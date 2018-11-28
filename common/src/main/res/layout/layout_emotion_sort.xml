@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/BaseActivityTheme"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <cn.yue.base.common.widget.keyboard.EmotionPageView
+        android:id="@+id/emotionPageLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <cn.yue.base.common.widget.keyboard.EmotionIndicatorView
+        android:id="@+id/indicatorView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <cn.yue.base.common.widget.keyboard.EmotionBottomSortLayout
+        android:id="@+id/bottomLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="1dp"
+        android:background="@drawable/shape_bg_transparent_stroke_4a4a4a"/>
+
+</LinearLayout>

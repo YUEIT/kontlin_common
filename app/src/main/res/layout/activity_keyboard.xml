@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.yue.base.kotlin.test.CustomKeyboardLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/keyboardL"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="jaisdofaiwjeofaw"/>
+    </ScrollView>
+</cn.yue.base.kotlin.test.CustomKeyboardLayout>
+

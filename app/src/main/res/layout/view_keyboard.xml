@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#fff"
+    android:orientation="vertical">
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:cardElevation="10dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:paddingLeft="20dp"
+            android:background="#ffffff"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/changeEmotionIV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="10dp"
+                android:src="@mipmap/icon_emoji"/>
+            <!--输入框-->
+            <EditText
+                android:id="@+id/commentET"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:layout_gravity="center_vertical"
+                android:maxLines="3"
+                android:imeOptions="actionSend"
+                android:textColorHint="#AFAFAF"
+                android:textColor="#000"
+                android:hint="输入你的评论"
+                android:textSize="13sp" />
+            <TextView
+                android:id="@+id/sendCommentTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:textColor="#000000"
+                android:textSize="15sp"
+                android:layout_gravity="center_vertical"
+                android:text="发送"/>
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <cn.yue.base.common.widget.keyboard.EmotionLayout
+        android:id="@+id/emotionL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
