@@ -23,8 +23,10 @@ android {
             }
             generateStubs = true
         }
-
-
+ 
+        dexOptions {
+            javaMaxHeapSize "1g"
+        }
     }
     buildTypes {
         release {
@@ -54,6 +56,3 @@ dependencies {
     implementation 'fm.jiecao:jiecaovideoplayer:5.5.4'
 }
 
-kapt {
-    generateStubs = true
-}

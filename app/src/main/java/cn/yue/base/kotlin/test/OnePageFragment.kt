@@ -13,6 +13,8 @@ import io.reactivex.Single
 @Route(path = "/app/onePage")
 class OnePageFragment : BasePullPageFragment<ArticleListVO, ArticleVO>() {
 
+
+
     override fun getItemLayoutId(): Int {
         return R.layout.item_article_list
     }
