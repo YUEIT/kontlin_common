@@ -157,4 +157,22 @@ object ProcessUtils {
         return true
     }
 
+    /**
+     * 获取当前进程名
+     * @param cxt
+     * @param pid
+     * @return
+     */
+    @JvmStatic
+    fun getProcessName(cxt: Context, pid: Int): String? {
+        val am = cxt.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val runningApps = am.runningAppProcesses ?: return null
+        for (procInfo in runningApps) {
+            if (procInfo.pid == pid) {
+                return procInfo.processName
+            }
+        }
+        return null
+    }
+
 }

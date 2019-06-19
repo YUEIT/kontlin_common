@@ -1,100 +1,154 @@
 package cn.yue.base.middle.view
 
 import android.content.Context
-import android.graphics.Typeface
-import android.graphics.drawable.Drawable
-import android.support.annotation.ColorInt
-import android.support.annotation.DrawableRes
+import android.support.annotation.LayoutRes
 import android.util.AttributeSet
-import android.widget.ImageView
+import android.view.View
+import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
-
+import cn.yue.base.common.activity.FRouter
+import cn.yue.base.common.image.ImageLoader
 import cn.yue.base.middle.R
+import kotlinx.android.synthetic.main.layout_page_hint_loading.view.*
 
 /**
  * Description :
  * Created by yue on 2018/11/13
  */
-class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : RelativeLayout(context, attrs, defStyleAttr) {
+class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : RelativeLayout(context, attrs, defStyleAttr){
 
-    private var hintIV: ImageView? = null
-    private var hintTV: TextView? = null
-
-    private val isNotNullHintTV: Boolean
-        get() = hintTV != null
-
-    private val isNotNullHintIV: Boolean
-        get() = hintIV != null
-
+    private var noNetView: View
+    private var noDataView: View
+    private var loadingView: View
+    private var serverErrorView: View
     init {
-        inflate(context, R.layout.layout_page_hint, this)
-        hintIV = findViewById(R.id.hintIV)
-        hintTV = findViewById(R.id.hintTV)
-        setDefault()
-    }
-
-    private fun setDefault() {
-        hintTV!!.textSize = 13f
-        hintTV!!.setTextColor(-0x5b5b5c)
-    }
-
-    fun setHintText(s: String) {
-        if (isNotNullHintTV) {
-            hintTV!!.text = s
+        isClickable = true
+        noNetView = inflate(context, R.layout.layout_page_hint_no_net, null)
+        noDataView = inflate(context, R.layout.layout_page_hint_no_data, null)
+        loadingView = inflate(context, R.layout.layout_page_hint_loading, null)
+        serverErrorView = View.inflate(context, R.layout.layout_page_hint_server_error, null)
+        ImageLoader.getLoader().loadGif(loadingIV, R.drawable.icon_page_loading)
+        noNetView.findViewById<TextView>(R.id.reloadTV).setOnClickListener{
+            if (onReloadListener != null) {
+                onReloadListener!!.onReload()
+            }
+        }
+        noNetView.findViewById<TextView>(R.id.checkNetTV).setOnClickListener {
+            FRouter.instance.build("/middle/noNet").navigation(context)
+        }
+        serverErrorView.findViewById<TextView>(R.id.reloadTV).setOnClickListener {
+            if (onReloadListener != null) {
+                onReloadListener!!.onRefresh()
+            }
+        }
+        serverErrorView.findViewById<TextView>(R.id.checkNetTV).setOnClickListener{
+            FRouter.instance.build("/middle/noNet").navigation(context)
         }
     }
 
-    fun setHintTextColor(@ColorInt color: Int) {
-        if (isNotNullHintTV) {
-            hintTV!!.setTextColor(color)
+    private var onReloadListener: OnReloadListener? = null
+
+    fun setOnReloadListener(onReloadListener: OnReloadListener) {
+        this.onReloadListener = onReloadListener
+    }
+
+    abstract class OnReloadListener {
+        abstract fun onReload()
+        open fun onRefresh() {}
+    }
+
+    fun setNoNetView(noNetView: View?) {
+        if (noNetView != null) {
+            this.noNetView = noNetView
         }
     }
 
-    fun setHintTextSize(size: Float) {
-        if (isNotNullHintTV) {
-            hintTV!!.textSize = size
+    fun setNoNetViewById(@LayoutRes layoutId: Int): View {
+        val view = View.inflate(context, layoutId, null)
+        setNoNetView(view)
+        return view
+    }
+
+    fun setNoDataView(noDataView: View?) {
+        if (noDataView != null) {
+            this.noDataView = noDataView
         }
     }
 
-    fun setHintTextSize(unit: Int, size: Float) {
-        if (isNotNullHintTV) {
-            hintTV!!.setTextSize(unit, size)
+    fun setNoDataViewById(@LayoutRes layoutId: Int): View {
+        val view = View.inflate(context, layoutId, null)
+        setNoDataView(view)
+        return view
+    }
+
+    fun setLoadingView(loadingView: View) {
+        if (noDataView != null) {
+            this.loadingView = loadingView
         }
     }
 
-    fun setHintTextTypeface(typeface: Typeface) {
-        if (isNotNullHintTV) {
-            hintTV!!.typeface = typeface
+    fun setLoadingViewById(@LayoutRes layoutId: Int): View {
+        val view = View.inflate(context, layoutId, null)
+        setLoadingView(view)
+        return view
+    }
+
+    fun showLoading() {
+        if (loadingView != null) {
+            visibility = View.VISIBLE
+            removeAllViews()
+            addView(loadingView)
+            setRefreshEnable(false)
         }
     }
 
-    fun setHintTextDrawable(left: Drawable, top: Drawable, right: Drawable, bottom: Drawable, padding: Int) {
-        if (isNotNullHintTV) {
-            hintTV!!.setCompoundDrawables(left, top, right, bottom)
-            hintTV!!.compoundDrawablePadding = padding
+    fun showSuccess() {
+        visibility = View.GONE
+        setRefreshEnable(true)
+    }
+
+    fun showErrorNet() {
+        if (noNetView != null) {
+            visibility = View.VISIBLE
+            removeAllViews()
+            addView(noNetView)
+            setRefreshEnable(false)
         }
     }
 
-    fun setHintTextMarginTop(marginTop: Int) {
-        if (isNotNullHintTV) {
-            val layoutParams = hintTV!!.layoutParams as RelativeLayout.LayoutParams
-            layoutParams.topMargin = marginTop
-            hintTV!!.layoutParams = layoutParams
+    fun showErrorNoData() {
+        if (noDataView != null) {
+            visibility = View.VISIBLE
+            removeAllViews()
+            addView(noDataView)
+            setRefreshEnable(true)
         }
     }
 
-    fun setHintImage(@DrawableRes resId: Int) {
-        if (isNotNullHintIV) {
-            hintIV!!.setImageResource(resId)
+    fun showErrorOperation() {
+        if (noNetView != null) {
+            visibility = View.VISIBLE
+            removeAllViews()
+            addView(serverErrorView)
+            setRefreshEnable(false)
         }
     }
 
-    fun setHintImageSize(w: Int, h: Int) {
-        if (isNotNullHintIV) {
-            val layoutParams = RelativeLayout.LayoutParams(w, h)
-            hintIV!!.layoutParams = layoutParams
+    private var refreshLayout: ViewGroup? = null
+    fun setRefreshTarget(refreshLayout: ViewGroup) {
+        this.refreshLayout = refreshLayout
+    }
+
+    fun setRefreshEnable(enable: Boolean) {
+        if (refreshLayout != null) {
+            refreshLayout!!.isEnabled = enable
         }
+    }
+
+    override fun addView(child: View) {
+        val params = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        addView(child, params)
     }
 
 }

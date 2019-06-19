@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/loadingIV"
+            android:layout_width="@dimen/q233"
+            android:layout_height="@dimen/q233"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/q30"
+            android:layout_gravity="center_horizontal"
+            android:textSize="12sp"
+            android:textColor="#9b9b9b"
+            android:text="好物·好价·好分享"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textSize="9sp"
+            android:textColor="#d2d2d2"
+            android:text="专注年轻人的社交零售空间"/>
+    </LinearLayout>
+
+</FrameLayout>

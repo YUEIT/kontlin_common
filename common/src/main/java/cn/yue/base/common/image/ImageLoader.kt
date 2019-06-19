@@ -1,5 +1,6 @@
 package cn.yue.base.common.image
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.support.annotation.DrawableRes
 import android.widget.ImageView
@@ -19,6 +20,7 @@ class ImageLoader {
             if (mLoader == null) {
                 mLoader = GlideImageLoader()
             }
+            mLoader?.clearCache()
             return mLoader as Loader
         }
     }
@@ -39,8 +41,19 @@ class ImageLoader {
 
         fun loadGif(imageView: ImageView?, url: String?)
 
+        fun loadGif(imageView: ImageView?, @DrawableRes resId: Int)
+
         fun loadRoundImage(imageView: ImageView?, url: String?, radius: Int)
 
         fun loadCircleImage(imageView: ImageView?, url: String?)
+
+        fun loadAsBitmap(context: Context, url: String?, callBack: LoadBitmapCallBack)
+
+        fun setPlaceholder(@DrawableRes resId: Int): Loader
+
+        fun loadImageNoCache(imageView: ImageView?, url: String?)
+
+        fun clearCache()
+
     }
 }

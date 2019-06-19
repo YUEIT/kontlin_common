@@ -14,10 +14,12 @@ import com.alibaba.android.arouter.launcher.ARouter
 
 class CommonActivity : BaseFragmentActivity() {
 
+    private var transition: Int = 0
     override fun getFragment(): Fragment? {
         var fragment: Fragment? = null
         if (intent != null && intent.extras != null && intent.extras!!.getParcelable<Parcelable>(FRouter.TAG) != null) {
             val fRouter = intent.extras!!.getParcelable<FRouter>(FRouter.TAG)
+            transition = fRouter.getTransition()
             try {
                 fragment = ARouter.getInstance()
                         .build(fRouter!!.getPath())
@@ -44,9 +46,14 @@ class CommonActivity : BaseFragmentActivity() {
                         }) as Fragment
             } catch (e: Exception) {
                 e.printStackTrace()
+                return null
             }
 
         }
         return fragment
+    }
+
+    override fun setExitAnim() {
+        overridePendingTransition(TransitionAnimation.getStopEnterAnim(transition), TransitionAnimation.getStopExitAnim(transition))
     }
 }

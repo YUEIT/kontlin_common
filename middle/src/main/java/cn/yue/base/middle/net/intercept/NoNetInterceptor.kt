@@ -1,6 +1,6 @@
 package cn.yue.base.middle.net.intercept
 
-import cn.yue.base.common.utils.NetworkUtils
+import cn.yue.base.common.utils.device.NetworkUtils
 import cn.yue.base.middle.net.NetworkConfig
 import cn.yue.base.middle.net.ResultException
 import okhttp3.Interceptor
@@ -19,7 +19,7 @@ import java.io.IOException
 class NoNetInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
-        return if (!NetworkUtils.isNetwork()) {
+        return if (!NetworkUtils.isConnected) {
             //            //取  缓存(因为现在没有缓存 所以取到的一定是null)
             //            Request newRequest = chain.request().newBuilder()
             //                    .cacheControl(CacheControl.FORCE_CACHE)

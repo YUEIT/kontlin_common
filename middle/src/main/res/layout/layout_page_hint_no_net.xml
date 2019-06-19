@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/q70"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/app_icon_exception_no_net"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/q50"
+            android:layout_gravity="center_horizontal"
+            android:textSize="12sp"
+            android:textColor="#d2d2d2"
+            android:text="哎呀！网络出问题了"/>
+
+        <TextView
+            android:id="@+id/reloadTV"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/q115"
+            android:layout_marginTop="@dimen/q95"
+            android:layout_marginLeft="@dimen/q122"
+            android:layout_marginRight="@dimen/q122"
+            android:gravity="center"
+            android:background="@drawable/shape_bg_fed400_radius_55"
+            android:textColor="#040000"
+            android:textSize="12sp"
+            android:text="重新加载" />
+
+        <TextView
+            android:id="@+id/checkNetTV"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/q115"
+            android:layout_marginTop="@dimen/q43"
+            android:layout_marginLeft="@dimen/q122"
+            android:layout_marginRight="@dimen/q122"
+            android:gravity="center"
+            android:background="@drawable/shape_bg_f3f3f3_radius_55"
+            android:textColor="#9b9b9b"
+            android:textSize="12sp"
+            android:text="检查网络" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/q50"
+            android:layout_gravity="center_horizontal"
+            android:textSize="12sp"
+            android:textColor="#d2d2d2"
+            android:text="请确保手机连接的WIFI或者运营商网络正常"/>
+    </LinearLayout>
+</FrameLayout>
+

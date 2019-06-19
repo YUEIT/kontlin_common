@@ -1,7 +1,8 @@
 package cn.yue.base.middle.net
 
 
-import cn.yue.base.middle.net.gson.SignGsonConverterFactory
+import cn.yue.base.middle.init.InitConstant
+import cn.yue.base.middle.net.convert.SignGsonConverterFactory
 import cn.yue.base.middle.net.intercept.NoNetInterceptor
 import cn.yue.base.middle.net.intercept.SignInterceptor
 import io.reactivex.plugins.RxJavaPlugins
@@ -36,7 +37,7 @@ class RetrofitManager private constructor() {
         builder.connectTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
         builder.readTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
         builder.writeTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
-        if (NetworkConfig.DEBUG) {
+        if (InitConstant.isDebug) {
             val logging = HttpLoggingInterceptor()
             logging.level = HttpLoggingInterceptor.Level.BODY
             builder.addInterceptor(logging)

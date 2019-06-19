@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/q144"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:id="@+id/leftLL"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/q58">
+
+        <ImageView
+            android:id="@+id/leftIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="10dp"
+            tools:src="@drawable/app_icon_back" />
+
+        <TextView
+            android:id="@+id/leftTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="#333333"
+            android:textSize="13sp"
+            tools:text="返回" />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/centerTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:textColor="#333333"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="标题" />
+
+    <LinearLayout
+        android:id="@+id/rightLL"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:gravity="center_vertical"
+        android:paddingRight="@dimen/q58">
+
+        <TextView
+            android:id="@+id/rightTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#333333"
+            android:textSize="13sp"
+            tools:text="确定" />
+
+        <ImageView
+            android:id="@+id/rightIV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            tools:src="@drawable/app_icon_delete" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_alignParentBottom="true"
+        android:background="#efefef" />
+</RelativeLayout>

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<set xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shareInterpolator="true">
+<set xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <translate
         android:duration="300"
-        android:fromXDelta="0"
-        android:toXDelta="1"
         android:interpolator="@android:anim/accelerate_interpolator"
-        android:fillAfter="true" />
+        android:fromXDelta="0.0%"
+        android:toXDelta="100.0%p"
+        android:fillAfter="true"/>
 
 </set>

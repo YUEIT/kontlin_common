@@ -16,21 +16,21 @@ abstract class BaseNetSingleObserver<T> : DisposableSingleObserver<T>() {
 
     abstract fun onException(e: ResultException)
 
-    fun onCancel(e: ResultException) {}
+    open fun onCancel(e: ResultException) {}
 
     override fun onError(e: Throwable) {
         val resultException: ResultException
         if (e is ResultException) {
             resultException = e
-            if (resultException.errCode == NetworkConfig.ERROR_TOKEN_INVALID || resultException.errCode == NetworkConfig.ERROR_LOGIN_INVALID) {
+            if (resultException.code == NetworkConfig.ERROR_TOKEN_INVALID || resultException.code == NetworkConfig.ERROR_LOGIN_INVALID) {
                 onLoginInvalid()
                 return
             }
             onException(resultException)
         } else if (e is CancellationException) {
-            onCancel(ResultException(NetworkConfig.ERROR_CANCEL, e.message?:""))
+            onCancel(ResultException(NetworkConfig.ERROR_CANCEL, "请求取消~"))
         } else {
-            onException(ResultException(NetworkConfig.ERROR_OTHER, e.message?:""))
+            onException(ResultException(NetworkConfig.ERROR_SERVER, e.message?:""))
         }
     }
 

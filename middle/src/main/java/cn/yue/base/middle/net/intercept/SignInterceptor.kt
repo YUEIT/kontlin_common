@@ -5,7 +5,7 @@ import cn.yue.base.common.utils.debug.LogUtils
 import cn.yue.base.middle.init.InitConstant
 import cn.yue.base.middle.net.NetworkConfig
 import cn.yue.base.middle.net.ResultException
-import cn.yue.base.middle.net.gson.RequestConverterBean
+import cn.yue.base.middle.net.convert.RequestConverterBean
 import com.google.gson.Gson
 import okhttp3.*
 import java.io.IOException
@@ -60,7 +60,7 @@ class SignInterceptor : Interceptor {
                 encodeData = encodeData.replace("\\+".toRegex(), "%20")
             }
             val appVersion = InitConstant.versionName
-            val deviceId = InitConstant.deviceId
+            val deviceId = InitConstant.getDeviceId()
             val sign = EncryptUtils.encryptMD5ToString((appVersion + InitConstant.APP_CLIENT_TYPE + encodeData +
                     deviceId + time + InitConstant.APP_SIGN_KEY).toByteArray())
 
@@ -114,7 +114,7 @@ class SignInterceptor : Interceptor {
                         map[key.replace("LIST_", "")] = list
                     } else {
                         if (original.url().queryParameterValues(key).size > 1) {
-                            throw ResultException(NetworkConfig.ERROR_OTHER, "请求的数据类型为list，且参数名未以LIST_开始~")
+                            throw ResultException(NetworkConfig.ERROR_OPERATION, "请求的数据类型为list，且参数名未以LIST_开始~")
                         }
                         val value = original.url().queryParameterValues(key)[0]
                         try {
@@ -150,7 +150,7 @@ class SignInterceptor : Interceptor {
 
             }
             val appVersion = InitConstant.versionName
-            val deviceId = InitConstant.deviceId
+            val deviceId = InitConstant.getDeviceId()
             val sign = EncryptUtils.encryptMD5ToString((appVersion + InitConstant.APP_CLIENT_TYPE + encodeData +
                     deviceId + time + InitConstant.APP_SIGN_KEY).toByteArray())
             tmp["app_version"] = appVersion.toString()

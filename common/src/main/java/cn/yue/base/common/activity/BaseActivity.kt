@@ -1,14 +1,21 @@
 package cn.yue.base.common.activity
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v7.app.AlertDialog
+import cn.yue.base.common.utils.app.BarUtils
 import cn.yue.base.common.utils.app.RunTimePermissionUtil
+import cn.yue.base.common.utils.debug.ToastUtils
+import cn.yue.base.common.widget.dialog.HintDialog
+import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.components.RxActivity
+import io.reactivex.SingleTransformer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 /**
  * 介绍：
@@ -17,45 +24,62 @@ import com.trello.rxlifecycle2.components.RxActivity
  * 时间：2017/2/20.
  */
 
-abstract class BaseActivity : RxActivity() {
+abstract class BaseActivity : RxActivity(), ILifecycleProvider<ActivityEvent> {
 
     protected abstract val layoutId: Int
 
     private var permissionCallBack: PermissionCallBack? = null
 
-    private var failDialog: AlertDialog? = null
+    private var failDialog: HintDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(layoutId)
+        if (hasContentView()) {
+            setContentView(layoutId)
+        }
         if (intent != null && intent.extras != null) {
             initBundle(intent.extras)
         }
         initView()
     }
 
+    protected fun hasContentView() : Boolean  = true
+
     protected abstract fun initView()
 
     protected fun initBundle(bundle: Bundle?) {}
 
-    override fun onStart() {
-        super.onStart()
+    fun setSystemBar(isFillUpTop: Boolean, isDarkIcon: Boolean) {
+        setSystemBar(isFillUpTop, isDarkIcon, Color.TRANSPARENT)
     }
 
-    override fun onResume() {
-        super.onResume()
+    fun setSystemBar(isFillUpTop: Boolean, isDarkIcon: Boolean, bgColor: Int) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return
+        }
+        try {
+            BarUtils.setStyle(this, isFillUpTop, isDarkIcon, bgColor)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun <T> toBindLifecycle(): SingleTransformer<T, T> {
+        return SingleTransformer {
+            upstream ->
+            upstream.compose(bindUntilEvent(ActivityEvent.DESTROY))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+        }
     }
 
-    override fun onStop() {
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun <T> toBindLifecycle(e: ActivityEvent): SingleTransformer<T, T> {
+        return SingleTransformer {
+            upstream ->
+            upstream.compose(bindUntilEvent(e))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+        }
     }
 
     /**
@@ -67,17 +91,27 @@ abstract class BaseActivity : RxActivity() {
         RunTimePermissionUtil.requestPermissions(this, requestCode, permissionCallBack, *permissions)
     }
 
+    fun requestPermission(permission: String, permissionCallBack: PermissionCallBack) {
+        RunTimePermissionUtil.requestPermissions(this, RunTimePermissionUtil.REQUEST_CODE, permissionCallBack, permission)
+    }
+
+    fun requestPermission(permissions: Array<String>, permissionCallBack: PermissionCallBack) {
+        RunTimePermissionUtil.requestPermissions(this, RunTimePermissionUtil.REQUEST_CODE, permissionCallBack, *permissions)
+    }
+
     fun setPermissionCallBack(permissionCallBack: PermissionCallBack) {
         this.permissionCallBack = permissionCallBack
     }
 
     fun showFailDialog() {
         if (failDialog == null) {
-            failDialog = AlertDialog.Builder(this)
-                    .setTitle("消息")
-                    .setMessage("当前应用无此权限，该功能暂时无法使用。如若需要，请单击确定按钮进行权限授权！")
-                    .setNegativeButton("取消", DialogInterface.OnClickListener { dialog, which -> return@OnClickListener })
-                    .setPositiveButton("确定") { dialog, which -> startSettings() }.create()
+            failDialog = HintDialog.Builder(this)
+                    .setTitleStr("消息")
+                    .setContentStr("当前应用无此权限，该功能暂时无法使用。如若需要，请单击确定按钮进行权限授权！")
+                    .setLeftClickStr("取消")
+                    .setRightClickStr("确定")
+                    .setOnRightClickListener { startSettings() }
+                    .build()
         }
         failDialog!!.show()
     }
@@ -90,6 +124,7 @@ abstract class BaseActivity : RxActivity() {
                     if (verificationPermissions(grantResults)) {
                         permissionCallBack!!.requestSuccess(permissions[i])
                     } else {
+                        ToastUtils.showShortToast("获取" + RunTimePermissionUtil.getPermissionName(permissions[i]) + "权限失败~")
                         permissionCallBack!!.requestFailed(permissions[i])
                     }
                 }
@@ -113,4 +148,8 @@ abstract class BaseActivity : RxActivity() {
         startActivity(intent)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        failDialog?.dismiss()
+    }
 }

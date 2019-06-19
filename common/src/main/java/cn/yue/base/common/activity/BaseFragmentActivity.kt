@@ -8,16 +8,24 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.support.annotation.ColorInt
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.Toolbar
 import android.text.TextUtils
+import android.view.View
+import android.view.ViewGroup
 import android.view.Window
+import android.widget.RelativeLayout
 import cn.yue.base.common.R
+import cn.yue.base.common.utils.app.BarUtils
 import cn.yue.base.common.utils.app.RunTimePermissionUtil
-import com.readystatesoftware.systembartint.SystemBarTintManager
+import cn.yue.base.common.widget.TopBar
+import cn.yue.base.common.widget.dialog.HintDialog
+import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.components.support.RxFragmentActivity
+import io.reactivex.SingleTransformer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.base_activity_layout.*
 import java.util.*
 
@@ -28,24 +36,32 @@ import java.util.*
  * 时间：2017/2/20.
  */
 
-abstract class BaseFragmentActivity : RxFragmentActivity() {
+abstract class BaseFragmentActivity : RxFragmentActivity(), ILifecycleProvider<ActivityEvent>{
 
     private lateinit var fragmentManager: FragmentManager
     private var currentFragment: BaseFragment? = null
+    private lateinit var topBar: TopBar
     private var resultCode: Int = 0
     private var resultBundle: Bundle? = null
     private var permissionCallBack: PermissionCallBack? = null
-    private var failDialog: AlertDialog? = null
+    private var failDialog: HintDialog? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            val tintManager = SystemBarTintManager(this)
-            tintManager.isStatusBarTintEnabled = true
-            tintManager.setStatusBarTintColor(Color.TRANSPARENT)
-        }
+        setSystemBar(false, true, Color.WHITE)
+        setContentView(getContentViewLayoutId())
+        initView()
+        replace(getFragment(), null, false)
+    }
+
+    protected open fun getContentViewLayoutId() : Int = R.layout.base_activity_layout
+
+    private fun initView() {
+        topBar = TopBar(this)
+        topFL.addView(topBar)
+        content.setBackgroundColor(Color.WHITE)
         fragmentManager = supportFragmentManager
         fragmentManager.addOnBackStackChangedListener {
             currentFragment = getCurrentFragment()
@@ -55,13 +71,65 @@ abstract class BaseFragmentActivity : RxFragmentActivity() {
             resultCode = Activity.RESULT_CANCELED
             resultBundle = null
         }
-        setContentView(R.layout.base_activity_layout)
-        replace(getFragment(), null, false)
+    }
+
+    fun setSystemBar(isFillTop: Boolean, isDarkIcon: Boolean) {
+        setSystemBar(isFillTop, isDarkIcon, Color.TRANSPARENT)
+    }
+
+    fun setSystemBar(isFillTop: Boolean, isDarkIcon: Boolean, bgColor: Int) {
+        try {
+            BarUtils.setStyle(this, isFillTop, isDarkIcon, bgColor)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        if (isFillTop) {
+            setFillUpTopLayout(isFillTop)
+        }
+    }
+
+    fun setFillUpTopLayout(isFillTop: Boolean) {
+        var systemBarPadding: Int
+        var subject: Int
+        if (isFillTop) {
+            systemBarPadding = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) 0
+                else Math.max(BarUtils.getStatusBarHeight(this), resources.getDimensionPixelOffset(R.dimen.q50))
+            subject = 0
+            getTopBar().setBgColor(Color.TRANSPARENT)
+        } else {
+            systemBarPadding = 0
+            subject = R.id.topFL
+        }
+        val topBarLayoutParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        topBarLayoutParams.topMargin = systemBarPadding
+        topFL!!.layoutParams = topBarLayoutParams
+        val contentLayoutParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        contentLayoutParams.addRule(RelativeLayout.BELOW, subject)
+        content!!.layoutParams = contentLayoutParams
     }
 
     abstract fun getFragment(): Fragment?
 
-    fun getToolBar(): Toolbar = topBar
+    fun getTopBar(): TopBar = topBar
+
+    fun customTopBar(view: View) {
+        topFL.removeAllViews()
+        topFL.addView(view)
+    }
+
+    fun getCustomTopBar() : View = topFL.getChildAt(0)
+
+    fun removeTopBar() {
+        topFL.removeView(topBar)
+    }
+
+    fun setContentBackground(@ColorInt color: Int) {
+        content.setBackgroundColor(color)
+    }
+
+    fun recreateFragment(fragmentName: String) {
+        replace(getFragment(), null, false)
+    }
 
     fun instantiate(mClass: Class<Fragment>, args: Bundle): Fragment {
         return Fragment.instantiate(this, mClass.simpleName, args)
@@ -71,7 +139,6 @@ abstract class BaseFragmentActivity : RxFragmentActivity() {
         if (fragment == null) return
         var tag = tag
         val transaction = fragmentManager.beginTransaction()
-        transaction.setCustomAnimations(R.anim.right_in, R.anim.left_out, R.anim.left_in, R.anim.right_out)
         if (TextUtils.isEmpty(tag)) {
             tag = UUID.randomUUID().toString()
         }
@@ -89,18 +156,13 @@ abstract class BaseFragmentActivity : RxFragmentActivity() {
         } else null
     }
 
-    override fun onResume() {
-        super.onResume()
-        overridePendingTransition(R.anim.left_in, R.anim.right_out)
-    }
-
     override fun onStop() {
         super.onStop()
-        overridePendingTransition(R.anim.left_in, R.anim.right_out)
+        setExitAnim()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    protected open fun setExitAnim() {
+        overridePendingTransition(R.anim.left_in, R.anim.right_out)
     }
 
     override fun onBackPressed() {
@@ -122,7 +184,7 @@ abstract class BaseFragmentActivity : RxFragmentActivity() {
 
         }
         super.onBackPressed()
-        this.overridePendingTransition(R.anim.left_in, R.anim.right_out)
+        setExitAnim()
     }
 
     fun setFragmentResult(resultCode: Int, resultBundle: Bundle?) {
@@ -157,6 +219,24 @@ abstract class BaseFragmentActivity : RxFragmentActivity() {
         }
     }
 
+    override fun <T> toBindLifecycle(): SingleTransformer<T, T> {
+        return SingleTransformer {
+            upstream ->
+            upstream.compose(bindUntilEvent(ActivityEvent.DESTROY))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+        }
+    }
+
+    override fun <T> toBindLifecycle(e: ActivityEvent): SingleTransformer<T, T> {
+        return SingleTransformer {
+            upstream ->
+            upstream.compose(bindUntilEvent(ActivityEvent.DESTROY))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+        }
+    }
+
     /**
      * 权限请求
      * @param permissions
@@ -172,12 +252,13 @@ abstract class BaseFragmentActivity : RxFragmentActivity() {
 
     fun showFailDialog() {
         if (failDialog == null) {
-            failDialog = AlertDialog.Builder(this)
-                    .setTitle("消息")
-                    .setMessage("当前应用无此权限，该功能暂时无法使用。如若需要，请单击确定按钮进行权限授权！")
-                    .setNegativeButton("取消") { dialog, _ -> dialog.dismiss() }
-                    .setPositiveButton("确定") { _, _ -> startSettings() }
-                    .create()
+            failDialog = HintDialog.Builder(this)
+                    .setTitleStr("消息")
+                    .setContentStr("当前应用无此权限，该功能暂时无法使用。如若需要，请单击确定按钮进行权限授权！")
+                    .setLeftClickStr("取消")
+                    .setRightClickStr("确定")
+                    .setOnRightClickListener { startSettings() }
+                    .build()
         }
         failDialog!!.show()
     }

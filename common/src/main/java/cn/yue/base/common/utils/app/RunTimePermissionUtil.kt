@@ -1,10 +1,13 @@
 package cn.yue.base.common.utils.app
 
+import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.text.TextUtils
 import cn.yue.base.common.activity.BaseActivity
 import cn.yue.base.common.activity.BaseFragmentActivity
 import cn.yue.base.common.activity.PermissionCallBack
@@ -16,6 +19,14 @@ import java.util.*
  */
 object RunTimePermissionUtil {
     val REQUEST_CODE = 100
+
+    fun requestPermissions(context: Context, permissionCallBack: PermissionCallBack?, vararg permissions: String) {
+        if (context is BaseActivity) {
+            requestPermissions(context , REQUEST_CODE, permissionCallBack, *permissions)
+        } else if (context is BaseFragmentActivity) {
+            requestPermissions(context, REQUEST_CODE, permissionCallBack, *permissions)
+        }
+    }
 
     fun requestPermissions(context: BaseFragmentActivity, requestCode: Int, permissionCallBack: PermissionCallBack?, vararg permissions: String) {
         //检查权限是否授权
@@ -100,6 +111,22 @@ object RunTimePermissionUtil {
         }
         return permissionList.toTypedArray()
     }
+
+    fun getPermissionName(permission: String): String {
+        if (permissionMap.isEmpty()) {
+            permissionMap[Manifest.permission.WRITE_EXTERNAL_STORAGE] = "写入存储空间"
+            permissionMap[Manifest.permission.READ_EXTERNAL_STORAGE] = "读取存储空间"
+            permissionMap[Manifest.permission.READ_PHONE_STATE] = "手机识别码"
+            permissionMap[Manifest.permission.CAMERA] = "相机拍照"
+            permissionMap[Manifest.permission.ACCESS_FINE_LOCATION] = "定位"
+        }
+        val permissionName = permissionMap[permission]
+        return if (!TextUtils.isEmpty(permissionName)) {
+            permissionName!!
+        } else ""
+    }
+
+    private val permissionMap = HashMap<String, String>()
 }
 
 

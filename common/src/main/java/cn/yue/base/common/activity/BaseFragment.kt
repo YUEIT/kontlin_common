@@ -7,15 +7,17 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import cn.yue.base.common.R
+import cn.yue.base.common.widget.TopBar
+import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.components.support.RxFragment
-import kotlinx.android.synthetic.main.base_activity_layout.*
+import io.reactivex.SingleTransformer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.util.*
 
 /**
@@ -25,7 +27,7 @@ import java.util.*
  * 时间：2017/2/20.
  */
 
-abstract class BaseFragment : RxFragment() {
+abstract class BaseFragment : RxFragment(), View.OnTouchListener, ILifecycleProvider<FragmentEvent> {
 
     protected var cacheView: View? = null
     protected lateinit var mFragmentManager: FragmentManager
@@ -33,7 +35,7 @@ abstract class BaseFragment : RxFragment() {
     protected var bundle: Bundle? = null
     protected lateinit var mInflater: LayoutInflater
     protected var mHandler = Handler()
-    protected lateinit var topBar: Toolbar
+    protected lateinit var topBar: TopBar
     protected var requestTag = UUID.randomUUID().toString()
 
     /**
@@ -61,15 +63,23 @@ abstract class BaseFragment : RxFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView(savedInstanceState)
+        view.setOnTouchListener(this)
+        if (!hasCache) {
+            initView(savedInstanceState)
+            initOther()
+        }
     }
+
+    protected open fun initOther() {}
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (cacheView == null || !needCache()) {//如果view没有被初始化或者不需要缓存的情况下，重新初始化控件
-            topBar = mActivity.topBar
+            topBar = mActivity.getTopBar()
             initToolBar(topBar)
             cacheView = if (getLayoutId() == 0) null else inflater.inflate(getLayoutId(), container, false)
+            hasCache = false
         } else {
+            hasCache = true
             val v = cacheView!!.parent as ViewGroup
             v?.removeView(cacheView)
         }
@@ -80,15 +90,45 @@ abstract class BaseFragment : RxFragment() {
      * true 避免当前Fragment被repalce后回退回来重走oncreateview，导致重复初始化View和数据
      * @return
      */
-    protected fun needCache(): Boolean {
+    protected open fun needCache(): Boolean {
         return true
     }
 
+    private var hasCache: Boolean = false
+
     protected abstract fun initView(savedInstanceState: Bundle?)
 
-    fun initToolBar(topBar: Toolbar) {
-        if (needToolBar()) {
-            topBar.visibility = View.VISIBLE
+    protected open fun initToolBar(topBar: TopBar) {
+        topBar.visibility = View.VISIBLE
+        topBar.setLeftImage(R.drawable.app_icon_back)
+        topBar.setLeftClickListener { finishAll() }
+    }
+
+    fun customTopBar(view: View) {
+        mActivity.customTopBar(view)
+    }
+
+    fun hideTopBar() {
+        mActivity.getTopBar().visibility = View.GONE
+    }
+
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        return true
+    }
+
+    override fun <T> toBindLifecycle(): SingleTransformer<T, T> {
+        return SingleTransformer { upstream ->
+            upstream.compose(bindUntilEvent(FragmentEvent.DESTROY))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+        }
+    }
+
+    override fun <T> toBindLifecycle(e: FragmentEvent): SingleTransformer<T, T> {
+        return SingleTransformer { upstream ->
+            upstream.compose(bindUntilEvent(e))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
         }
     }
 
@@ -101,7 +141,7 @@ abstract class BaseFragment : RxFragment() {
         return Fragment.instantiate(activity, fragmentName, bundle) as BaseFragment
     }
 
-    fun onFragmentBackPressed(): Boolean {
+    open fun onFragmentBackPressed(): Boolean {
         return false
     }
 
@@ -189,62 +229,6 @@ abstract class BaseFragment : RxFragment() {
         return if (cacheView == null) {
             null
         } else cacheView!!.findViewById<View>(resId) as T
-    }
-
-
-    /**
-     * 是否需要持有公共的toolbar，只有当fragment作为一个完整的页面时才需要
-     * 暂未处理，默认处理方式：不重写resetToolBar（）
-     *
-     * @return
-     */
-    protected fun needToolBar(): Boolean {
-        return true
-    }
-
-    /***********************
-     * 对基础view的一些公共操作
-     */
-    protected fun setTextColorRid(t: TextView?, rId: Int) {
-        if (null != t) {
-            if (activity != null) {
-                t.setTextColor(activity!!.resources.getColor(rId))
-            }
-        }
-    }
-
-    protected fun setTextColor(t: TextView?, color: Int) {
-        t?.setTextColor(color)
-    }
-
-    protected fun setTextView(t: TextView?, s: CharSequence?) {
-        if (null != t && null != s) {
-            t.text = s
-        } else if (null != t) {
-            t.text = ""
-        }
-    }
-
-    protected fun setImageResource(img: ImageView?, resId: Int) {
-        img?.setImageResource(resId)
-    }
-
-    protected fun setBackground(v: View?, resId: Int) {
-        v?.setBackgroundResource(resId)
-    }
-
-    protected fun setVisible(v: View?, visible: Boolean) {
-        if (null != v) {
-            if (visible) {
-                v.visibility = View.VISIBLE
-            } else {
-                v.visibility = View.GONE
-            }
-        }
-    }
-
-    protected fun setOnClickListener(v: View?, l: View.OnClickListener) {
-        v?.setOnClickListener(l)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

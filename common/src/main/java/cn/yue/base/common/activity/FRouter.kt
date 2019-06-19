@@ -1,6 +1,7 @@
 package cn.yue.base.common.activity
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -9,10 +10,13 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.text.TextUtils
 import android.util.SparseArray
-import cn.yue.base.common.Constant
-import cn.yue.base.common.R
+import cn.yue.base.common.utils.debug.ToastUtils
+import com.alibaba.android.arouter.core.LogisticsCenter
+import com.alibaba.android.arouter.facade.Postcard
+import com.alibaba.android.arouter.facade.enums.RouteType
 import com.alibaba.android.arouter.launcher.ARouter
 import java.io.Serializable
+import java.net.NoRouteToHostException
 import java.util.*
 
 
@@ -30,15 +34,11 @@ class FRouter : Parcelable {
     
     private var timeout: Int = 0
     private var enterAnim: Int = 0
-    
     private var exitAnim: Int = 0
+    private var transition: Int = 0
         
     private var isInterceptLogin: Boolean = false //是否登录拦截
     private var loginUri: String? = null //登录路径
-
-    private fun getRealEnterAnim(): Int = if (enterAnim <= 0) R.anim.right_in else enterAnim
-
-    private fun getRealExitAnim(): Int = if (exitAnim <= 0) R.anim.left_out else exitAnim
 
     private object FRouterHolder {
         val instance = FRouter()
@@ -51,17 +51,17 @@ class FRouter : Parcelable {
         this.setUri(uri)
         this.extras = bundle ?: Bundle()
         this.isInterceptLogin = false
-        this.loginUri = null
+        this.transition = 0
     }
 
     private fun clear() {
         this.extras = Bundle()
         this.path = null
         this.isInterceptLogin = false
-        this.loginUri = null
         this.flags = 0
         this.enterAnim = 0
         this.exitAnim = 0
+        this.transition = 0
     }
 
     fun getTag(): Any? {
@@ -73,6 +73,11 @@ class FRouter : Parcelable {
         return this
     }
 
+    private fun getRealEnterAnim(): Int = if (enterAnim > 0) enterAnim else TransitionAnimation.getStartEnterAnim(transition)
+
+    private fun getRealExitAnim(): Int = if (exitAnim > 0) exitAnim else TransitionAnimation.getStartExitAnim(transition)
+
+    fun getTransition(): Int = transition
 
     fun getTimeout(): Int {
         return this.timeout
@@ -106,6 +111,25 @@ class FRouter : Parcelable {
         return this
     }
 
+    private var targetActivity: Class<*>? = null
+
+    fun setTargetActivity(targetActivity: Class<*>?) {
+        this.targetActivity = targetActivity
+    }
+
+    private fun getRouteType(): RouteType {
+        if (TextUtils.isEmpty(path)) {
+            throw NullPointerException("path is null")
+        }
+        val postcard: Postcard = ARouter.getInstance().build(path)
+        try {
+            LogisticsCenter.completion(postcard)
+        } catch (e : NoRouteToHostException) {
+            return RouteType.UNKNOWN
+        }
+        return postcard.type
+    }
+
     fun navigation(context: Context) {
         this.navigation(context, null)
     }
@@ -114,6 +138,14 @@ class FRouter : Parcelable {
         if (isInterceptLogin && interceptLogin(context)) {
             return
         }
+        if (getRouteType() == RouteType.ACTIVITY) {
+            jumpToActivity(context)
+        } else if (getRouteType() == RouteType.FRAGMENT) {
+            jumpToFragment(context, toActivity)
+        } else {
+            ToastUtils.showShortToast("找不到页面")
+        }
+
         if (context is Activity) {
             context.overridePendingTransition(getRealEnterAnim(), getRealExitAnim())
         }
@@ -150,6 +182,57 @@ class FRouter : Parcelable {
         context.startActivityForResult(intent, requestCode)
     }
 
+    private fun jumpToActivity(context: Context) {
+        jumpToActivity(context)
+    }
+
+    private fun jumpToActivity(context: Context, requestCode: Int) {
+        val postcard: Postcard = ARouter.getInstance()
+                .build(path)
+                .withFlags(flags)
+                .with(extras)
+                .withTransition(getRealEnterAnim(), getRealExitAnim())
+                .setTimeout(getTimeout())
+        if (requestCode <= 0 || context !is Activity) {
+            postcard.navigation(context)
+        } else {
+            postcard.navigation(context, requestCode)
+        }
+    }
+
+    private fun jumpToFragment(context: Context) {
+        jumpToFragment(context, null)
+    }
+
+    private fun jumpToFragment(context: Context, toActivity: Class<*>?) {
+        jumpToFragment(context, toActivity, -1)
+    }
+
+    private fun jumpToFragment(context: Context, toActivity: Class<*>?, requestCode: Int) {
+        val intent: Intent = Intent()
+        intent.putExtra(TAG, this)
+        intent.putExtras(extras)
+        intent.flags = flags
+        if (toActivity == null) {
+            if (targetActivity == null) {
+                intent.setClass(context, CommonActivity::class.java)
+            } else {
+                intent.setClass(context, targetActivity)
+            }
+        } else {
+            intent.setClass(context, toActivity)
+        }
+        if (requestCode <= 0) {
+            context.startActivity(intent)
+        } else {
+            if (context is Activity) {
+                context.startActivityForResult(intent, requestCode)
+            }
+        }
+        if (context is Activity) {
+            context.overridePendingTransition(getRealEnterAnim(), getRealExitAnim())
+        }
+    }
 
     fun with(bundle: Bundle?): FRouter {
         if (null != bundle) {
@@ -290,23 +373,30 @@ class FRouter : Parcelable {
         return this
     }
 
+    fun withTransitionStyle(transitionStyle: Int): FRouter {
+        this.transition = transitionStyle
+        return this
+    }
+
     override fun toString(): String {
         return "FRouter{uri=" + this.uri + ", tag=" + this.tag + ", mBundle=" + this.extras + ", flags=" + this.flags + ", timeout=" + this.timeout + ", provider=" + ", greenChannel=" + ", enterAnim=" + this.enterAnim + ", exitAnim=" + this.exitAnim + "}\n" + super.toString()
     }
 
     @JvmOverloads
-    fun setInterceptLogin(loginUri: String? = null): FRouter {
+    fun setInterceptLogin(): FRouter {
         isInterceptLogin = true
-        this.loginUri = loginUri
         return this
     }
 
-    private fun interceptLogin(context: Context): Boolean {
-        if (!Constant.LOGINED) {
-            ARouter.getInstance().build(if (TextUtils.isEmpty(loginUri)) "/app/login" else loginUri)
-                    .withFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    .navigation(context)
-            return true
+    private var onInterceptLoginListener : ((context: Context) -> Boolean)? = null
+
+    fun setOnInterceptLoginlistener(onInterceptLoginListener: ((context: Context) -> Boolean)?) {
+        this.onInterceptLoginListener = onInterceptLoginListener
+    }
+
+    private fun interceptLogin(context: Context) : Boolean {
+        if (onInterceptLoginListener != null) {
+            return onInterceptLoginListener!!(context)
         }
         return false
     }
@@ -327,6 +417,17 @@ class FRouter : Parcelable {
             override fun createFromParcel(source: Parcel): FRouter = FRouter(source)
             override fun newArray(size: Int): Array<FRouter?> = arrayOfNulls(size)
         }
+
+        @JvmStatic
+        fun init(application: Application) {
+            ARouter.init(application)
+        }
+
+        @JvmStatic
+        fun debug() {
+            ARouter.openLog()
+            ARouter.openDebug()
+        }
     }
 
     constructor(source: Parcel) {
@@ -337,6 +438,7 @@ class FRouter : Parcelable {
         timeout = source.readInt()
         enterAnim = source.readInt()
         exitAnim = source.readInt()
+        transition = source.readInt()
     }
 
     override fun describeContents(): Int {
@@ -351,6 +453,7 @@ class FRouter : Parcelable {
         dest.writeInt(timeout)
         dest.writeInt(enterAnim)
         dest.writeInt(exitAnim)
+        dest.writeInt(transition)
     }
 
 

@@ -487,7 +487,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
      * @param position
      * @return
      */
-    protected fun getViewType(position: Int): Int {
+    protected open fun getViewType(position: Int): Int {
         return 0
     }
 

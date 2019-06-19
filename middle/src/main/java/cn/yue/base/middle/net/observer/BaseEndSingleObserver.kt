@@ -16,5 +16,9 @@ abstract class BaseEndSingleObserver<T> : BaseNetSingleObserver<T>() {
         onEnd(false, null, e)
     }
 
+    override fun onCancel(e: ResultException) {
+        onEnd(false, null, e)
+    }
+
     abstract fun onEnd(result: Boolean, t: T?, e: ResultException?)
 }

@@ -16,18 +16,21 @@ class SPUtils(spName: String) {
     private val sp: SharedPreferences
     private val editor: SharedPreferences.Editor
 
-    /**
-     * SP中获取所有键值对
-     *
-     * @return Map对象
-     */
-    val all: Map<String, *>
-        get() = sp.all
-
     init {
         sp = Utils.getContext().getSharedPreferences(spName, Context.MODE_PRIVATE)
         editor = sp.edit()
         editor.apply()
+    }
+
+    companion object {
+        private var spUtils: SPUtils? = null
+
+        fun getInstance(): SPUtils {
+            if (spUtils == null) {
+                spUtils = SPUtils("SP_NAME")
+            }
+            return spUtils!!
+        }
     }
 
     /**

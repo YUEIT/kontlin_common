@@ -7,8 +7,6 @@ package cn.yue.base.middle.net.wrapper
 
 open class BaseListBean<T> : BaseListJavaBean<T>() {
 
-    fun getPageNt(): String? = nt
-
 
     fun getList(): MutableList<T>? {
         return super.getRealList()
@@ -22,8 +20,17 @@ open class BaseListBean<T> : BaseListJavaBean<T>() {
         return mPageNo
     }
 
-    fun getPageCount(): Int {
+    fun getPageSize(): Int {
         return if (getList() == null) 0 else getList()!!.size
     }
+
+    fun getPageNt() : String? {
+        return nt
+    }
+
+    fun getCurrentPageTotal() : Int {
+        return if (getList()==null) 0 else getList()!!.size
+    }
+
 }
 
