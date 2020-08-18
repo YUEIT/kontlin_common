@@ -42,7 +42,7 @@
         android:textSize="11sp"
         android:text="支付剩余时间："/>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/payRV"
         android:layout_marginTop="@dimen/q109"
         android:layout_width="match_parent"

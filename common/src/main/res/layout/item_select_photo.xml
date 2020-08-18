@@ -7,15 +7,18 @@
         android:id="@+id/photoIV"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:padding="10dp"
+        android:padding="5dp"
         android:layout_gravity="center"
         android:scaleType="centerCrop"/>
 
     <CheckBox
-        android:id="@+id/photoCB"
+        android:id="@+id/checkIV"
+        android:enabled="false"
+        android:clickable="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
-        android:layout_gravity="right"/>
+        android:layout_gravity="right"
+        android:button="@drawable/check_box_small_selector" />
 </FrameLayout>

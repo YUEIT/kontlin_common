@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<cn.yue.base.middle.view.refresh.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/refreshL"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
+    <cn.yue.base.middle.view.refresh.SwipeRefreshLayout
+        android:id="@+id/refreshL"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ViewStub
-            android:id="@+id/baseVS"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
 
-        <cn.yue.base.middle.view.PageHintView
-            android:id="@+id/hintView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
+            <ViewStub
+                android:id="@+id/baseVS"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-</cn.yue.base.middle.view.refresh.SwipeRefreshLayout>
+            <cn.yue.base.middle.view.PageHintView
+                android:id="@+id/hintView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
+        </FrameLayout>
+
+    </cn.yue.base.middle.view.refresh.SwipeRefreshLayout>
+</FrameLayout>
 
 

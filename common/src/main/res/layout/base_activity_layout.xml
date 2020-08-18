@@ -8,10 +8,10 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/topFL"/>
+        android:layout_below="@id/topBar"/>
 
     <FrameLayout
-        android:id="@+id/topFL"
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

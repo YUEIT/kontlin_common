@@ -4,17 +4,12 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 27
-
-
+    compileSdkVersion rootProject.ext.android.targetSdkVersion
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
 //        javaCompileOptions {
 //            annotationProcessorOptions {
@@ -23,7 +18,7 @@ android {
 //        }
         kapt {
             arguments {
-                arg("moduleName", project.getName())
+                arg("AROUTER_MODULE_NAME", project.getName())
             }
             generateStubs = true
         }
@@ -36,33 +31,44 @@ android {
         }
     }
 
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
 }
 
 androidExtensions {
     experimental = true
 }
 
+//kapt {
+//    generateStubs = true
+//}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation rootProject.ext.androidx["junit"]
+    androidTestImplementation rootProject.ext.androidx["junit-test"]
+    androidTestImplementation rootProject.ext.androidx["espresso-test"]
 
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-
-    api project(':common')
-    api 'com.android.support:multidex:1.0.3'
+    api project(":common")
+    api rootProject.ext.androidx["multidex"]
+    api rootProject.ext.androidx["lifecycle-viewmodel"]
+    api rootProject.ext.androidx["lifecycle-livedata"]
+    api rootProject.ext.androidx["lifecycle-viewmodel-savestate"]
+    annotationProcessor rootProject.ext.androidx["lifecycle-compiler"]
     //Rx
-    api 'io.reactivex.rxjava2:rxjava:2.2.0'
-    api 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    api 'com.trello.rxlifecycle2:rxlifecycle-components:2.2.1'
+    api rootProject.ext.dependencies["rxjava"]
+    api rootProject.ext.dependencies["rxandroid"]
+//    api rootProject.ext.dependencies["rxlifecycle"]
     //okhttp
-    api 'com.squareup.okhttp3:okhttp:3.11.0'
-    api 'com.squareup.okhttp3:logging-interceptor:3.11.0'
+    api rootProject.ext.dependencies["okhttp"]
+    api rootProject.ext.dependencies["okhttp-log"]
     //Retrofit
-    api 'com.squareup.retrofit2:retrofit:2.4.0'
-    api 'com.squareup.retrofit2:converter-gson:2.4.0'
-    api 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
-}
-kapt {
-    generateStubs = true
+    api rootProject.ext.dependencies["retrofit"]
+    api rootProject.ext.dependencies["retrofit-converter-gson"]
+    api rootProject.ext.dependencies["retrofit-adapter-rxjava"]
+
+    //aRouter
+    implementation rootProject.ext.dependencies["arouter-api"]
+    kapt rootProject.ext.dependencies["arouter-compiler"]
 }

@@ -1,0 +1,58 @@
+ext {
+
+    android = [
+            'buildToolsVersion' : '29.0.2',
+            'targetSdkVersion' : 29,
+            'minSdkVersion' : 19,
+    ]
+
+    kotlin = [
+            "version"                              : "1.3.60",
+            "stdlib"                               : "org.jetbrains.kotlin:kotlin-stdlib:1.3.60",
+            // 协程
+            "coroutine"                            : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3",
+            "coroutine-android"                    : "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3",
+            "reflect"                              : 'org.jetbrains.kotlin:kotlin-reflect:1.3.41'
+    ]
+
+    androidx = [
+            'multidex'                             : 'androidx.multidex:multidex:2.0.0',
+            'legacy'                               : 'androidx.legacy:legacy-support-v4:1.0.0',
+            'appcompat'                            : 'androidx.appcompat:appcompat:1.1.0',
+            'recyclerview'                         : 'androidx.recyclerview:recyclerview:1.0.0',
+            'cardview'                             : 'androidx.cardview:cardview:1.0.0',
+            "constraintlayout"                     : 'androidx.constraintlayout:constraintlayout:2.0.0-beta3',
+            'gridlayout'                           : 'androidx.gridlayout:gridlayout:1.0.0',
+            'viewpager2'                           : 'androidx.viewpager2:viewpager2:1.0.0',
+            'design'                               : 'com.google.android.material:material:1.0.0',
+            'junit'                                : 'junit:junit:4.12',
+            'junit-test'                           : "androidx.test.ext:junit:1.1.1",
+            'espresso-test'                        : 'androidx.test.espresso:espresso-core:3.1.0',
+            'lifecycle-viewmodel'                  : 'androidx.lifecycle:lifecycle-viewmodel:2.2.0',
+            'lifecycle-livedata'                   : 'androidx.lifecycle:lifecycle-livedata:2.2.0',
+            'lifecycle-viewmodel-savestate'        : 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0',
+            'lifecycle-compiler'                   : 'androidx.lifecycle:lifecycle-compiler:2.2.0',
+    ]
+
+    dependencies = [
+            "rxjava"                               : "io.reactivex.rxjava2:rxjava:2.2.12",
+            "rxandroid"                            : "io.reactivex.rxjava2:rxandroid:2.1.1",
+            "rxlifecycle"                          : "com.trello.rxlifecycle3:rxlifecycle-components:3.1.0",
+            "okhttp"                               : "com.squareup.okhttp3:okhttp:4.2.2",
+            'okhttp-log'                           : 'com.squareup.okhttp3:logging-interceptor:3.11.0',
+            "retrofit"                             : "com.squareup.retrofit2:retrofit:2.6.2",
+            "retrofit-converter-gson"              : "com.squareup.retrofit2:converter-gson:2.6.2",
+            "retrofit-adapter-rxjava"              : "com.squareup.retrofit2:adapter-rxjava2:2.6.2",
+            "glide"                                : "com.github.bumptech.glide:glide:4.10.0",
+            "gson"                                 : "com.google.code.gson:gson:2.8.6",
+            "arouter-api"                          : "com.alibaba:arouter-api:1.5.0",
+            "arouter-compiler"                     : "com.alibaba:arouter-compiler:1.2.2",
+            "walle"                                : 'com.meituan.android.walle:library:1.1.6',
+            'walle-payload_reader'                 : 'com.meituan.android.walle:payload_reader:1.1.6',
+            'walle-payload_writer'                 : 'com.meituan.android.walle:payload_writer:1.1.6',
+            'viewpager2'                           : "androidx.viewpager2:viewpager2:1.0.0",
+            'systembartint'                        : 'com.readystatesoftware.systembartint:systembartint:1.0.3',
+            'tkrefreshlayout'                      : 'com.lcodecorex:tkrefreshlayout:1.0.7',
+            'autosize'                             : 'me.jessyan:autosize:1.2.1',
+    ]
+}
