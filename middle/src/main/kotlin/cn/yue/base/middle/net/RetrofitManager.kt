@@ -73,10 +73,6 @@ class RetrofitManager private constructor() {
                 .build()
     }
 
-
-    // 查看CallObservable的subscribeActual方法可知，一般情况下异常会被“observer.onError(t);”中处理
-    // 但是如果是onError中抛出的异常，会调用RxJavaPlugins.onError方法，所有这里实现Consumer<Throwable>接口，并让异常在accept中处理
-    // 考虑到ResultException是自定义异常，并不能让APP闪退，这里拦截，如果是其他异常直接抛出。
     private fun handlerError() {
         RxJavaPlugins.setErrorHandler { throwable ->
             if (throwable !is ResultException) {

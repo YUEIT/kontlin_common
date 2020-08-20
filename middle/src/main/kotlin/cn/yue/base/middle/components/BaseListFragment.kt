@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import cn.yue.base.common.activity.BaseFragment
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.common.utils.device.NetworkUtils
@@ -181,6 +180,10 @@ abstract class BaseListFragment<P : BaseListBean<S>, S> : BaseFragment(), IStatu
 
     fun getFooter(): BaseFooter {
         return footer
+    }
+
+    fun getPageHintView(): PageHintView {
+        return hintView
     }
 
     /**

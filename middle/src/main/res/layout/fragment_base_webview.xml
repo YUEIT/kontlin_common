@@ -10,10 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <cn.yue.base.middle.webview.CstWebView
-            android:id="@+id/base_pull_down_web_fragment_webview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+<!--        <cn.yue.base.middle.webview.CstWebView-->
+<!--            android:id="@+id/base_pull_down_web_fragment_webview"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent" />-->
 
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

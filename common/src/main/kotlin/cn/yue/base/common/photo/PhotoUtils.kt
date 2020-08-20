@@ -28,7 +28,7 @@ object PhotoUtils {
      * @param context
      * @return
      */
-    fun getAllMedia(context: Context?): List<MediaVO> {
+    fun getAllMedia(context: Context): List<MediaVO> {
         return getMediaByFolder(context, true, null, MediaType.ALL)
     }
 
@@ -37,7 +37,7 @@ object PhotoUtils {
      * @param context
      * @return
      */
-    fun getAllMediaPhotos(context: Context?): List<MediaVO> {
+    fun getAllMediaPhotos(context: Context): List<MediaVO> {
         return getMediaByFolder(context, true, null, MediaType.PHOTO)
     }
 
@@ -46,7 +46,7 @@ object PhotoUtils {
      * @param context
      * @return
      */
-    fun getAllMediaVideos(context: Context?): List<MediaVO> {
+    fun getAllMediaVideos(context: Context): List<MediaVO> {
         return getMediaByFolder(context, true, null, MediaType.VIDEO)
     }
 
@@ -56,9 +56,14 @@ object PhotoUtils {
      * @return
      */
     @JvmStatic
-    fun getTheLastPhotos(context: Context?, num: Int): ArrayList<MediaVO> {
+    fun getTheLastPhotos(context: Context, num: Int): ArrayList<MediaVO> {
         val list = ArrayList<MediaVO>()
-        list.addAll(getMediaByFolder(context, true, null, MediaType.PHOTO).subList(0, num))
+        val photos = getMediaByFolder(context, true, null, MediaType.PHOTO)
+        if (photos.size > num) {
+            list.addAll(photos.subList (0, num))
+        } else {
+            list.addAll(photos)
+        }
         return list
     }
 
@@ -70,7 +75,7 @@ object PhotoUtils {
      * @return
      */
     @JvmStatic
-    fun getPhotosByFolder(context: Context?, isAll: Boolean, folderId: String?): ArrayList<MediaVO> {
+    fun getPhotosByFolder(context: Context, isAll: Boolean, folderId: String?): ArrayList<MediaVO> {
         return getMediaByFolder(context, isAll, folderId, MediaType.PHOTO)
     }
 
@@ -82,9 +87,9 @@ object PhotoUtils {
      * @param mediaType
      * @return
      */
-    fun getMediaByFolder(context: Context?, isAll: Boolean, folderId: String?, mediaType: MediaType?): ArrayList<MediaVO> {
+    fun getMediaByFolder(context: Context, isAll: Boolean, folderId: String?, mediaType: MediaType): ArrayList<MediaVO> {
         val list = ArrayList<MediaVO>()
-        val cursor = load(context!!, isAll, folderId!!, mediaType!!)
+        val cursor = load(context, isAll, folderId, mediaType)
         while (cursor.moveToNext()) {
             val mediaVO = MediaVO()
             val id = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
@@ -116,7 +121,7 @@ object PhotoUtils {
      * @return
      */
     @JvmStatic
-    fun getAllPhotosFolder(context: Context?): MutableList<MediaFolderVO> {
+    fun getAllPhotosFolder(context: Context): MutableList<MediaFolderVO> {
         return getAllMediaFolder(context, MediaType.PHOTO)
     }
 
@@ -125,9 +130,9 @@ object PhotoUtils {
      * @param context
      * @return
      */
-    fun getAllMediaFolder(context: Context?, mediaType: MediaType?): MutableList<MediaFolderVO> {
+    fun getAllMediaFolder(context: Context, mediaType: MediaType): MutableList<MediaFolderVO> {
         val list: MutableList<MediaFolderVO> = ArrayList()
-        val cursor = load(context!!, mediaType!!)
+        val cursor = load(context, mediaType)
         while (cursor.moveToNext()) {
             val column = cursor.getString(cursor.getColumnIndex(COLUMN_URI))
             val folderVO = MediaFolderVO()

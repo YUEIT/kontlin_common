@@ -1,6 +1,5 @@
 package cn.yue.base.middle.router
 
-import android.app.Activity
 import android.content.Context
 
 /**
@@ -9,8 +8,6 @@ import android.content.Context
  */
 interface INavigation {
     fun bindRouterCard(routerCard: RouterCard): INavigation?
-    fun navigation(context: Context)
-    fun navigation(context: Context, toActivity: String?)
-    fun navigation(context: Activity, requestCode: Int)
-    fun navigation(context: Activity, toActivity: String?, requestCode: Int)
+    fun navigation(context: Context, requestCode: Int = 0)
+    fun navigation(context: Context, toActivity: String?, requestCode: Int = 0)
 }

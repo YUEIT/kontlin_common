@@ -168,7 +168,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
         return list
     }
 
-    fun clear() {
+    open fun clear() {
         if (list.hasValue()) {
             list!!.clear()
         }
@@ -178,12 +178,12 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
      * 设置数据
      * @param list
      */
-    fun setList(list: MutableList<T>?) {
+    open fun setList(list: MutableList<T>?) {
         this.list = list
         notifyDataSetChanged()
     }
 
-    fun addList(list: Collection<T>?) {
+    open fun addList(list: Collection<T>?) {
         if (null != list) {
             if (null != this.list) {
                 this.list!!.addAll(list)
@@ -196,7 +196,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
      * 添加单条数据
      * @param t
      */
-    fun addItem(t: T?) {
+    open fun addItem(t: T?) {
         if (null != t) {
             if (null != list) {
                 list!!.add(t)
@@ -205,7 +205,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
         notifyDataSetChanged()
     }
 
-    fun remove(t: T?) {
+    open fun remove(t: T?) {
         if (null != t) {
             if (null != list) {
                 list!!.remove(t)
@@ -214,7 +214,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
         notifyDataSetChanged()
     }
 
-    fun remove(position: Int) {
+    open fun remove(position: Int) {
         if (position > -1 && null != list && list!!.size > position) {
             list!!.removeAt(position)
             innerAdapter.notifyDataSetChanged()

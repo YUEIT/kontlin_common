@@ -15,40 +15,35 @@
  */
 package cn.yue.base.middle.net.convert
 
+import cn.yue.base.middle.net.CharsetConfig
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonWriter
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
 import retrofit2.Converter
 import java.io.IOException
 import java.io.OutputStreamWriter
 import java.io.Writer
-import java.nio.charset.Charset
 
 
 /**
  * request请求 body参数解析
  * Created by yue on 2018/7/25.
  */
-internal class GsonRequestBodyConverter<T>(private val gson: Gson, private val adapter: TypeAdapter<T>) : Converter<T, RequestBody> {
+internal class GsonRequestBodyConverter<T>(private val gson: Gson, private val adapter: TypeAdapter<T>)
+    : Converter<T, RequestBody> {
 
     //body 里的内容直接修改为统一的参数；并且拦截器会判断直接使用该requestBody
     @Throws(IOException::class)
     override fun convert(value: T): RequestBody {
-        val buffer: Buffer = Buffer()
-        val writer: Writer = OutputStreamWriter(buffer.outputStream(), UTF_8)
+        val buffer = Buffer()
+        val writer: Writer = OutputStreamWriter(buffer.outputStream(), CharsetConfig.ENCODING)
         val jsonWriter: JsonWriter = gson.newJsonWriter(writer)
         adapter.write(jsonWriter, value)
         jsonWriter.close()
-        return RequestBody.create(MEDIA_TYPE, buffer.readByteArray())
-    }
-
-    companion object {
-        private val MEDIA_TYPE = "application/json; charset=UTF-8".toMediaTypeOrNull()
-        private val UTF_8 = Charset.forName("UTF-8")
+        return buffer.readByteArray().toRequestBody(CharsetConfig.CONTENT_TYPE)
     }
 
 }

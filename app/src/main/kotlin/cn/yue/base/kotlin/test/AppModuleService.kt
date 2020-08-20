@@ -1,7 +1,6 @@
 package cn.yue.base.kotlin.test
 
 import android.content.Context
-import android.util.Log
 import cn.yue.base.middle.module.IAppModule
 
 /**
@@ -10,10 +9,8 @@ import cn.yue.base.middle.module.IAppModule
  */
 class AppModuleService : IAppModule{
     override fun test(str: String) {
-        Log.d("luobiao", "test: " + str)
     }
 
     override fun init(context: Context) {
-
     }
 }

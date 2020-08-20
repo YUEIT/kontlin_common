@@ -1,5 +1,8 @@
 package cn.yue.base.kotlin.test
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import cn.yue.base.common.activity.BaseActivity
 import cn.yue.base.kotlin.test.component.TestDialogFragment
 import cn.yue.base.middle.module.IAppModule
@@ -30,7 +33,30 @@ class MainActivity : BaseActivity() {
             ModuleManager.getModuleService(IAppModule::class).test("hehe")
             TestDialogFragment().show(supportFragmentManager, "")
         }
+        jump4.setOnClickListener {
+            FRouter.instance.build("/app/testPageVM").navigation(this)
+        }
+        jump5.setOnClickListener {
+            FRouter.instance.build("/app/testPullVM").navigation(this)
+        }
+        jump6.setOnClickListener {
+            FRouter.instance.build("/common/selectPhoto").navigation(this, 1)
+        }
+        jump7.setOnClickListener {
+            FRouter.instance.build("/common/viewPhoto")
+                    .withStringArrayList("list", arrayListOf("http://daidaigoucn.oss-cn-shanghai.aliyuncs.com/static/images/shop/sd1.png"))
+                    .navigation(this)
+        }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            val photos = data?.getParcelableArrayListExtra<Uri>("photos")
+            FRouter.instance.build("/common/viewPhoto")
+                    .withParcelableArrayList("uris", photos)
+                    .navigation(this)
+        }
+    }
 }
 

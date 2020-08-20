@@ -1,6 +1,5 @@
 package cn.yue.base.middle.router
 
-import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
@@ -251,19 +250,19 @@ class RouterCard : INavigation, Parcelable {
 
     fun withMap(map: Map<String, Any?>): RouterCard {
         for ((key, value) in map) {
-            putObject(key, value)
+            putAny(key, value)
         }
         return this
     }
 
-    private fun putObject(key: String, any: Any?) {
+    private fun putAny(key: String, any: Any?) {
         if (any == null) {
             return
         }
         if (any is String) {
-            extras.putString(key, any as String?)
+            extras.putString(key, any)
         } else if (any is Boolean) {
-            extras.putBoolean(key, (any as Boolean?)!!)
+            extras.putBoolean(key, any)
         } else if (any is Int) {
             extras.putInt(key, any)
         } else if (any is Float) {
@@ -273,19 +272,19 @@ class RouterCard : INavigation, Parcelable {
         } else if (any is Long) {
             extras.putLong(key, any)
         } else if (any is Map<*, *>) {
-            extras.putSerializable(key, BundleMap((any as Map<*, *>?)!!))
+            extras.putSerializable(key, BundleMap(any))
         } else if (any is ArrayList<*>) {
             if (any.isNotEmpty()) {
                 val ob = any[0]
                 if (ob is String) {
-                    extras.putStringArrayList(key, any as ArrayList<String?>?)
+                    extras.putStringArrayList(key, any as ArrayList<String>)
                 } else if (ob is Int) {
-                    extras.putIntegerArrayList(key, any as ArrayList<Int?>?)
+                    extras.putIntegerArrayList(key, any as ArrayList<Int>)
                 } else {
-                    extras.putParcelableArrayList(key, any as ArrayList<out Parcelable?>?)
+                    extras.putParcelableArrayList(key, any as ArrayList<out Parcelable>)
                 }
             } else {
-                extras.putParcelableArrayList(key, any as ArrayList<out Parcelable?>?)
+                extras.putParcelableArrayList(key, any as ArrayList<out Parcelable>)
             }
         }
     }
@@ -347,25 +346,13 @@ class RouterCard : INavigation, Parcelable {
         return null
     }
 
-    override fun navigation(context: Context) {
-        navigation?.apply {
-            navigation(context)
-        }
-    }
-
-    override fun navigation(context: Context, toActivity: String?) {
-        navigation?.apply {
-            navigation(context, toActivity)
-        }
-    }
-
-    override fun navigation(context: Activity, requestCode: Int) {
+    override fun navigation(context: Context, requestCode: Int) {
         navigation?.apply {
             navigation(context, requestCode)
         }
     }
 
-    override fun navigation(context: Activity, toActivity: String?, requestCode: Int) {
+    override fun navigation(context: Context, toActivity: String?, requestCode: Int) {
         navigation?.apply {
             navigation(context, toActivity, requestCode)
         }

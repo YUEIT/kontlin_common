@@ -7,15 +7,6 @@ import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
 
-/**
- * Intro: 无网络不请求 返回一个友好的Error
- * Author: zhangxutong
- * E-mail: mcxtzhang@163.com
- * Home Page: http://blog.csdn.net/zxt0601
- * Created:   2017/2/22.
- * History:
- */
-
 class NoNetInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -38,7 +29,7 @@ class NoNetInterceptor : Interceptor {
             //                return proceed;
             //            }
 
-            throw ResultException(NetworkConfig.ERROR_NO_NET, "无网络:" + chain.request().url.toString())
+            throw ResultException(NetworkConfig.ERROR_NO_NET, "无网络: ${chain.request().url}")
         } else {
             chain.proceed(chain.request())
         }

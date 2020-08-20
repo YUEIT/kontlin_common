@@ -1,14 +1,21 @@
 package cn.yue.base.middle.net.intercept
 
+import android.text.TextUtils
 import cn.yue.base.common.utils.constant.EncryptUtils
-import cn.yue.base.common.utils.debug.LogUtils
 import cn.yue.base.middle.init.InitConstant
+import cn.yue.base.middle.net.CharsetConfig
 import cn.yue.base.middle.net.NetworkConfig
 import cn.yue.base.middle.net.ResultException
-import cn.yue.base.middle.net.convert.RequestConverterBean
+import cn.yue.base.middle.net.convert.RequestConverterData
+import cn.yue.base.middle.net.netLog
 import com.google.gson.Gson
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import com.google.gson.reflect.TypeToken
+import okhttp3.HttpUrl
+import okhttp3.Interceptor
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import okio.Buffer
 import java.io.IOException
 import java.net.URLEncoder
 import java.util.*
@@ -22,7 +29,7 @@ class SignInterceptor : Interceptor {
 
     private var isDataEncode = false
 
-    constructor() {}
+    constructor()
 
     constructor(isDataEncode: Boolean) {
         this.isDataEncode = isDataEncode
@@ -31,7 +38,6 @@ class SignInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
-        val language = original.header("language")
         if (original.method == "GET") {
             return chain.proceed(interceptGet(original))
         } else if (original.method == "POST") {
@@ -51,7 +57,7 @@ class SignInterceptor : Interceptor {
                 }
             }
         }
-        LogUtils.i("okhttp", "  origin :  $map")
+        "  origin :  $map".netLog()
         var encodeData = toJsonStr(map)
         val url: HttpUrl
         val time = System.currentTimeMillis() / 1000
@@ -73,12 +79,11 @@ class SignInterceptor : Interceptor {
                     .addQueryParameter("time", time.toString() + "")
                     .addQueryParameter("sign", sign)
                     .build()
-            LogUtils.i("okhttp", "  intercept : " + url.toString())
-            val request = original.newBuilder()
+            "  intercept : $url".netLog()
+            return original.newBuilder()
                     .url(url)
                     .addHeader("Content-Type", "application/json")
                     .build()
-            return request
         } catch (e: Exception) {
             e.printStackTrace()
             return original
@@ -105,8 +110,8 @@ class SignInterceptor : Interceptor {
                         for (value in original.url.queryParameterValues(key)) {
                             //如果能解析成功，说明是bean类型,转成Object ; 失败：基本类型直接add
                             try {
-                                val bean: RequestConverterBean = gson.fromJson(value, RequestConverterBean::class.javaObjectType)
-                                list.add(gson.fromJson(bean.json, Class.forName(bean.className)))
+                                val data: RequestConverterData = gson.fromJson(value, RequestConverterData::class.javaObjectType)
+                                list.add(gson.fromJson(data.json, Class.forName(data.className)))
                             } catch (e: Exception) {
                                 list.add(value)
                             }
@@ -119,7 +124,7 @@ class SignInterceptor : Interceptor {
                         }
                         val value = original.url.queryParameterValues(key)[0]
                         try {
-                            val bean = gson.fromJson(value, RequestConverterBean::class.javaObjectType)
+                            val bean = gson.fromJson(value, RequestConverterData::class.javaObjectType)
                             map[key] = gson.fromJson(bean.json, Class.forName(bean.className))
                         } catch (e: Exception) {
                             map[key] = value
@@ -128,15 +133,27 @@ class SignInterceptor : Interceptor {
                     }
                 }
             }
-            LogUtils.i("okhttp", "  origin :  $map")
+            // 获取 Body 参数
+            var bodyString = ""
+            if (original.body != null) {
+                val buffer = Buffer()
+                original.body!!.writeTo(buffer)
+                bodyString = buffer.readUtf8()
+            }
+            if (isJsonObject(bodyString) || isJsonArray(bodyString)) {
+                val bodyMap: TreeMap<String, String> = gson.fromJson(bodyString, object : TypeToken<TreeMap<String?, String?>?>() {}.type)
+                for (key in bodyMap.keys) {
+                    map[key] = bodyMap[key]
+                }
+            }
+            "  origin :  $map".netLog()
             val url = original.url.newBuilder().query(null).build()
-            LogUtils.i("okhttp", "  intercept : " + url.toString() + "  --------   body: " + gson.toJson(getBody(map)))
-            val request = original.newBuilder()
+            "  intercept : $url  --------   body: ${gson.toJson(getBody(map))}".netLog()
+            return original.newBuilder()
                     .url(url)
                     .addHeader("Content-Type", "application/json")
-                    .method("POST", RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), gson.toJson(getBody(map))))
+                    .method("POST", gson.toJson(getBody(map)).toRequestBody(CharsetConfig.CONTENT_TYPE))
                     .build()
-            return request
         }
     }
 
@@ -177,4 +194,13 @@ class SignInterceptor : Interceptor {
         return gson.toJson(tamp)
     }
 
+    private fun isJsonObject(content: String): Boolean {
+        return !TextUtils.isEmpty(content) && content.trim { it <= ' ' }.startsWith("{")
+                && content.trim { it <= ' ' }.endsWith("}")
+    }
+
+    private fun isJsonArray(content: String): Boolean {
+        return !TextUtils.isEmpty(content) && content.trim { it <= ' ' }.startsWith("[")
+                && content.trim { it <= ' ' }.endsWith("]")
+    }
 }

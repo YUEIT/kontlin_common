@@ -11,7 +11,6 @@ import androidx.fragment.app.DialogFragment
 import cn.yue.base.common.activity.BaseFragmentActivity
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.middle.activity.CommonActivity
-import cn.yue.base.middle.router.RouterCard
 import com.alibaba.android.arouter.core.LogisticsCenter
 import com.alibaba.android.arouter.exception.NoRouteFoundException
 import com.alibaba.android.arouter.facade.enums.RouteType
@@ -57,38 +56,17 @@ class FRouter() : INavigation, Parcelable {
         return postcard.type
     }
 
-    override fun bindRouterCard(routerCard: RouterCard): INavigation? {
+    override fun bindRouterCard(routerCard: RouterCard): INavigation {
         this.mRouterCard = routerCard
         this.mRouterCard.setNavigationImpl(this)
         return this
     }
 
-    override fun navigation(context: Context) {
-        this.navigation(context, null)
-    }
-
-    override fun navigation(context: Context, toActivity: String?) {
-        if (mRouterCard.isInterceptLogin() && interceptLogin(context!!)) {
-            return
-        }
-        when (getRouteType()) {
-            RouteType.ACTIVITY -> {
-                jumpToActivity(context)
-            }
-            RouteType.FRAGMENT -> {
-                jumpToFragment(context, toActivity)
-            }
-            else -> {
-                showShortToast("找不到页面~")
-            }
-        }
-    }
-
-    override fun navigation(context: Activity, requestCode: Int) {
+    override fun navigation(context: Context, requestCode: Int) {
         this.navigation(context, null, requestCode)
     }
 
-    override fun navigation(context: Activity, toActivity: String?, requestCode: Int) {
+    override fun navigation(context: Context, toActivity: String?, requestCode: Int) {
         if (mRouterCard.isInterceptLogin() && interceptLogin(context)) {
             return
         }
@@ -105,7 +83,7 @@ class FRouter() : INavigation, Parcelable {
         }
     }
 
-    private fun jumpToActivity(context: Context, requestCode: Int = -1) {
+    private fun jumpToActivity(context: Context, requestCode: Int) {
         val postcard = ARouter.getInstance()
                 .build(mRouterCard.getPath())
                 .withFlags(mRouterCard.getFlags())
@@ -119,7 +97,7 @@ class FRouter() : INavigation, Parcelable {
         }
     }
 
-    private fun jumpToFragment(context: Context, toActivity: String? = null, requestCode: Int = -1) {
+    private fun jumpToFragment(context: Context, toActivity: String? = null, requestCode: Int) {
         val intent = Intent()
         intent.putExtra(TAG, this)
         intent.putExtras(mRouterCard.getExtras())

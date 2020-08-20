@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.annotation.LayoutRes
-import cn.yue.base.common.image.ImageLoader.Companion.getLoader
+import cn.yue.base.common.image.ImageLoader
 import cn.yue.base.middle.R
 import cn.yue.base.middle.components.load.PageStatus
 import cn.yue.base.middle.router.FRouter.Companion.instance
@@ -16,7 +16,8 @@ import cn.yue.base.middle.router.FRouter.Companion.instance
  * Description :
  * Created by yue on 2018/11/13
  */
-class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : RelativeLayout(context, attrs, defStyleAttr) {
+class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
+    : RelativeLayout(context, attrs, defStyleAttr) {
 
     private var noNetView: View? = null
     private var noDataView: View? = null
@@ -38,7 +39,7 @@ class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeS
         noDataView = View.inflate(context, R.layout.layout_page_hint_no_data, null)
         serverErrorView = View.inflate(context, R.layout.layout_page_hint_server_error, null)
         val loadingIV = loadingView?.findViewById<ImageView>(R.id.loadingIV)
-        getLoader().loadGif(loadingIV, R.drawable.icon_page_loading)
+        ImageLoader.getLoader().loadGif(loadingIV, R.drawable.app_icon_wait)
         noNetView?.findViewById<View>(R.id.reloadTV)?.setOnClickListener {
                 onReloadListener?.apply {
                     invoke()

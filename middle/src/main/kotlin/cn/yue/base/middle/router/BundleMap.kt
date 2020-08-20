@@ -6,7 +6,7 @@ import java.io.Serializable
  * Description :
  * Created by yue on 2020/4/22
  */
-class BundleMap(var map: Map<*, *>) : Serializable {
+class BundleMap(private var map: Map<*, *>) : Serializable {
 
     override fun toString(): String {
         return "BundleMap{" +

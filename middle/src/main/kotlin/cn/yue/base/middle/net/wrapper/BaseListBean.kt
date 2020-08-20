@@ -5,7 +5,7 @@ package cn.yue.base.middle.net.wrapper
  * Created by yue on 2018/7/11.
  */
 
-open class BaseListBean<T> : BaseListJavaBean<T>() {
+open class BaseListBean<T> : BaseUnityListBean<T>() {
 
 
     fun getList(): MutableList<T>? {

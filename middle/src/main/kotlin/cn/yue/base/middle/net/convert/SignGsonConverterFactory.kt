@@ -17,24 +17,19 @@ import java.lang.reflect.Type
  * you must [add this instance][Retrofit.Builder.addConverterFactory]
  * last to allow the other converters a chance to see their types.
  */
-class SignGsonConverterFactory private constructor(private val gson: Gson?) : Converter.Factory() {
+class SignGsonConverterFactory private constructor(private val gson: Gson) : Converter.Factory() {
 
-    init {
-        if (gson == null) throw NullPointerException("gson == null")
+    override fun responseBodyConverter(type: Type, annotations: Array<Annotation>?, retrofit: Retrofit?)
+            : Converter<ResponseBody, *>? {
+        return SignGsonResponseBodyConverter<Any>(gson, type)
     }
 
-    override fun responseBodyConverter(type: Type?, annotations: Array<Annotation>?, retrofit: Retrofit?): Converter<ResponseBody, *>? {
-        //方法 1  自动剥离
-        return SignGsonResponseBodyConverter<Any>(gson!!, type!!)
-        //方法 2  不自动剥离 但是通过map一个函数去完成(transformer)
-    }
-
-    override fun requestBodyConverter(type: Type?, parameterAnnotations: Array<Annotation>?, methodAnnotations: Array<Annotation>?, retrofit: Retrofit?): Converter<*, RequestBody>? {
-        val adapter = gson!!.getAdapter<Any>(TypeToken.get(type!!) as TypeToken<Any>)
+    override fun requestBodyConverter(type: Type, parameterAnnotations: Array<Annotation>?, methodAnnotations: Array<Annotation>?, retrofit: Retrofit?): Converter<*, RequestBody>? {
+        val adapter = gson.getAdapter<Any>(TypeToken.get(type) as TypeToken<Any>)
         return SignGsonRequestBodyConverter(gson, adapter)
     }
 
-    override fun stringConverter(type: Type?, annotations: Array<Annotation>?, retrofit: Retrofit?): Converter<*, String>? {
+    override fun stringConverter(type: Type, annotations: Array<Annotation>?, retrofit: Retrofit?): Converter<*, String>? {
         return SignRequestStringConverter<Any>()
     }
 

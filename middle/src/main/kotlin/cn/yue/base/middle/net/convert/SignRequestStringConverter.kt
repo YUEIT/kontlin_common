@@ -33,10 +33,9 @@ class SignRequestStringConverter<T> : Converter<T, String> {
             return t.toString()
         } else {
             val clazz = t as Object
-            val bean = RequestConverterBean(clazz.`class`.name, gson.toJson(t))
+            val bean = RequestConverterData(clazz.`class`.name, gson.toJson(t))
             return gson.toJson(bean)
         }
-        return t.toString()
     }
 
     companion object {

@@ -1,10 +1,6 @@
 package cn.yue.base.middle.router
 
-import android.app.Activity
 import android.content.Context
-import cn.yue.base.middle.module.IFlutterModule
-import cn.yue.base.middle.module.manager.IModuleService
-import cn.yue.base.middle.module.manager.ModuleManager.Companion.getModuleService
 
 /**
  * Description : 跨平台路由 支持Flutter页面跳转
@@ -42,27 +38,15 @@ class PlatformRouter : INavigation {
         return this
     }
 
-    override fun navigation(context: Context) {
-        if (navigation != null) {
-            navigation!!.navigation(context)
+    override fun navigation(context: Context, requestCode: Int) {
+        navigation?.apply {
+            navigation(context, requestCode)
         }
     }
 
-    override fun navigation(context: Context, toActivity: String?) {
-        if (navigation != null) {
-            navigation!!.navigation(context, toActivity)
-        }
-    }
-
-    override fun navigation(context: Activity, requestCode: Int) {
-        if (navigation != null) {
-            navigation!!.navigation(context, requestCode)
-        }
-    }
-
-    override fun navigation(context: Activity, toActivity: String?, requestCode: Int) {
-        if (navigation != null) {
-            navigation!!.navigation(context, toActivity, requestCode)
+    override fun navigation(context: Context, toActivity: String?, requestCode: Int) {
+        navigation?.apply {
+            navigation(context, toActivity, requestCode)
         }
     }
 

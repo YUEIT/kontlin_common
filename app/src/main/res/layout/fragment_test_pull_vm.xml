@@ -5,7 +5,7 @@
     <data>
         <variable
             name="viewModel"
-            type="cn.yue.base.test.component.TestPullViewModel" />
+            type="cn.yue.base.kotlin.test.component.TestPullViewModel" />
     </data>
 
     <LinearLayout
@@ -23,8 +23,6 @@
             android:id="@+id/jump2"
             android:layout_width="200dp"
             android:layout_height="100dp"
-            textColors='@{"#ff0000,#aaaaaa,#000000"}'
-            textSizes='@{"13,9,13"}'
             android:text="中文,bb,iai"/>
     </LinearLayout>
 </layout>

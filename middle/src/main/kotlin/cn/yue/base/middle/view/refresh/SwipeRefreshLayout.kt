@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import cn.yue.base.middle.R
 
 /**
  * Description :
@@ -11,10 +12,14 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
  */
 class SwipeRefreshLayout(context: Context, attributeSet: AttributeSet): SwipeRefreshLayout(context, attributeSet), IRefreshLayout {
 
-    var COLORS = intArrayOf(cn.yue.base.common.R.color.progress_color_1, cn.yue.base.common.R.color.progress_color_2, cn.yue.base.common.R.color.progress_color_3, cn.yue.base.common.R.color.progress_color_4)
+    private val colors = intArrayOf(R.color.progress_color_1,
+            R.color.progress_color_2,
+            R.color.progress_color_3,
+            R.color.progress_color_4
+    )
 
     override fun init() {
-        setColorSchemeResources(*COLORS)
+        setColorSchemeResources(*colors)
     }
 
     override fun setTargetView(targetView: View) {

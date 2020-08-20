@@ -6,9 +6,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/q157"
-        android:layout_marginRight="@dimen/q157"
-        android:layout_marginTop="@dimen/q166"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="50dp"
         android:orientation="vertical">
 
         <TextView

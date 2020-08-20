@@ -15,7 +15,7 @@ import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import com.bumptech.glide.load.resource.bitmap.TransformationUtils
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import java.security.MessageDigest
 
@@ -176,19 +176,23 @@ class GlideImageLoader : ImageLoader.Loader {
                 .into(imageView)
     }
 
-    override fun loadAsBitmap(context: Context, url: String?, callBack: LoadBitmapCallBack) {
+    override fun loadAsBitmap(context: Context, url: String?, onLoaded: (bitmap: Bitmap) -> Unit, noFound: (() -> Unit)?) {
         Glide.with(context)
                 .asBitmap()
                 .load(url)
-                .into(object :SimpleTarget<Bitmap>() {
+                .into(object : CustomTarget<Bitmap>() {
 
                     override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                        callBack.onBitmapLoaded(resource)
+                        onLoaded(resource)
                     }
 
                     override fun onLoadFailed(errorDrawable: Drawable?) {
                         super.onLoadFailed(errorDrawable)
-                        callBack.onBitmapNoFound()
+                        noFound?.invoke()
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+
                     }
                 })
     }

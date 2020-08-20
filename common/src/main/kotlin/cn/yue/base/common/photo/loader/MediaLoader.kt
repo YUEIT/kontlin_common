@@ -28,14 +28,14 @@ object MediaLoader {
             + " OR "
             + MediaStore.Files.FileColumns.MEDIA_TYPE + "=?)"
             + " AND " + MediaStore.MediaColumns.SIZE + ">0")
-    private val SELECTION_ALL_ARGS = arrayOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(), MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString())
+    private val SELECTION_ALL_ARGS = arrayOf<String?>(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(), MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString())
 
     // ===========================================================
     // === params for album ALL && showSingleMediaType: true ===
     private const val SELECTION_ALL_FOR_SINGLE_MEDIA_TYPE = (MediaStore.Files.FileColumns.MEDIA_TYPE + "=?"
             + " AND " + MediaStore.MediaColumns.SIZE + ">0")
 
-    private fun getSelectionArgsForSingleMediaType(mediaType: Int): Array<String> {
+    private fun getSelectionArgsForSingleMediaType(mediaType: Int): Array<String?> {
         return arrayOf(mediaType.toString())
     }
 
@@ -48,7 +48,7 @@ object MediaLoader {
             + " bucket_id=?"
             + " AND " + MediaStore.MediaColumns.SIZE + ">0")
 
-    private fun getSelectionAlbumArgs(albumId: String): Array<String> {
+    private fun getSelectionAlbumArgs(albumId: String?): Array<String?> {
         return arrayOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(), MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString(),
                 albumId
         )
@@ -61,7 +61,7 @@ object MediaLoader {
             + " bucket_id=?"
             + " AND " + MediaStore.MediaColumns.SIZE + ">0")
 
-    private fun getSelectionAlbumArgsForSingleMediaType(mediaType: Int, albumId: String): Array<String> {
+    private fun getSelectionAlbumArgsForSingleMediaType(mediaType: Int, albumId: String?): Array<String?> {
         return arrayOf(mediaType.toString(), albumId)
     }
 
@@ -86,7 +86,7 @@ object MediaLoader {
         }
     }
 
-    private fun getSelectionArgs(isAll: Boolean, folderId: String, mediaType: MediaType): Array<String> {
+    private fun getSelectionArgs(isAll: Boolean, folderId: String?, mediaType: MediaType): Array<String?> {
         return if (isAll) {
             if (onlyShowImages(mediaType)) {
                 getSelectionArgsForSingleMediaType(
@@ -117,7 +117,7 @@ object MediaLoader {
     const val ITEM_ID_CAPTURE: Long = -1
     const val ITEM_DISPLAY_NAME_CAPTURE = "Capture"
     @JvmStatic
-    fun load(context: Context, isAll: Boolean, folderId: String, mediaType: MediaType): Cursor {
+    fun load(context: Context, isAll: Boolean, folderId: String?, mediaType: MediaType): Cursor {
         val result = ContentResolverCompat.query(context.contentResolver,
                 QUERY_URI, PROJECTION, getSelection(isAll, mediaType), getSelectionArgs(isAll, folderId, mediaType), ORDER_BY,
                 CancellationSignal())

@@ -13,11 +13,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-//        javaCompileOptions {
-//            annotationProcessorOptions {
-//                arguments = [ moduleName : project.getName() ]
-//            }
-//        }
         kapt {
             arguments {
                 arg("AROUTER_MODULE_NAME", project.getName())
@@ -42,9 +37,8 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    dataBinding {
+        enabled true
     }
 }
 
@@ -61,10 +55,8 @@ dependencies {
     implementation project(":middle")
     implementation rootProject.ext.androidx["appcompat"]
     implementation rootProject.ext.androidx["constraintlayout"]
-
     //aRouter
     implementation rootProject.ext.dependencies["arouter-api"]
     kapt rootProject.ext.dependencies["arouter-compiler"]
-
 }
 

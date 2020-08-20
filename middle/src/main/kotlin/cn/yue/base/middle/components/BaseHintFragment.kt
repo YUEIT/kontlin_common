@@ -61,6 +61,10 @@ abstract class BaseHintFragment : BaseFragment(), IStatusView, IWaitView, IBaseV
 
     open fun stubInflate(stub: ViewStub?, inflated: View?) {}
 
+    fun getPageHintView(): PageHintView {
+        return hintView
+    }
+
     override fun showStatusView(status: PageStatus?) {
         if (loader.isFirstLoad) {
             hintView.show(status)

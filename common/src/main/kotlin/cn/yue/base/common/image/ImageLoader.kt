@@ -1,6 +1,7 @@
 package cn.yue.base.common.image
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
@@ -52,7 +53,7 @@ class ImageLoader {
 
         fun loadCircleImage(imageView: ImageView?, url: String?)
 
-        fun loadAsBitmap(context: Context, url: String?, callBack: LoadBitmapCallBack)
+        fun loadAsBitmap(context: Context, url: String?, onLoaded: (bitmap: Bitmap) -> Unit, noFound: (() -> Unit)? = null)
 
         fun setPlaceholder(@DrawableRes resId: Int): Loader
 

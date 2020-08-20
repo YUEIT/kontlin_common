@@ -13,7 +13,7 @@
         android:layout_height="50dp"
         android:textSize="15sp"
         android:gravity="center"
-        android:text="jump1" />
+        android:text="testPull" />
 
     <TextView
         android:id="@+id/jump2"
@@ -21,7 +21,7 @@
         android:layout_height="50dp"
         android:textSize="15sp"
         android:gravity="center"
-        android:text="jump2" />
+        android:text="testPullList" />
 
     <TextView
         android:id="@+id/jump3"
@@ -29,5 +29,37 @@
         android:layout_height="50dp"
         android:textSize="15sp"
         android:gravity="center"
-        android:text="jump3" />
+        android:text="testDialog" />
+
+    <TextView
+        android:id="@+id/jump4"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:text="testPageVM" />
+
+    <TextView
+        android:id="@+id/jump5"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:text="testPullVM" />
+
+    <TextView
+        android:id="@+id/jump6"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:text="testSeletPhoto" />
+
+    <TextView
+        android:id="@+id/jump7"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:text="testViewPhoto" />
 </LinearLayout>

@@ -1,10 +1,7 @@
 package cn.yue.base.kotlin.test.component
 
 import android.os.Bundle
-import android.view.View
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import cn.yue.base.common.widget.recyclerview.CommonAdapter
+import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
 import cn.yue.base.kotlin.test.R
 import cn.yue.base.middle.components.BaseListFragment
@@ -22,6 +19,11 @@ class TestListFragment : BaseListFragment<BaseListBean<TestItemBean>, TestItemBe
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
         initTest()
+    }
+
+    override fun initTopBar(topBar: TopBar) {
+        super.initTopBar(topBar)
+        topBar.setCenterTextStr("testPullList")
     }
 
     override fun getLayoutId(): Int {
