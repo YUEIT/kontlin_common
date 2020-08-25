@@ -10,12 +10,6 @@ import android.widget.ScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-/**
- * 介绍：带有头部的ViewPager的滑动类
- * 邮箱：luobiao@imcoming.cn
- * 时间：2016/10/26.
- */
-
 class HeaderScrollHelper {
 
     private val sysVersion: Int         //当前sdk版本，用于判断api版本

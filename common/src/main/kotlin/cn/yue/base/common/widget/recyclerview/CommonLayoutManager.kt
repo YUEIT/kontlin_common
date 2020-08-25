@@ -11,10 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 /**
  * 介绍：通用LayoutManager 即简化编写流程
- * 作者：luobiao
- * 邮箱：luobiao@imcoming.cn
- * 时间：2016/11/14.
- */
+**/
 
 open class CommonLayoutManager : RecyclerView.LayoutManager {
 

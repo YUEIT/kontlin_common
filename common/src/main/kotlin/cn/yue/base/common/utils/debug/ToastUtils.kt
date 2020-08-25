@@ -7,13 +7,6 @@ import androidx.annotation.StringRes
 
 import cn.yue.base.common.utils.Utils
 
-
-/**
- * 介绍：吐司相关工具类
- * 作者：luobiao
- * 邮箱：luobiao@imcoming.cn
- * 时间：2017/2/23.
- */
 object ToastUtils {
 
     private var sToast: Toast? = null

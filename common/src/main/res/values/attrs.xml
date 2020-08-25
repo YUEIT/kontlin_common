@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="HeaderViewPager">
+    <declare-styleable name="HeaderScrollView">
         <attr name="hvp_topOffset" format="dimension"/>
     </declare-styleable>
 
@@ -19,6 +19,14 @@
         <attr name="pstsTextDefaultColor" format="color"/>
         <attr name="pstsTextSelectColor" format="color"/>
         <attr name="pstsIndicatorWidth" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="SampleTabStrip">
+        <attr name="stsTabPaddingLeftRight" format="dimension"/>
+        <attr name="stsScrollOffset" format="dimension"/>
+        <attr name="stsTabBackground" format="reference"/>
+        <attr name="stsShouldExpand" format="boolean"/>
+        <attr name="stsTextAllCaps" format="boolean"/>
     </declare-styleable>
 
     <declare-styleable name="RoundImageView">

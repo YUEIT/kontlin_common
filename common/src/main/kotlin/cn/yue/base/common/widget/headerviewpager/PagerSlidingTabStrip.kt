@@ -24,13 +24,6 @@ import java.util.Locale
 
 import cn.yue.base.common.R
 
-
-/**
- * 介绍：viewPager 带文字的指示器
- * 邮箱：luobiao@imcoming.cn
- * 时间：2016/10/26.
- */
-
 class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : HorizontalScrollView(context, attrs, defStyle) {
     // @formatter:on
 
@@ -61,9 +54,7 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
     private var dividerColor = 0x1A000000
 
     private var shouldExpand = false
-    var isTextAllCaps = true
-        private set
-
+    private var isTextAllCaps = true
     private var scrollOffset = 52
     private var indicatorHeight = 8
     private var indicatorWidth = 0
@@ -77,33 +68,36 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
     private var tabTextSelectColor = -0x1000000
     private var tabTypeface: Typeface? = null
     private var tabTypefaceStyle = Typeface.NORMAL
-
     private var lastScrollX = 0
-
-    var tabBackground = 0
-
+    private var tabBackground = 0
     private var locale: Locale? = null
 
-    var textSize: Int
-        get() = tabTextSize
-        set(textSizePx) {
-            this.tabTextSize = textSizePx
-            updateTabStyles()
-        }
+    fun setTextSize(textSizePx: Int) {
+        this.tabTextSize = textSizePx
+        updateTabStyles()
+    }
 
-    var textColor: Int
-        get() = tabTextColor
-        set(textColor) {
-            this.tabTextColor = textColor
-            updateTabStyles()
-        }
+    fun getTextSize(): Int {
+        return tabTextSize
+    }
 
-    var tabPaddingLeftRight: Int
-        get() = tabPadding
-        set(paddingPx) {
-            this.tabPadding = paddingPx
-            updateTabStyles()
-        }
+    fun setTextColor(textColor: Int) {
+        this.tabTextColor = textColor
+        updateTabStyles()
+    }
+
+    fun getTextColor(): Int {
+        return tabTextColor
+    }
+
+    fun getTabPaddingLeftRight(): Int {
+        return tabPadding
+    }
+
+    fun setTabPaddingLeftRight(paddingPx: Int) {
+        tabPadding = paddingPx
+        updateTabStyles()
+    }
 
     interface IconTabProvider {
         fun getPageIconResId(position: Int): Int
@@ -119,17 +113,13 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
 
 
     init {
-
         isFillViewport = true
         setWillNotDraw(false)
-
         tabsContainer = LinearLayout(context)
         tabsContainer.orientation = LinearLayout.HORIZONTAL
         tabsContainer.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
         addView(tabsContainer)
-
         val dm = resources.displayMetrics
-
         scrollOffset = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, scrollOffset.toFloat(), dm).toInt()
         indicatorHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, indicatorHeight.toFloat(), dm).toInt()
         underlineHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, underlineHeight.toFloat(), dm).toInt()
@@ -137,20 +127,13 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
         tabPadding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, tabPadding.toFloat(), dm).toInt()
         dividerWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dividerWidth.toFloat(), dm).toInt()
         tabTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, tabTextSize.toFloat(), dm).toInt()
-
         // get system attrs (android:textSize and android:textColor)
-
         var a = context.obtainStyledAttributes(attrs, ATTRS)
-
         tabTextSize = a.getDimensionPixelSize(0, tabTextSize)
         tabTextColor = a.getColor(1, tabTextColor)
-
         a.recycle()
-
         // get custom attrs
-
         a = context.obtainStyledAttributes(attrs, R.styleable.PagerSlidingTabStrip)
-
         indicatorColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsIndicatorColor, indicatorColor)
         underlineColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsUnderlineColor, underlineColor)
         dividerColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsDividerColor, dividerColor)
@@ -165,20 +148,15 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
         tabTextColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsTextDefaultColor, tabTextColor)
         tabTextSelectColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsTextSelectColor, tabTextSelectColor)
         indicatorWidth = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_pstsIndicatorWidth, indicatorWidth)
-
         a.recycle()
-
         rectPaint = Paint()
         rectPaint.isAntiAlias = true
         rectPaint.style = Paint.Style.FILL
-
         dividerPaint = Paint()
         dividerPaint.isAntiAlias = true
         dividerPaint.strokeWidth = dividerWidth.toFloat()
-
         defaultTabLayoutParams = LinearLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT)
         expandedTabLayoutParams = LinearLayout.LayoutParams(0, FrameLayout.LayoutParams.MATCH_PARENT, 1.0f)
-
         if (locale == null) {
             locale = resources.configuration.locale
         }
@@ -186,13 +164,10 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
 
     fun setViewPager(pager: ViewPager?) {
         this.pager = pager
-
         if (pager!!.adapter == null) {
             throw IllegalStateException("ViewPager does not have adapter instance.")
         }
-
         pager.setOnPageChangeListener(pageListener)
-
         notifyDataSetChanged()
     }
 
@@ -237,9 +212,7 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
             // If we already have a PagerAdapter, unregister our observer
             mPagerAdapter!!.unregisterDataSetObserver(mPagerAdapterObserver!!)
         }
-
         mPagerAdapter = adapter
-
         if (addObserver && adapter != null) {
             // Register our observer on the new adapter
             if (mPagerAdapterObserver == null) {
@@ -247,14 +220,12 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
             }
             adapter.registerDataSetObserver(mPagerAdapterObserver!!)
         }
-
         // Finally make sure we reflect the new adapter
         populateFromPagerAdapter()
     }
 
     internal fun populateFromPagerAdapter() {
         tabsContainer.removeAllViews()
-
         if (mPagerAdapter != null) {
             val adapterCount = mPagerAdapter!!.count
             tabCount = adapterCount
@@ -266,26 +237,21 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
                 } else {
                     addTextTab(i, pager!!.adapter!!.getPageTitle(i)!!.toString())
                 }
-
             }
             updateTabStyles()
-
             viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
 
                 @SuppressLint("NewApi")
                 override fun onGlobalLayout() {
-
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
                         viewTreeObserver.removeGlobalOnLayoutListener(this)
                     } else {
                         viewTreeObserver.removeOnGlobalLayoutListener(this)
                     }
-
                     currentPosition = pager!!.currentItem
                     scrollToChild(currentPosition, 0)
                 }
             })
-
         }
     }
 
@@ -295,11 +261,8 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
     }
 
     fun notifyDataSetChanged() {
-
         tabsContainer.removeAllViews()
-
         tabCount = pager!!.adapter!!.count
-
         for (i in 0 until tabCount) {
             if (pager!!.adapter is LayoutTabProvider) {
                 addTab(i, (pager!!.adapter as LayoutTabProvider).createTabView(i))
@@ -308,66 +271,49 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
             } else {
                 addTextTab(i, pager!!.adapter!!.getPageTitle(i)!!.toString())
             }
-
         }
-
         updateTabStyles()
-
         viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
 
             @SuppressLint("NewApi")
             override fun onGlobalLayout() {
-
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
                     viewTreeObserver.removeGlobalOnLayoutListener(this)
                 } else {
                     viewTreeObserver.removeOnGlobalLayoutListener(this)
                 }
-
                 currentPosition = pager!!.currentItem
                 scrollToChild(currentPosition, 0)
             }
         })
-
     }
 
     private fun addTextTab(position: Int, title: String) {
-
         val tab = TextView(context)
         tab.text = title
         tab.gravity = Gravity.CENTER
         tab.setSingleLine()
-
         addTab(position, tab)
     }
 
     private fun addIconTab(position: Int, resId: Int) {
-
         val tab = ImageButton(context)
         tab.setImageResource(resId)
-
         addTab(position, tab)
-
     }
 
     private fun addTab(position: Int, tab: View) {
         tab.isFocusable = true
         tab.setOnClickListener { pager!!.currentItem = position }
-
         tab.setPadding(tabPadding, 0, tabPadding, 0)
         tabsContainer.addView(tab, position, if (shouldExpand) expandedTabLayoutParams else defaultTabLayoutParams)
     }
 
     private fun updateTabStyles() {
-
         for (i in 0 until tabCount) {
-
             val v = tabsContainer.getChildAt(i)
-
             v.setBackgroundResource(tabBackground)
-
             if (v is TextView) {
-
                 val tab = v
                 tab.setTextSize(TypedValue.COMPLEX_UNIT_PX, tabTextSize.toFloat())
                 tab.setTypeface(tabTypeface, tabTypefaceStyle)
@@ -376,7 +322,6 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
                 } else {
                     tab.setTextColor(tabTextColor)
                 }
-
                 // setAllCaps() is only available from API 14, so the upper case is made manually if we are on a
                 // pre-ICS-build
                 if (isTextAllCaps) {
@@ -394,22 +339,17 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
     }
 
     private fun scrollToChild(position: Int, offset: Int) {
-
         if (tabCount == 0 && position >= tabsContainer.childCount) {
             return
         }
-
         var newScrollX = tabsContainer.getChildAt(position).left + offset
-
         if (position > 0 || offset > 0) {
             newScrollX -= scrollOffset
         }
-
         if (newScrollX != lastScrollX) {
             lastScrollX = newScrollX
             scrollTo(newScrollX, 0)
         }
-
     }
 
     override fun onDraw(canvas: Canvas) {

@@ -1,7 +1,6 @@
 package cn.yue.base.kotlin.test
 
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.lifecycleScope
 import cn.yue.base.middle.components.BaseHintFragment
 import cn.yue.base.middle.net.ResultException
@@ -37,11 +36,11 @@ class TestCoroutineFragment : BaseHintFragment() {
                 }),
                 object : BaseNetSingleObserver<ArrayList<*>>() {
                     override fun onException(e: ResultException) {
-                        Log.d("luobiao", "onException: " + e)
+
                     }
 
                     override fun onSuccess(t: ArrayList<*>) {
-                        Log.d("luobiao", "onSuccess: " + t[0] + " , " + t[1])
+
                     }
 
                 }

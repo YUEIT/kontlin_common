@@ -4,13 +4,6 @@ import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
-/**
- * 介绍：
- * 作者：luobiao
- * 邮箱：luobiao@imcoming.cn
- * 时间：2016/12/27.
- */
-
 class SwipeLayoutManager : CommonLayoutManager() {
 
     override fun getOffsetSecond(): Int {

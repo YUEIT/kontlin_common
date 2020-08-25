@@ -8,13 +8,6 @@ import android.graphics.drawable.Drawable
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-/**
- * 介绍：LinearLayoutManager 分界线
- * 作者：luobiao
- * 邮箱：luobiao@imcoming.cn
- * 时间：2016/10/test.
- */
-
 class LinearLayoutDecoration : RecyclerView.ItemDecoration {
 
     protected var mDivider: Drawable? = null

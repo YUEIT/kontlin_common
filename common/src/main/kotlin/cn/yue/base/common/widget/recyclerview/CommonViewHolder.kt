@@ -9,13 +9,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-/**
- * 介绍：
- * 作者：luobiao
- * 邮箱：luobiao@imcoming.cn
- * 时间：2016/12/2.
- */
-
 class CommonViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun <V : View> getView(id: Int): V? {
