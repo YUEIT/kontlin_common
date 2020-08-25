@@ -11,7 +11,10 @@ import cn.yue.base.middle.components.load.PageStatus
 import cn.yue.base.middle.mvp.IStatusView
 import cn.yue.base.middle.mvvm.BaseViewModel
 import cn.yue.base.middle.view.PageHintView
-
+/**
+ * Description :
+ * Created by yue on 2020/8/8
+ */
 abstract class BaseHintVMFragment<VM : BaseViewModel> : BaseVMFragment<VM>(), IStatusView {
     private lateinit var hintView: PageHintView
 

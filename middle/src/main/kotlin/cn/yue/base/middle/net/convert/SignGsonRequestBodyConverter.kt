@@ -15,7 +15,6 @@
  */
 package cn.yue.base.middle.net.convert
 
-import cn.yue.base.common.utils.constant.EncryptUtils
 import cn.yue.base.middle.init.InitConstant
 import cn.yue.base.middle.net.CharsetConfig
 import cn.yue.base.middle.net.netLog
@@ -54,8 +53,9 @@ internal class SignGsonRequestBodyConverter<T>(private val gson: Gson, private v
             //      }
             val appVersion = InitConstant.getVersionName()
             val deviceId = InitConstant.getDeviceId()
-            val sign = EncryptUtils.encryptMD5ToString((appVersion + InitConstant.APP_CLIENT_TYPE + encodeData +
-                    deviceId + time + InitConstant.APP_SIGN_KEY).toByteArray())
+            val sign = ""
+//            val sign = EncryptUtils.encryptMD5ToString((appVersion + InitConstant.APP_CLIENT_TYPE
+//                    + encodeData + deviceId + time + InitConstant.APP_SIGN_KEY).toByteArray())
             tmp["app_version"] = appVersion.toString()
             tmp["client_type"] = InitConstant.APP_CLIENT_TYPE + ""
             tmp["data"] = encodeData

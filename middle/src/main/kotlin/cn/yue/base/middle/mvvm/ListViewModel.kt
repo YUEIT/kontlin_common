@@ -2,6 +2,7 @@ package cn.yue.base.middle.mvvm
 
 import android.app.Application
 import android.text.TextUtils
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -10,13 +11,13 @@ import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.middle.components.load.LoadStatus
 import cn.yue.base.middle.components.load.PageStatus
 import cn.yue.base.middle.mvvm.data.MutableListLiveData
-import cn.yue.base.middle.net.NetworkConfig
+import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
+import cn.yue.base.middle.net.coroutine.request
 import cn.yue.base.middle.net.observer.BaseNetSingleObserver
 import cn.yue.base.middle.net.wrapper.BaseListBean
 import io.reactivex.Single
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 abstract class ListViewModel<P : BaseListBean<S>, S>(application: Application) : BaseViewModel(application) {
     private var pageNt: String? = "1"
@@ -47,64 +48,71 @@ abstract class ListViewModel<P : BaseListBean<S>, S>(application: Application) :
         loadData()
     }
 
-    abstract fun getRequestSingle(nt: String?): Single<P>?
+    open fun getRequestSingle(nt: String?): Single<P>? = null
+
+    open suspend fun getRequestScope(nt: String?): P? = null
 
     fun loadData() {
-        if (getRequestSingle(pageNt) == null) {
-            return
+        val observer = object : BaseNetSingleObserver<P>() {
+            private var isLoadingRefresh = false
+            override fun onStart() {
+                super.onStart()
+                isLoadingRefresh = (loader.pageStatus === PageStatus.LOADING
+                        || loader.loadStatus === LoadStatus.REFRESH)
+            }
+
+            override fun onSuccess(p: P) {
+                if (isLoadingRefresh) {
+                    dataList.clear()
+                }
+                if (isLoadingRefresh && p.getCurrentPageTotal() == 0) {
+                    loadEmpty()
+                } else {
+                    loadSuccess(p)
+                    if (p.getCurrentPageTotal() < p.getPageSize()) {
+                        loadNoMore()
+                    } else if (p.getTotal() > 0 && p.getTotal() <= dataList.size) {
+                        loadNoMore()
+                    } else if (p.getCurrentPageTotal() == 0) {
+                        loadNoMore()
+                    } else if (TextUtils.isEmpty(p.getPageNt()) && !initPageNt().matches(Regex("\\d+"))) {
+                        loadNoMore()
+                    }
+                }
+                if (isLoadingRefresh) {
+                    onRefreshComplete(p, null)
+                }
+            }
+
+            override fun onException(e: ResultException) {
+                loadFailed(e)
+                if (isLoadingRefresh) {
+                    onRefreshComplete(null, e)
+                }
+            }
+
+            override fun onCancel(e: ResultException) {
+                super.onCancel(e)
+                loadFailed(e)
+            }
         }
-        getRequestSingle(pageNt)!!
-                .delay(1000, TimeUnit.MILLISECONDS)
-                .compose(this.toBindLifecycle())
-                .subscribe(object : BaseNetSingleObserver<P>() {
-                    private var isLoadingRefresh = false
-                    override fun onStart() {
-                        super.onStart()
-                        isLoadingRefresh = (loader.pageStatus === PageStatus.LOADING
-                                || loader.loadStatus === LoadStatus.REFRESH)
-                    }
-
-                    override fun onSuccess(p: P) {
-                        if (isLoadingRefresh) {
-                            dataList.clear()
-                        }
-                        if (isLoadingRefresh && p!!.getCurrentPageTotal() == 0) {
-                            loadEmpty()
-                        } else {
-                            loadSuccess(p)
-                            if (p!!.getCurrentPageTotal() < p.getPageSize()) {
-                                loadNoMore()
-                            } else if (p.getTotal() > 0 && p.getTotal() <= dataList.size) {
-                                loadNoMore()
-                            } else if (p.getCurrentPageTotal() == 0) {
-                                loadNoMore()
-                            } else if (TextUtils.isEmpty(p.getPageNt()) && !initPageNt().matches(Regex("\\d+"))) {
-                                loadNoMore()
-                            }
-                        }
-                        if (isLoadingRefresh) {
-                            onRefreshComplete(p, null)
-                        }
-                    }
-
-                    override fun onException(e: ResultException) {
-                        loadFailed(e)
-                        if (isLoadingRefresh) {
-                            onRefreshComplete(null, e)
-                        }
-                    }
-
-                    override fun onCancel(e: ResultException) {
-                        super.onCancel(e)
-                        loadFailed(e)
-                    }
-                })
+        val requestSingle = getRequestSingle(pageNt)
+        if (requestSingle != null) {
+            requestSingle
+//                    .delay(1000, TimeUnit.MILLISECONDS)
+                    .compose(this.toBindLifecycle())
+                    .subscribe(observer)
+        } else {
+            viewModelScope.request({
+                getRequestScope(pageNt)!!
+            }, observer)
+        }
     }
 
     open fun loadSuccess(p: P) {
         loader.pageStatus = PageStatus.NORMAL
         loader.loadStatus = LoadStatus.NORMAL
-        if (TextUtils.isEmpty(p!!.getPageNt())) {
+        if (TextUtils.isEmpty(p.getPageNt())) {
             try {
                 pageNt = if (p.getPageNo() == 0) {
                     Integer.valueOf(pageNt + 1).toString()
@@ -130,34 +138,46 @@ abstract class ListViewModel<P : BaseListBean<S>, S>(application: Application) :
     open fun loadFailed(e: ResultException) {
         pageNt = lastNt
         if (loader.isFirstLoad) {
-            if (NetworkConfig.ERROR_NO_NET == e.code) {
-                loader.pageStatus = PageStatus.NO_NET
-            } else if (NetworkConfig.ERROR_NO_DATA == e.code) {
-                loader.pageStatus = PageStatus.NO_DATA
-            } else if (NetworkConfig.ERROR_CANCEL == e.code) {
-                loader.pageStatus = PageStatus.NO_NET
-                showShortToast(e.message)
-            } else if (NetworkConfig.ERROR_OPERATION == e.code) {
-                loader.pageStatus = PageStatus.ERROR
-                showShortToast(e.message)
-            } else {
-                loader.pageStatus = PageStatus.ERROR
-                showShortToast(e.message)
+            when {
+                ResponseCode.ERROR_NO_NET == e.code -> {
+                    loader.pageStatus = PageStatus.NO_NET
+                }
+                ResponseCode.ERROR_NO_DATA == e.code -> {
+                    loader.pageStatus = PageStatus.NO_DATA
+                }
+                ResponseCode.ERROR_CANCEL == e.code -> {
+                    loader.pageStatus = PageStatus.NO_NET
+                    showShortToast(e.message)
+                }
+                ResponseCode.ERROR_OPERATION == e.code -> {
+                    loader.pageStatus = PageStatus.ERROR
+                    showShortToast(e.message)
+                }
+                else -> {
+                    loader.pageStatus = PageStatus.ERROR
+                    showShortToast(e.message)
+                }
             }
         } else {
-            if (NetworkConfig.ERROR_NO_NET == e.code) {
-                loader.loadStatus = LoadStatus.NO_NET
-            } else if (NetworkConfig.ERROR_NO_DATA == e.code) {
-                loader.loadStatus = LoadStatus.NO_DATA
-            } else if (NetworkConfig.ERROR_CANCEL == e.code) {
-                loader.loadStatus = LoadStatus.NORMAL
-                showShortToast(e.message)
-            } else if (NetworkConfig.ERROR_OPERATION == e.code) {
-                loader.loadStatus = LoadStatus.NORMAL
-                showShortToast(e.message)
-            } else {
-                loader.loadStatus = LoadStatus.NORMAL
-                showShortToast(e.message)
+            when {
+                ResponseCode.ERROR_NO_NET == e.code -> {
+                    loader.loadStatus = LoadStatus.NO_NET
+                }
+                ResponseCode.ERROR_NO_DATA == e.code -> {
+                    loader.loadStatus = LoadStatus.NO_DATA
+                }
+                ResponseCode.ERROR_CANCEL == e.code -> {
+                    loader.loadStatus = LoadStatus.NORMAL
+                    showShortToast(e.message)
+                }
+                ResponseCode.ERROR_OPERATION == e.code -> {
+                    loader.loadStatus = LoadStatus.NORMAL
+                    showShortToast(e.message)
+                }
+                else -> {
+                    loader.loadStatus = LoadStatus.NORMAL
+                    showShortToast(e.message)
+                }
             }
         }
     }

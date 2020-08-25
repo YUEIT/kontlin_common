@@ -19,12 +19,12 @@ import cn.yue.base.common.photo.PhotoUtils.getTheLastPhotos
 import cn.yue.base.common.photo.data.MediaVO
 import cn.yue.base.common.photo.data.MediaVO.CREATOR.equals
 import cn.yue.base.common.utils.app.RunTimePermissionUtil
-import cn.yue.base.common.utils.code.ThreadPoolUtils
-import cn.yue.base.common.utils.debug.LogUtils.Companion.e
+import cn.yue.base.common.utils.debug.LogUtils
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
 import java.util.*
+import java.util.concurrent.Executors
 
 /**
  * Description :
@@ -70,7 +70,7 @@ class SelectPhotoFragment : BaseFragment() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 val layoutManager = recyclerView.layoutManager as GridLayoutManager?
-                e("" + layoutManager!!.findLastVisibleItemPosition())
+                LogUtils.e("" + layoutManager!!.findLastVisibleItemPosition())
                 if (photoList.size - 5 <= layoutManager.findLastVisibleItemPosition() && isCanLoadMore) {
                     isCanLoadMore = false
                     getPhotoList()
@@ -96,7 +96,7 @@ class SelectPhotoFragment : BaseFragment() {
     private var folderId: String? = null
     private fun getPhotoList() {
         RunTimePermissionUtil.requestPermissions(mActivity, {
-                val threadPoolUtils = ThreadPoolUtils(ThreadPoolUtils.Type.SingleThread, 1)
+                val threadPoolUtils = Executors.newSingleThreadExecutor()
                 threadPoolUtils.execute(Runnable {
                     if (allMedia == null) {
                         allMedia = when {

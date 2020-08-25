@@ -20,7 +20,7 @@ import cn.yue.base.middle.view.refresh.IRefreshLayout
 
 /**
  * Description :
- * Created by yue on 2019/3/7
+ * Created by yue on 2020/8/8
  */
 abstract class BaseListVMFragment<VM : ListViewModel<*, *>> : BaseVMFragment<VM>(), IStatusView {
     private var adapter: CommonAdapter<*>? = null
@@ -36,13 +36,13 @@ abstract class BaseListVMFragment<VM : ListViewModel<*, *>> : BaseVMFragment<VM>
     override fun initView(savedInstanceState: Bundle?) {
         hintView = findViewById(R.id.hintView)
         hintView.setOnReloadListener {
-                if (NetworkUtils.isConnected()) {
-                    if (autoRefresh()) {
-                        viewModel.refresh()
-                    }
-                } else {
-                    showShortToast("网络不给力，请检查您的网络设置~")
+            if (NetworkUtils.isConnected()) {
+                if (autoRefresh()) {
+                    viewModel.refresh()
                 }
+            } else {
+                showShortToast("网络不给力，请检查您的网络设置~")
+            }
         }
         refreshL = findViewById<View>(R.id.refreshL) as IRefreshLayout
         refreshL.init()
@@ -133,17 +133,17 @@ abstract class BaseListVMFragment<VM : ListViewModel<*, *>> : BaseVMFragment<VM>
     }
 
     override fun showStatusView(status: PageStatus?) {
-            if (viewModel.loader.isFirstLoad) {
-                hintView.show(status)
-                if (status == PageStatus.NORMAL) {
-                    baseRV.visibility = View.VISIBLE
-                } else {
-                    baseRV.visibility = View.GONE
-                }
-            } else {
-                hintView.show(PageStatus.NORMAL)
+        if (viewModel.loader.isFirstLoad) {
+            hintView.show(status)
+            if (status == PageStatus.NORMAL) {
                 baseRV.visibility = View.VISIBLE
+            } else {
+                baseRV.visibility = View.GONE
             }
+        } else {
+            hintView.show(PageStatus.NORMAL)
+            baseRV.visibility = View.VISIBLE
+        }
         if (status == PageStatus.NORMAL) {
             viewModel.loader.isFirstLoad = false
         }

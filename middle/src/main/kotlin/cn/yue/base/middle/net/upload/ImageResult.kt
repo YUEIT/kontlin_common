@@ -15,7 +15,7 @@ data class ImageResult(var size: Int,
     companion object {
         fun toListString(list: List<ImageResult>) : MutableList<String>{
             val stringList = ArrayList<String>()
-            if (list == null || list.size == 0) {
+            if (list.isEmpty()) {
                 return stringList
             }
 

@@ -7,7 +7,7 @@ import cn.yue.base.kotlin.test.R
 import cn.yue.base.middle.components.BaseListFragment
 import cn.yue.base.middle.net.wrapper.BaseListBean
 import com.alibaba.android.arouter.facade.annotation.Route
-import io.reactivex.Single
+import kotlinx.android.synthetic.main.item_test.view.*
 import java.util.*
 
 /**
@@ -18,7 +18,6 @@ import java.util.*
 class TestListFragment : BaseListFragment<BaseListBean<TestItemBean>, TestItemBean>() {
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
-        initTest()
     }
 
     override fun initTopBar(topBar: TopBar) {
@@ -31,29 +30,18 @@ class TestListFragment : BaseListFragment<BaseListBean<TestItemBean>, TestItemBe
     }
 
     override fun getItemType(position: Int): Int {
-        return if (position == 1) {
-            1
-        } else super.getItemType(position)
+        return super.getItemType(position)
     }
 
     override fun getItemLayoutId(viewType: Int): Int {
-        return if (viewType == 1) {
-            R.layout.item_test_recyclerview
-        } else R.layout.item_test
+       return R.layout.item_test
     }
 
-    override fun bindItemData(holder: CommonViewHolder<TestItemBean>?, position: Int, testItemBean: TestItemBean) {
-
+    override fun bindItemData(holder: CommonViewHolder<TestItemBean>, position: Int, testItemBean: TestItemBean) {
+        holder.itemView.testTV.text = testItemBean.name
     }
 
-    private val testList: MutableList<String> = ArrayList()
-    private fun initTest() {
-        for (i in 0..9) {
-            testList.add("ssssa$i")
-        }
-    }
-
-    override fun getRequestSingle(nt: String?): Single<BaseListBean<TestItemBean>>? {
+    override suspend fun getRequestScope(nt: String?): BaseListBean<TestItemBean>? {
         val listBean: BaseListBean<TestItemBean> = BaseListBean<TestItemBean>()
         listBean.mPageSize = 20
         listBean.mTotal = 22
@@ -64,6 +52,6 @@ class TestListFragment : BaseListFragment<BaseListBean<TestItemBean>, TestItemBe
             list.add(testItemBean)
         }
         listBean.pageList = list
-        return Single.just<BaseListBean<TestItemBean>>(listBean)
+        return listBean
     }
 }

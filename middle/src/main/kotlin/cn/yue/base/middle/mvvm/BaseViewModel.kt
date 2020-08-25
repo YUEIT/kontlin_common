@@ -19,7 +19,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import java.util.*
-
+/**
+ * Description :
+ * Created by yue on 2020/8/8
+ */
 open class BaseViewModel(application: Application) : AndroidViewModel(application), ILifecycleProvider<Lifecycle.Event>, IWaitView {
     @JvmField
     var loader = LoaderLiveData()
@@ -173,4 +176,5 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
         finishModel.bundle = bundle
         finishEvent.postValue(finishModel)
     }
+
 }

@@ -1,25 +1,13 @@
 package cn.yue.base.common.utils.device
 
 import android.app.Activity
-import android.app.KeyguardManager
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.provider.Settings
 import android.util.DisplayMetrics
-import android.view.Surface
 import android.view.WindowManager
 import cn.yue.base.common.utils.Utils
-import cn.yue.base.common.utils.app.BarUtils
 
-
-/**
- * 介绍：屏幕相关工具类
- * 作者：luobiao
- * 邮箱：luobiao@imcoming.cn
- * 时间：2017/2/23.
- */
 object ScreenUtils {
 
     /**
@@ -98,99 +86,5 @@ object ScreenUtils {
      */
     val isPortrait: Boolean
         get() = Utils.getContext().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-
-    /**
-     * 获取屏幕旋转角度
-     *
-     * @param activity activity
-     * @return 屏幕旋转角度
-     */
-    @JvmStatic
-    fun getScreenRotation(activity: Activity): Int {
-        when (activity.windowManager.defaultDisplay.rotation) {
-            Surface.ROTATION_0 -> return 0
-            Surface.ROTATION_90 -> return 90
-            Surface.ROTATION_180 -> return 180
-            Surface.ROTATION_270 -> return 270
-            else -> return 0
-        }
-    }
-
-    /**
-     * 获取当前屏幕截图，包含状态栏
-     *
-     * @param activity activity
-     * @return Bitmap
-     */
-    @JvmStatic
-    fun captureWithStatusBar(activity: Activity): Bitmap {
-        val view = activity.window.decorView
-        view.isDrawingCacheEnabled = true
-        view.buildDrawingCache()
-        val bmp = view.drawingCache
-        val dm = DisplayMetrics()
-        activity.windowManager.defaultDisplay.getMetrics(dm)
-        val ret = Bitmap.createBitmap(bmp, 0, 0, dm.widthPixels, dm.heightPixels)
-        view.destroyDrawingCache()
-        return ret
-    }
-
-    /**
-     * 获取当前屏幕截图，不包含状态栏
-     *
-     * @param activity activity
-     * @return Bitmap
-     */
-    @JvmStatic
-    fun captureWithoutStatusBar(activity: Activity): Bitmap {
-        val view = activity.window.decorView
-        view.isDrawingCacheEnabled = true
-        view.buildDrawingCache()
-        val bmp = view.drawingCache
-        val statusBarHeight = BarUtils.getStatusBarHeight(activity)
-        val dm = DisplayMetrics()
-        activity.windowManager.defaultDisplay.getMetrics(dm)
-        val ret = Bitmap.createBitmap(bmp, 0, statusBarHeight, dm.widthPixels, dm.heightPixels - statusBarHeight)
-        view.destroyDrawingCache()
-        return ret
-    }
-
-    /**
-     * 判断是否锁屏
-     *
-     * @return `true`: 是<br></br>`false`: 否
-     */
-    val isScreenLock: Boolean
-        get() {
-            val km = Utils.getContext().getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-            return km.inKeyguardRestrictedInputMode()
-        }
-
-    /**
-     * 获取进入休眠时长
-     *
-     * @return 进入休眠时长，报错返回-123
-     */
-    /**
-     * 设置进入休眠时长
-     *
-     * 需添加权限 `<uses-permission android:name="android.permission.WRITE_SETTINGS" />`
-     *
-     * @param duration 时长
-     */
-    @JvmStatic
-    var sleepDuration: Int
-        get() {
-            try {
-                return Settings.System.getInt(Utils.getContext().contentResolver, Settings.System.SCREEN_OFF_TIMEOUT)
-            } catch (e: Settings.SettingNotFoundException) {
-                e.printStackTrace()
-                return -123
-            }
-
-        }
-        set(duration) {
-            Settings.System.putInt(Utils.getContext().contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, duration)
-        }
 
 }

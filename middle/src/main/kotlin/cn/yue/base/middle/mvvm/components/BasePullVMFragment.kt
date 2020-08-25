@@ -17,7 +17,7 @@ import cn.yue.base.middle.view.refresh.IRefreshLayout
 
 /**
  * Description :
- * Created by yue on 2019/3/7
+ * Created by yue on 2020/8/8
  */
 abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>(), IStatusView {
     private lateinit var refreshL: IRefreshLayout

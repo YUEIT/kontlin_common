@@ -5,19 +5,12 @@ import android.content.SharedPreferences
 
 import cn.yue.base.common.utils.Utils
 
-/**
- * 介绍：SP相关工具类
- * 作者：luobiao
- * 邮箱：luobiao@imcoming.cn
- * 时间：2017/2/23.
- */
 class SPUtils(spName: String) {
 
-    private val sp: SharedPreferences
+    private val sp: SharedPreferences = Utils.getContext().getSharedPreferences(spName, Context.MODE_PRIVATE)
     private val editor: SharedPreferences.Editor
 
     init {
-        sp = Utils.getContext().getSharedPreferences(spName, Context.MODE_PRIVATE)
         editor = sp.edit()
         editor.apply()
     }

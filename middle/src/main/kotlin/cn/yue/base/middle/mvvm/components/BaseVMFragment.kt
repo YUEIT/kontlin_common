@@ -13,7 +13,10 @@ import cn.yue.base.middle.mvp.IWaitView
 import cn.yue.base.middle.mvvm.BaseViewModel
 import cn.yue.base.middle.router.FRouter
 import java.lang.reflect.ParameterizedType
-
+/**
+ * Description :
+ * Created by yue on 2020/8/8
+ */
 abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment(), IWaitView {
 
     lateinit var viewModel: VM

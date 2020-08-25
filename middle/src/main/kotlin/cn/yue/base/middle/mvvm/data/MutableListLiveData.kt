@@ -2,7 +2,10 @@ package cn.yue.base.middle.mvvm.data
 
 import androidx.lifecycle.MutableLiveData
 import java.util.*
-
+/**
+ * Description :
+ * Created by yue on 2020/8/8
+ */
 class MutableListLiveData<T> : MutableLiveData<ArrayList<T>>(ArrayList<T>()) {
 
     override fun postValue(value: ArrayList<T>) {

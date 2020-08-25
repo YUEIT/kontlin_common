@@ -13,11 +13,10 @@ import cn.yue.base.common.photo.PhotoUtils.getAllPhotosFolder
 import cn.yue.base.common.photo.PhotoUtils.getTheLastPhotos
 import cn.yue.base.common.photo.data.MediaFolderVO
 import cn.yue.base.common.photo.data.MediaVO
-import cn.yue.base.common.utils.code.ThreadPoolUtils
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
-import kotlin.collections.ArrayList
+import java.util.concurrent.Executors
 
 /**
  * Description :
@@ -53,7 +52,7 @@ class SelectPhotoFolderFragment : BaseFragment() {
 
     private var allFolder: MutableList<MediaFolderVO> = ArrayList()
     private fun getAllPhotoFolder() {
-            val threadPoolUtils = ThreadPoolUtils(ThreadPoolUtils.Type.SingleThread, 1)
+            val threadPoolUtils = Executors.newSingleThreadExecutor()
             threadPoolUtils.execute(Runnable {
                 val allFolder = getAllPhotosFolder(mActivity)
                 val lastPhotos: List<MediaVO> = getTheLastPhotos(mActivity, 100)

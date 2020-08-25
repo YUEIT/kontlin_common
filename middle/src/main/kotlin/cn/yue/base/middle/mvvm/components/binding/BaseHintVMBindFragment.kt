@@ -7,7 +7,10 @@ import androidx.databinding.ViewDataBinding
 import cn.yue.base.middle.mvvm.BaseViewModel
 import cn.yue.base.middle.mvvm.components.BaseHintVMFragment
 import cn.yue.base.middle.mvvm.data.BR
-
+/**
+ * Description :
+ * Created by yue on 2020/8/8
+ */
 abstract class BaseHintVMBindFragment<VM : BaseViewModel, T : ViewDataBinding> : BaseHintVMFragment<VM>() {
 
     lateinit var binding: T

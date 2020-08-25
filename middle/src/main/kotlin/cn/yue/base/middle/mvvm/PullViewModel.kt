@@ -4,7 +4,10 @@ import android.app.Application
 import cn.yue.base.middle.components.load.LoadStatus
 import cn.yue.base.middle.components.load.PageStatus
 import cn.yue.base.middle.mvp.IPullView
-
+/**
+ * Description :
+ * Created by yue on 2020/8/8
+ */
 abstract class PullViewModel(application: Application) : BaseViewModel(application), IPullView {
 
     /**

@@ -1,7 +1,7 @@
 package cn.yue.base.middle.net.observer
 
 import cn.yue.base.common.utils.debug.ToastUtils
-import cn.yue.base.middle.net.NetworkConfig
+import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
 import io.reactivex.observers.DisposableSingleObserver
 import java.util.concurrent.CancellationException
@@ -14,6 +14,10 @@ import java.util.concurrent.CancellationException
 abstract class BaseNetSingleObserver<T> : DisposableSingleObserver<T>() {
 
 
+    public override fun onStart() {
+        super.onStart()
+    }
+
     abstract fun onException(e: ResultException)
 
     open fun onCancel(e: ResultException) {}
@@ -22,15 +26,16 @@ abstract class BaseNetSingleObserver<T> : DisposableSingleObserver<T>() {
         val resultException: ResultException
         if (e is ResultException) {
             resultException = e
-            if (resultException.code == NetworkConfig.ERROR_TOKEN_INVALID || resultException.code == NetworkConfig.ERROR_LOGIN_INVALID) {
+            if (resultException.code == ResponseCode.ERROR_TOKEN_INVALID
+                    || resultException.code == ResponseCode.ERROR_LOGIN_INVALID) {
                 onLoginInvalid()
                 return
             }
             onException(resultException)
         } else if (e is CancellationException) {
-            onCancel(ResultException(NetworkConfig.ERROR_CANCEL, "请求取消~"))
+            onCancel(ResultException(ResponseCode.ERROR_CANCEL, "请求取消~"))
         } else {
-            onException(ResultException(NetworkConfig.ERROR_SERVER, e.message?:""))
+            onException(ResultException(ResponseCode.ERROR_SERVER, e.message?:""))
         }
     }
 

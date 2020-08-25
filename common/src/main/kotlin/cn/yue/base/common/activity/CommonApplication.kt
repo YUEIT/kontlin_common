@@ -1,14 +1,11 @@
 package cn.yue.base.common.activity
 
+import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
-import android.os.Build
 import android.os.Process
-import android.os.StrictMode
-import android.os.StrictMode.VmPolicy
-import cn.yue.base.common.utils.Utils.init
-import cn.yue.base.common.utils.code.ProcessUtils.getProcessName
-import cn.yue.base.common.utils.debug.LogUtils.Companion.e
+import cn.yue.base.common.utils.Utils
+import cn.yue.base.common.utils.debug.LogUtils
 
 /**
  * Description :
@@ -22,31 +19,29 @@ abstract class CommonApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        if (null != packageName && packageName ==
-                getProcessName(this, Process.myPid())) {
+        if (null != packageName && packageName == getThisProcessName()) {
             //只有进程名和包名一样 才执行初始化操作
             initUtils()
         } else {
-            e("其他进程启动,不做初始化操作:" + Process.myPid())
+            LogUtils.e("其他进程启动,不做初始化操作:" + Process.myPid())
         }
     }
 
     private fun initUtils() {
-        init(this)
-        initPhotoError()
+        Utils.init(this)
         init()
     }
 
     protected abstract fun init()
 
-    /**
-     * android 7.0系统解决拍照的问题
-     */
-    private fun initPhotoError() {
-        val builder = VmPolicy.Builder()
-        StrictMode.setVmPolicy(builder.build())
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            builder.detectFileUriExposure()
+    private fun getThisProcessName(): String? {
+        val am = this.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val runningApps = am.runningAppProcesses ?: return null
+        for (procInfo in runningApps) {
+            if (procInfo.pid == Process.myPid()) {
+                return procInfo.processName
+            }
         }
+        return null
     }
 }

@@ -2,8 +2,6 @@ package cn.yue.base.common.utils
 
 import android.content.Context
 
-import cn.yue.base.common.utils.code.SPUtils
-
 
 /**
  * Utils 包括以下几个部分
@@ -61,8 +59,6 @@ import cn.yue.base.common.utils.code.SPUtils
 object Utils {
 
     private var mContext: Context? = null
-    var spUtils: SPUtils? = null
-        private set
 
     /**
      * 初始化工具类
@@ -72,7 +68,6 @@ object Utils {
     @JvmStatic
     fun init(mContext: Context) {
         Utils.mContext = mContext.applicationContext
-        spUtils = SPUtils("utils")
     }
 
     /**

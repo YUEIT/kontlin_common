@@ -44,6 +44,8 @@ dependencies {
     api project(":common")
     api rootProject.ext.androidx["multidex"]
     api rootProject.ext.androidx["lifecycle-viewmodel"]
+    api rootProject.ext.androidx["lifecycle-runtime-ktx"]
+    api rootProject.ext.androidx["lifecycle-viewmodel-ktx"]
     api rootProject.ext.androidx["lifecycle-livedata"]
     api rootProject.ext.androidx["lifecycle-viewmodel-savestate"]
     kapt rootProject.ext.androidx["lifecycle-compiler"]

@@ -10,7 +10,7 @@ import cn.yue.base.middle.mvvm.data.BR
 
 /**
  * Description :
- * Created by yue on 2019/3/7
+ * Created by yue on 2020/8/8
  */
 abstract class BasePullVMBindFragment<VM : PullViewModel, T : ViewDataBinding> : BasePullVMFragment<VM>() {
     lateinit var binding: T

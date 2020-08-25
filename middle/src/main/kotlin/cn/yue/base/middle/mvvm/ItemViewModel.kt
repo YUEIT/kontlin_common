@@ -4,7 +4,10 @@ import android.os.Bundle
 import androidx.lifecycle.Lifecycle
 import cn.yue.base.middle.router.RouterCard
 import io.reactivex.SingleTransformer
-
+/**
+ * Description :
+ * Created by yue on 2020/8/8
+ */
 abstract class ItemViewModel(private val parentViewModel: BaseViewModel)
     : BaseViewModel(parentViewModel.getApplication()) {
 

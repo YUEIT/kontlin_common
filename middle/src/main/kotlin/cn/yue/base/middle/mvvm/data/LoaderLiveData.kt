@@ -5,7 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import cn.yue.base.middle.components.load.LoadStatus
 import cn.yue.base.middle.components.load.PageStatus
-
+/**
+ * Description :
+ * Created by yue on 2020/8/8
+ */
 class LoaderLiveData {
     var isFirstLoad = true
     private val pageStatusLiveData = MutableLiveData<PageStatus>()

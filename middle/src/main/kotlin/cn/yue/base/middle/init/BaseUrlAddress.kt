@@ -5,18 +5,17 @@ package cn.yue.base.middle.init
  * Created by yue on 2019/3/13
  */
 object BaseUrlAddress {
-    /** */
+
     var upLoadUrl: String = ""
 
     private fun debugModel() {
-        upLoadUrl = "http://imgsvc.imcoming.com"
+        upLoadUrl = "http://imgsvc.com"
     }
 
     private fun releaseModel() {
-        upLoadUrl = "https://imgsvc.anlaiye.com.cn"
+        upLoadUrl = "https://imgsvc.com.cn"
     }
 
-    /** */
     @JvmStatic
     fun setDebug(debug: Boolean) {
         if (debug) {
@@ -28,6 +27,6 @@ object BaseUrlAddress {
 
     //开发环境，着急调试的话加上，一般不用
     private fun developModel() {
-        upLoadUrl = "https://imgsvc.anlaiye.com.cn"
+        upLoadUrl = "https://imgsvc.com.cn"
     }
 }

@@ -9,7 +9,7 @@ import android.text.TextUtils
 import android.util.SparseArray
 import cn.yue.base.common.activity.TransitionAnimation.getStartEnterAnim
 import cn.yue.base.common.activity.TransitionAnimation.getStartExitAnim
-import cn.yue.base.common.utils.debug.LogUtils.Companion.i
+import cn.yue.base.common.utils.debug.LogUtils
 import java.io.Serializable
 
 /**
@@ -107,7 +107,7 @@ class RouterCard : INavigation, Parcelable {
                 path = "/" + split[1]
             }
         }
-        i("router path: $path")
+        LogUtils.i("router path: $path")
         return path
     }
 

@@ -6,14 +6,12 @@ import android.os.Build
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import cn.yue.base.common.R
-import cn.yue.base.common.utils.app.BarUtils.Companion.getStatusBarHeight
+import cn.yue.base.common.utils.app.BarUtils
 import cn.yue.base.common.utils.app.DisplayUtils.dip2px
 import kotlinx.android.synthetic.main.layout_top_bar.view.*
 
@@ -28,7 +26,7 @@ class TopBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = 
         val statusBarSpace = findViewById<View>(R.id.statusBarSpace)
         val layoutParams = statusBarSpace.layoutParams as LinearLayout.LayoutParams
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            layoutParams.height = Math.max(getStatusBarHeight(context), dip2px(30f))
+            layoutParams.height = Math.max(BarUtils.getStatusBarHeight(), dip2px(30f))
         }
         defaultStyle()
     }

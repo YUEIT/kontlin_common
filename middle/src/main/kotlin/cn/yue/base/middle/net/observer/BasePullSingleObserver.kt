@@ -3,7 +3,7 @@ package cn.yue.base.middle.net.observer
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.middle.components.load.PageStatus
 import cn.yue.base.middle.mvp.IPullView
-import cn.yue.base.middle.net.NetworkConfig
+import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
 
 /**
@@ -25,16 +25,21 @@ abstract class BasePullSingleObserver<T>(private val iPullView: IPullView?) : Ba
 
     override fun onException(e: ResultException) {
         if (iPullView != null) {
-            if (NetworkConfig.ERROR_NO_NET == e.code) {
-                iPullView.loadComplete(PageStatus.NO_NET)
-            } else if (NetworkConfig.ERROR_NO_DATA == e.code) {
-                iPullView.loadComplete(PageStatus.NO_DATA)
-            } else if (NetworkConfig.ERROR_OPERATION == e.code) {
-                iPullView.loadComplete(PageStatus.ERROR)
-                showShortToast(e.message)
-            } else {
-                iPullView.loadComplete(PageStatus.ERROR)
-                showShortToast(e.message)
+            when {
+                ResponseCode.ERROR_NO_NET == e.code -> {
+                    iPullView.loadComplete(PageStatus.NO_NET)
+                }
+                ResponseCode.ERROR_NO_DATA == e.code -> {
+                    iPullView.loadComplete(PageStatus.NO_DATA)
+                }
+                ResponseCode.ERROR_OPERATION == e.code -> {
+                    iPullView.loadComplete(PageStatus.ERROR)
+                    showShortToast(e.message)
+                }
+                else -> {
+                    iPullView.loadComplete(PageStatus.ERROR)
+                    showShortToast(e.message)
+                }
             }
             iPullView.finishRefresh()
         }

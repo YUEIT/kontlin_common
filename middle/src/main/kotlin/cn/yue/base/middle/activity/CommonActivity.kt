@@ -1,12 +1,10 @@
 package cn.yue.base.middle.activity
 
-import android.os.Parcelable
-import android.util.Log
 import androidx.fragment.app.Fragment
 import cn.yue.base.common.activity.BaseFragmentActivity
 import cn.yue.base.common.activity.TransitionAnimation.getStopEnterAnim
 import cn.yue.base.common.activity.TransitionAnimation.getStopExitAnim
-import cn.yue.base.common.utils.debug.LogUtils.Companion.e
+import cn.yue.base.common.utils.debug.LogUtils
 import cn.yue.base.middle.router.FRouter
 import com.alibaba.android.arouter.facade.Postcard
 import com.alibaba.android.arouter.facade.callback.NavigationCallback
@@ -32,7 +30,7 @@ open class CommonActivity : BaseFragmentActivity() {
                         override fun onFound(postcard: Postcard) {}
                         override fun onLost(postcard: Postcard) {
                             //showError();
-                            e("no find page $postcard")
+                            LogUtils.e("no find page $postcard")
                         }
                         override fun onArrival(postcard: Postcard) {}
                         override fun onInterrupt(postcard: Postcard) {}

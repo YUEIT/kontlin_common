@@ -1,6 +1,6 @@
 package cn.yue.base.middle.net.observer
 
-import cn.yue.base.middle.net.NetworkConfig
+import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
 import cn.yue.base.middle.net.upload.ImageResult
 import cn.yue.base.middle.net.upload.ImageResultListData
@@ -15,7 +15,7 @@ abstract class BaseUploadObserver : DisposableSingleObserver<ImageResultListData
 
     override fun onSuccess(t: ImageResultListData) {
         if (t.data == null || t.data!!.isEmpty()) {
-            onException(ResultException(NetworkConfig.ERROR_SERVER, "上传失败"))
+            onException(ResultException(ResponseCode.ERROR_SERVER, "上传失败"))
             return
         }
         onSuccess(t.data!!)
@@ -24,8 +24,8 @@ abstract class BaseUploadObserver : DisposableSingleObserver<ImageResultListData
     override fun onError(e: Throwable) {
         when (e) {
             is ResultException -> onException(e)
-            is CancellationException ->  onCancel(ResultException(NetworkConfig.ERROR_CANCEL, e.message!!))
-            else -> onException(ResultException(NetworkConfig.ERROR_OPERATION, e.message!!))
+            is CancellationException ->  onCancel(ResultException(ResponseCode.ERROR_CANCEL, e.message!!))
+            else -> onException(ResultException(ResponseCode.ERROR_OPERATION, e.message!!))
         }
     }
     

@@ -7,7 +7,10 @@ import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
 import cn.yue.base.middle.mvvm.data.BR
 import java.util.*
-
+/**
+ * Description :
+ * Created by yue on 2020/8/8
+ */
 abstract class CommonVMAdapter<T> : CommonAdapter<T> {
     // key为itemType; value为layoutId
     private val typeToLayoutMap: MutableMap<Int, Int> = HashMap()

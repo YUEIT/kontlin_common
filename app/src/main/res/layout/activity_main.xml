@@ -62,4 +62,12 @@
         android:textSize="15sp"
         android:gravity="center"
         android:text="testViewPhoto" />
+
+    <TextView
+        android:id="@+id/jump8"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:text="testCoroutine" />
 </LinearLayout>

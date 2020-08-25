@@ -1,6 +1,5 @@
 package cn.yue.base.middle.init
 
-import cn.yue.base.common.utils.device.DeviceUtils.getNullDeviceId
 import cn.yue.base.common.utils.device.PhoneUtils
 
 /**
@@ -8,11 +7,10 @@ import cn.yue.base.common.utils.device.PhoneUtils
  * Created by yue on 2018/11/12
  */
 object InitConstant {
-    /**------------------------------------------------------------------------------------------ */ //version.properties文件中修改对应值（正式编译版本无需修改，自动设置false）
+    /**------------------------------------------------------------------------------------------ */
     @JvmField
     var isDebug = false
     var logMode = false
-
 
     private var mVersionName: String? = null
 
@@ -30,7 +28,7 @@ object InitConstant {
         if (mDeviceId == null) {
             mDeviceId = PhoneUtils.getAndroidId()
         }
-        return getNullDeviceId(mDeviceId).also { mDeviceId = it }
+        return PhoneUtils.getNullDeviceId(mDeviceId).also { mDeviceId = it }
     }
 
     const val APP_CLIENT_TYPE = "2"

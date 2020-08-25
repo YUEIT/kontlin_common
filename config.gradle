@@ -32,17 +32,19 @@ ext {
             'lifecycle-livedata'                   : 'androidx.lifecycle:lifecycle-livedata:2.2.0',
             'lifecycle-viewmodel-savestate'        : 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0',
             'lifecycle-compiler'                   : 'androidx.lifecycle:lifecycle-compiler:2.2.0',
+            'lifecycle-runtime-ktx'                : 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0',
+            'lifecycle-viewmodel-ktx'              : 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     ]
 
     dependencies = [
             "rxjava"                               : "io.reactivex.rxjava2:rxjava:2.2.12",
             "rxandroid"                            : "io.reactivex.rxjava2:rxandroid:2.1.1",
             "rxlifecycle"                          : "com.trello.rxlifecycle3:rxlifecycle-components:3.1.0",
-            "okhttp"                               : "com.squareup.okhttp3:okhttp:4.2.2",
+            "okhttp"                               : "com.squareup.okhttp3:okhttp:4.8.1",
             'okhttp-log'                           : 'com.squareup.okhttp3:logging-interceptor:3.11.0',
-            "retrofit"                             : "com.squareup.retrofit2:retrofit:2.6.2",
-            "retrofit-converter-gson"              : "com.squareup.retrofit2:converter-gson:2.6.2",
-            "retrofit-adapter-rxjava"              : "com.squareup.retrofit2:adapter-rxjava2:2.6.2",
+            "retrofit"                             : "com.squareup.retrofit2:retrofit:2.9.0",
+            "retrofit-converter-gson"              : "com.squareup.retrofit2:converter-gson:2.9.0",
+            "retrofit-adapter-rxjava"              : "com.squareup.retrofit2:adapter-rxjava2:2.9.0",
             "glide"                                : "com.github.bumptech.glide:glide:4.10.0",
             "gson"                                 : "com.google.code.gson:gson:2.8.6",
             "arouter-api"                          : "com.alibaba:arouter-api:1.5.0",

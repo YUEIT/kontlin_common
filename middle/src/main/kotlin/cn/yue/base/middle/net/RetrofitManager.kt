@@ -2,6 +2,7 @@ package cn.yue.base.middle.net
 
 
 import cn.yue.base.middle.init.InitConstant
+import cn.yue.base.middle.net.convert.GsonConverterFactory
 import cn.yue.base.middle.net.convert.SignGsonConverterFactory
 import cn.yue.base.middle.net.intercept.NoNetInterceptor
 import cn.yue.base.middle.net.intercept.SignInterceptor
@@ -52,9 +53,7 @@ class RetrofitManager private constructor() {
     }
 
     companion object {
-
         private const val DEFAULT_TIMEOUT = 60
-
         val instance = RetrofitManagerHolder.instance
     }
 
@@ -70,6 +69,14 @@ class RetrofitManager private constructor() {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 //注册自定义的工厂类
                 .addConverterFactory(SignGsonConverterFactory.create())
+                .build()
+    }
+
+    fun getCoroutineRetrofit(baseUrl: String): Retrofit {
+        return Retrofit.Builder()
+                .client(builder.build())
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
                 .build()
     }
 

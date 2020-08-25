@@ -1,13 +1,9 @@
 package cn.yue.base.middle.net.intercept
 
 import android.text.TextUtils
-import cn.yue.base.common.utils.constant.EncryptUtils
 import cn.yue.base.middle.init.InitConstant
-import cn.yue.base.middle.net.CharsetConfig
-import cn.yue.base.middle.net.NetworkConfig
-import cn.yue.base.middle.net.ResultException
+import cn.yue.base.middle.net.*
 import cn.yue.base.middle.net.convert.RequestConverterData
-import cn.yue.base.middle.net.netLog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import okhttp3.HttpUrl
@@ -68,8 +64,9 @@ class SignInterceptor : Interceptor {
             }
             val appVersion = InitConstant.getVersionName()
             val deviceId = InitConstant.getDeviceId()
-            val sign = EncryptUtils.encryptMD5ToString((appVersion + InitConstant.APP_CLIENT_TYPE + encodeData +
-                    deviceId + time + InitConstant.APP_SIGN_KEY).toByteArray())
+            val sign = ""
+//            val sign = EncryptUtils.encryptMD5ToString((appVersion + InitConstant.APP_CLIENT_TYPE
+//                    + encodeData + deviceId + time + InitConstant.APP_SIGN_KEY).toByteArray())
 
             url = original.url.newBuilder().query(null)
                     .addQueryParameter("data", encodeData)
@@ -120,7 +117,7 @@ class SignInterceptor : Interceptor {
                         map[key.replace("LIST_", "")] = list
                     } else {
                         if (original.url.queryParameterValues(key).size > 1) {
-                            throw ResultException(NetworkConfig.ERROR_OPERATION, "请求的数据类型为list，且参数名未以LIST_开始~")
+                            throw ResultException(ResponseCode.ERROR_OPERATION, "请求的数据类型为list，且参数名未以LIST_开始~")
                         }
                         val value = original.url.queryParameterValues(key)[0]
                         try {
@@ -169,8 +166,9 @@ class SignInterceptor : Interceptor {
             }
             val appVersion = InitConstant.getVersionName()
             val deviceId = InitConstant.getDeviceId()
-            val sign = EncryptUtils.encryptMD5ToString((appVersion + InitConstant.APP_CLIENT_TYPE + encodeData +
-                    deviceId + time + InitConstant.APP_SIGN_KEY).toByteArray())
+            val sign = ""
+//            val sign = encryptMD5ToString((appVersion + InitConstant.APP_CLIENT_TYPE
+//                    + encodeData + deviceId + time + InitConstant.APP_SIGN_KEY).toByteArray())
             tmp["app_version"] = appVersion.toString()
             tmp["client_type"] = InitConstant.APP_CLIENT_TYPE + ""
             tmp["data"] = encodeData

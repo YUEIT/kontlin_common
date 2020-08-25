@@ -1,21 +1,22 @@
 package cn.yue.base.kotlin.test.component
 
 import android.app.Application
-import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
+import androidx.lifecycle.viewModelScope
+import cn.yue.base.common.utils.debug.ToastUtils
 import cn.yue.base.middle.mvvm.PullViewModel
+import cn.yue.base.middle.net.coroutine.request
 import cn.yue.base.middle.net.observer.BasePullSingleObserver
-import io.reactivex.Single
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.delay
 
 class TestPullViewModel(application: Application) : PullViewModel(application) {
     override fun loadData() {
-        Single.just("ssss")
-                .delay(1000, TimeUnit.MILLISECONDS)
-                .compose(this.toBindLifecycle())
-                .subscribe(object : BasePullSingleObserver<String>(this@TestPullViewModel) {
-                    override fun onNext(s: String) {
-                        showShortToast(s)
-                    }
-                })
+        viewModelScope.request({
+            delay(1000)
+            "ssss"
+        }, object : BasePullSingleObserver<String>(this@TestPullViewModel) {
+            override fun onNext(t: String) {
+                ToastUtils.showShortToast(t)
+            }
+        })
     }
 }

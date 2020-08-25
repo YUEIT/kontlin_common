@@ -1,7 +1,7 @@
 package cn.yue.base.middle.net.intercept
 
 import cn.yue.base.common.utils.device.NetworkUtils
-import cn.yue.base.middle.net.NetworkConfig
+import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -29,7 +29,7 @@ class NoNetInterceptor : Interceptor {
             //                return proceed;
             //            }
 
-            throw ResultException(NetworkConfig.ERROR_NO_NET, "无网络: ${chain.request().url}")
+            throw ResultException(ResponseCode.ERROR_NO_NET, "无网络: ${chain.request().url}")
         } else {
             chain.proceed(chain.request())
         }

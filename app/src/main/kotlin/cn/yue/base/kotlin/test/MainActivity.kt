@@ -47,6 +47,9 @@ class MainActivity : BaseActivity() {
                     .withStringArrayList("list", arrayListOf("http://daidaigoucn.oss-cn-shanghai.aliyuncs.com/static/images/shop/sd1.png"))
                     .navigation(this)
         }
+        jump8.setOnClickListener {
+            FRouter.instance.build("/app/testCoroutine").navigation(this)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
