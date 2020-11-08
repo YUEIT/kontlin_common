@@ -8,7 +8,6 @@ import android.graphics.drawable.shapes.OvalShape
 import android.view.animation.Animation
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.ViewCompat
-import androidx.core.view.ViewCompat.LAYER_TYPE_SOFTWARE
 
 /**
  * Description :
@@ -20,16 +19,16 @@ class CircleImageView : AppCompatImageView {
     constructor(context: Context, color: Int, radius: Float) : super(context) {
         val density = getContext().resources.displayMetrics.density
         val diameter = (radius * density * 2f).toInt()
-        val shadowYOffset = (density * Y_OFFSET).toInt()
-        val shadowXOffset = (density * X_OFFSET).toInt()
+        val shadowYOffset = (density * offsetY).toInt()
+        val shadowXOffset = (density * offsetX).toInt()
 
-        mShadowRadius = (density * SHADOW_RADIUS).toInt()
+        mShadowRadius = (density * shadowRadius).toInt()
         val circle: ShapeDrawable
         val oval = OvalShadow(mShadowRadius, diameter)
         circle = ShapeDrawable(oval)
         ViewCompat.setLayerType(this, ViewCompat.LAYER_TYPE_SOFTWARE, circle.paint)
         circle.paint.setShadowLayer(mShadowRadius.toFloat(), shadowXOffset.toFloat(), shadowYOffset.toFloat(),
-                KEY_SHADOW_COLOR)
+                keyShadowColor)
         val padding = mShadowRadius
         // set padding so the inner image sits correctly within the shadow.
         setPadding(padding, padding, padding, padding)
@@ -37,13 +36,14 @@ class CircleImageView : AppCompatImageView {
         setBackgroundDrawable(circle)
     }
 
-    private val KEY_SHADOW_COLOR = 0x1E000000
-    private val FILL_SHADOW_COLOR = 0x3D000000
+    private val keyShadowColor = 0x1E000000
+    private val fillShadowColor = 0x3D000000
+
     // PX
-    private val X_OFFSET = 0f
-    private val Y_OFFSET = 1.75f
-    private val SHADOW_RADIUS = 2.5f
-    private val SHADOW_ELEVATION = 4
+    private val offsetX = 0f
+    private val offsetY = 1.75f
+    private val shadowRadius = 2.5f
+    private val shadowElevation = 4
 
     private var mListener: Animation.AnimationListener? = null
     private var mShadowRadius: Int = 0
@@ -92,24 +92,26 @@ class CircleImageView : AppCompatImageView {
         }
     }
 
-    private inner class OvalShadow(shadowRadius: Int, private val mCircleDiameter: Int) : OvalShape() {
+    private inner class OvalShadow(shadowRadius: Int, private val mCircleDiameter: Int)
+        : OvalShape() {
         private val mRadialGradient: RadialGradient
-        private val mShadowPaint: Paint
+        private val mShadowPaint: Paint = Paint()
 
         init {
-            mShadowPaint = Paint()
             mShadowRadius = shadowRadius
             mRadialGradient = RadialGradient((mCircleDiameter / 2).toFloat(), (mCircleDiameter / 2).toFloat(),
-                    mShadowRadius.toFloat(), intArrayOf(FILL_SHADOW_COLOR, Color.TRANSPARENT), null, Shader.TileMode.CLAMP)
+                    mShadowRadius.toFloat(), intArrayOf(fillShadowColor, Color.TRANSPARENT),
+                    null, Shader.TileMode.CLAMP)
             mShadowPaint.shader = mRadialGradient
         }
 
         override fun draw(canvas: Canvas, paint: Paint) {
             val viewWidth = this@CircleImageView.width
             val viewHeight = this@CircleImageView.height
-            canvas.drawCircle((viewWidth / 2).toFloat(), (viewHeight / 2).toFloat(), (mCircleDiameter / 2 + mShadowRadius).toFloat(),
-                    mShadowPaint)
-            canvas.drawCircle((viewWidth / 2).toFloat(), (viewHeight / 2).toFloat(), (mCircleDiameter / 2).toFloat(), paint)
+            canvas.drawCircle((viewWidth / 2).toFloat(), (viewHeight / 2).toFloat(),
+                    (mCircleDiameter / 2 + mShadowRadius).toFloat(), mShadowPaint)
+            canvas.drawCircle((viewWidth / 2).toFloat(), (viewHeight / 2).toFloat(),
+                    (mCircleDiameter / 2).toFloat(), paint)
         }
     }
 }

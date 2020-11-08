@@ -1,4 +1,4 @@
-package cn.yue.base.common.widget.headerviewpager
+package cn.yue.base.common.widget.viewpager
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -12,7 +12,7 @@ import android.widget.LinearLayout
 import android.widget.Scroller
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import cn.yue.base.common.R
-import cn.yue.base.common.widget.headerviewpager.HeaderScrollHelper.ScrollableContainer
+import cn.yue.base.common.widget.viewpager.HeaderScrollHelper.ScrollableContainer
 
 class HeaderScrollView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr) {
     private var topOffset = 0 //滚动的最大偏移量

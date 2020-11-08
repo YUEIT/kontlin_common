@@ -16,11 +16,20 @@ import androidx.recyclerview.widget.RecyclerView
 open class CommonLayoutManager : RecyclerView.LayoutManager {
 
     private val TAG = "CommonLayoutManager"
-    @JvmField protected var mOrientation: Int = 0
-    @JvmField protected var mOrientationHelper: OrientationHelper? = null
+    var mOrientation: Int = 0
+    private var mOrientationHelper: OrientationHelper? = null
     private var mLayoutState: LayoutState? = null
-    private var savedState: SavedState? = null
-    @JvmField protected val mLayoutChunkResult = LayoutChunkResult()
+    protected val mLayoutChunkResult = LayoutChunkResult()
+
+    constructor(mOrientation: Int = OrientationHelper.VERTICAL) {
+//        isAutoMeasureEnabled = true
+        //设置该值可以兼容viewHolder设置为wrap_content
+        if (mOrientation != OrientationHelper.HORIZONTAL && mOrientation != OrientationHelper.VERTICAL) {
+            throw IllegalArgumentException("invalid orientation:$mOrientation")
+        }
+        this.mOrientation = mOrientation
+        ensureLayoutState()
+    }
 
     open fun getOffsetSecond(): Int = 0
 
@@ -36,40 +45,36 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
      */
     private fun getChildClosestToStart(): View? = getChildAt(0)
 
-    constructor() {
-        isAutoMeasureEnabled = true //设置该值可以兼容viewHolder设置为wrap_content
-        mOrientation = OrientationHelper.VERTICAL
-        ensureLayoutState()
-    }
-
-    constructor(mOrientation: Int) {
-        isAutoMeasureEnabled = true //设置该值可以兼容viewHolder设置为wrap_content
-        if (mOrientation != OrientationHelper.HORIZONTAL && mOrientation != OrientationHelper.VERTICAL) {
-            throw IllegalArgumentException("invalid orientation:$mOrientation")
+    fun getOrientationHelper(): OrientationHelper {
+        if (mOrientationHelper == null) {
+            mOrientationHelper = OrientationHelper.createOrientationHelper(this, mOrientation)
         }
-        this.mOrientation = mOrientation
-        ensureLayoutState()
+        return mOrientationHelper!!
+    }
+    
+    private fun getLayoutState(): LayoutState {
+        if (mLayoutState == null) {
+            mLayoutState = LayoutState()
+        }
+        return mLayoutState!!
     }
 
+    override fun isAutoMeasureEnabled(): Boolean {
+        return true
+    }
     /**
      * 初始化LayoutState和OrientationHelper
      */
     private fun ensureLayoutState() {
-        if (mLayoutState == null) {
-            mLayoutState = createLayoutState()
-        }
-        if (mOrientationHelper == null) {
-            mOrientationHelper = OrientationHelper.createOrientationHelper(this, mOrientation)
-        }
-    }
-
-    private fun createLayoutState(): LayoutState {
-        return LayoutState()
+        getLayoutState()
+        getOrientationHelper()
     }
 
     internal fun resolveIsInfinite(): Boolean {
-        return mOrientationHelper!!.mode == View.MeasureSpec.UNSPECIFIED && mOrientationHelper!!.end == 0
+        return getOrientationHelper().mode == View.MeasureSpec.UNSPECIFIED && getOrientationHelper().end == 0
     }
+
+    private var savedState: SavedState? = null
 
     override fun onSaveInstanceState(): Parcelable {
         if (savedState != null) {
@@ -81,7 +86,7 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
             val refChild = getChildClosestToStart()
             refChild?.let {
                 state.position = getPosition(it)
-                state.offset = mOrientationHelper!!.getDecoratedStart(it) - mOrientationHelper!!.startAfterPadding
+                state.offset = getOrientationHelper().getDecoratedStart(it) - getOrientationHelper().startAfterPadding
             }
         }
         return state
@@ -121,26 +126,26 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
             offset = savedState!!.offset
         }
         ensureLayoutState()
-        mLayoutState!!.mRecycle = false
+        getLayoutState().mRecycle = false
 
         detachAndScrapAttachedViews(recycler)
-        mLayoutState!!.mInfinite = resolveIsInfinite()
+        getLayoutState().mInfinite = resolveIsInfinite()
 
         updateLayoutStateToFillEnd(position, offset)
-        fill(recycler, mLayoutState!!, state)
+        fill(recycler, getLayoutState(), state)
 
-        val endOffset = mLayoutState!!.mOffsetFirst
-        val lastElement = mLayoutState!!.mCurrentPosition
+        val endOffset = getLayoutState().mOffsetFirst
+        val lastElement = getLayoutState().mCurrentPosition
         updateLayoutStateToFillStart(position, offset)
-        mLayoutState!!.mCurrentPosition += mLayoutState!!.mItemDirection
-        fill(recycler, mLayoutState!!, state)
-        if (mLayoutState!!.mAvailable > 0) {
+        getLayoutState().mCurrentPosition += getLayoutState().mItemDirection
+        fill(recycler, getLayoutState(), state)
+        if (getLayoutState().mAvailable > 0) {
             // start could not consume all it should. add more items towards end
             updateLayoutStateToFillEnd(lastElement, endOffset)
-            fill(recycler, mLayoutState!!, state)
+            fill(recycler, getLayoutState(), state)
         }
         if (!state.isPreLayout) {
-            mOrientationHelper!!.onLayoutComplete()
+            getOrientationHelper().onLayoutComplete()
         }
     }
 
@@ -154,13 +159,13 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
      * @param offset
      */
     private fun updateLayoutStateToFillStart(itemPosition: Int, offset: Int) {
-        mLayoutState!!.mAvailable = offset - mOrientationHelper!!.startAfterPadding
-        mLayoutState!!.mCurrentPosition = itemPosition
-        mLayoutState!!.mItemDirection = LayoutState.ITEM_DIRECTION_HEAD
-        mLayoutState!!.mLayoutDirection = LayoutState.LAYOUT_START
-        mLayoutState!!.mOffsetFirst = offset
-        mLayoutState!!.mOffsetSecond = getOffsetSecond()
-        mLayoutState!!.mScrollingOffset = LayoutState.SCROLLING_OFFSET_NaN
+        getLayoutState().mAvailable = offset - getOrientationHelper().startAfterPadding
+        getLayoutState().mCurrentPosition = itemPosition
+        getLayoutState().mItemDirection = LayoutState.ITEM_DIRECTION_HEAD
+        getLayoutState().mLayoutDirection = LayoutState.LAYOUT_START
+        getLayoutState().mOffsetFirst = offset
+        getLayoutState().mOffsetSecond = getOffsetSecond()
+        getLayoutState().mScrollingOffset = LayoutState.SCROLLING_OFFSET_NaN
     }
 
     /**
@@ -169,13 +174,13 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
      * @param offset
      */
     private fun updateLayoutStateToFillEnd(itemPosition: Int, offset: Int) {
-        mLayoutState!!.mAvailable = mOrientationHelper!!.endAfterPadding - offset
-        mLayoutState!!.mItemDirection = LayoutState.ITEM_DIRECTION_TAIL
-        mLayoutState!!.mCurrentPosition = itemPosition
-        mLayoutState!!.mLayoutDirection = LayoutState.LAYOUT_END
-        mLayoutState!!.mOffsetFirst = offset
-        mLayoutState!!.mOffsetSecond = getOffsetSecond()
-        mLayoutState!!.mScrollingOffset = LayoutState.SCROLLING_OFFSET_NaN
+        getLayoutState().mAvailable = getOrientationHelper().endAfterPadding - offset
+        getLayoutState().mItemDirection = LayoutState.ITEM_DIRECTION_TAIL
+        getLayoutState().mCurrentPosition = itemPosition
+        getLayoutState().mLayoutDirection = LayoutState.LAYOUT_END
+        getLayoutState().mOffsetFirst = offset
+        getLayoutState().mOffsetSecond = getOffsetSecond()
+        getLayoutState().mScrollingOffset = LayoutState.SCROLLING_OFFSET_NaN
     }
 
 
@@ -218,12 +223,12 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
         if (childCount == 0 || dy == 0) {
             return 0
         }
-        mLayoutState!!.mRecycle = true
+        getLayoutState().mRecycle = true
         ensureLayoutState()
         val layoutDirection = if (dy > 0) LayoutState.LAYOUT_END else LayoutState.LAYOUT_START
         val absDy = Math.abs(dy)
         updateLayoutState(layoutDirection, absDy, true, state)
-        val consumed = mLayoutState!!.mScrollingOffset + fill(recycler, mLayoutState!!, state)
+        val consumed = getLayoutState().mScrollingOffset + fill(recycler, getLayoutState(), state)
 
         if (consumed < 0) {
             if (DEBUG) {
@@ -232,11 +237,11 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
             return 0
         }
         val scrolled = if (absDy > consumed) layoutDirection * consumed else dy
-        mOrientationHelper!!.offsetChildren(-scrolled)
+        getOrientationHelper().offsetChildren(-scrolled)
         if (DEBUG) {
             Log.d(TAG, "scroll dy: $dy scrolled: $scrolled")
         }
-        mLayoutState!!.mLastScrollDelta = scrolled
+        getLayoutState().mLastScrollDelta = scrolled
         return scrolled
     }
 
@@ -250,36 +255,36 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
     fun updateLayoutState(layoutDirection: Int, requiredSpace: Int,
                           canUseExistingSpace: Boolean, state: RecyclerView.State?) {
         // If parent provides a hint, don't measure unlimited.
-        mLayoutState!!.mInfinite = false
-        mLayoutState!!.mLayoutDirection = layoutDirection
+        getLayoutState().mInfinite = false
+        getLayoutState().mLayoutDirection = layoutDirection
         var scrollingOffset: Int = 0
         if (layoutDirection == LayoutState.LAYOUT_END) { //列表从下往上移动
             // get the first child in the direction we are going
             val child = getChildClosestToEnd()
             // the direction in which we are traversing children
             child?.let {
-                mLayoutState!!.mItemDirection = LayoutState.ITEM_DIRECTION_TAIL //布局在尾部
-                mLayoutState!!.mCurrentPosition = getPosition(child) + mLayoutState!!.mItemDirection
-                mLayoutState!!.mOffsetFirst = mOrientationHelper!!.getDecoratedEnd(child)
-                mLayoutState!!.mOffsetSecond = getDecoratedOtherEnd(child)
+                getLayoutState().mItemDirection = LayoutState.ITEM_DIRECTION_TAIL //布局在尾部
+                getLayoutState().mCurrentPosition = getPosition(child) + getLayoutState().mItemDirection
+                getLayoutState().mOffsetFirst = getOrientationHelper().getDecoratedEnd(child)
+                getLayoutState().mOffsetSecond = getDecoratedOtherEnd(child)
                 // calculate how much we can scroll without adding new children (independent of layout)
-                scrollingOffset = mOrientationHelper!!.getDecoratedEnd(child) - mOrientationHelper!!.endAfterPadding
+                scrollingOffset = getOrientationHelper().getDecoratedEnd(child) - getOrientationHelper().endAfterPadding
             }
         } else {
             val child = getChildClosestToStart()
             child?.let {
-                mLayoutState!!.mItemDirection = LayoutState.ITEM_DIRECTION_HEAD
-                mLayoutState!!.mCurrentPosition = getPosition(child) + mLayoutState!!.mItemDirection
-                mLayoutState!!.mOffsetFirst = mOrientationHelper!!.getDecoratedStart(child)
-                mLayoutState!!.mOffsetSecond = getDecoratedOtherEnd(child)
-                scrollingOffset = -mOrientationHelper!!.getDecoratedStart(child) + mOrientationHelper!!.startAfterPadding
+                getLayoutState().mItemDirection = LayoutState.ITEM_DIRECTION_HEAD
+                getLayoutState().mCurrentPosition = getPosition(child) + getLayoutState().mItemDirection
+                getLayoutState().mOffsetFirst = getOrientationHelper().getDecoratedStart(child)
+                getLayoutState().mOffsetSecond = getDecoratedOtherEnd(child)
+                scrollingOffset = -getOrientationHelper().getDecoratedStart(child) + getOrientationHelper().startAfterPadding
             }
         }
-        mLayoutState!!.mAvailable = requiredSpace
+        getLayoutState().mAvailable = requiredSpace
         if (canUseExistingSpace) {
-            mLayoutState!!.mAvailable -= scrollingOffset
+            getLayoutState().mAvailable -= scrollingOffset
         }
-        mLayoutState!!.mScrollingOffset = scrollingOffset
+        getLayoutState().mScrollingOffset = scrollingOffset
     }
 
     private fun getDecoratedOtherEnd(child: View): Int {
@@ -380,14 +385,14 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
      * @param result
      */
     open fun onLayout(view: View, state: RecyclerView.State?, layoutState: LayoutState, result: LayoutChunkResult) {
-        result.mConsumed = mOrientationHelper!!.getDecoratedMeasurement(view) //源码为实际高度+marginTop+marginBottom，即item的高度
+        result.mConsumed = getOrientationHelper().getDecoratedMeasurement(view) //源码为实际高度+marginTop+marginBottom，即item的高度
         val left: Int
         val top: Int
         val right: Int
         val bottom: Int
         if (mOrientation == OrientationHelper.VERTICAL) {
             left = paddingLeft
-            right = left + mOrientationHelper!!.getDecoratedMeasurementInOther(view)
+            right = left + getOrientationHelper().getDecoratedMeasurementInOther(view)
             if (layoutState.mLayoutDirection == LayoutState.LAYOUT_START) {
                 bottom = layoutState.mOffsetFirst
                 top = layoutState.mOffsetFirst - result.mConsumed
@@ -397,7 +402,7 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
             }
         } else {
             top = paddingTop
-            bottom = top + mOrientationHelper!!.getDecoratedMeasurementInOther(view)
+            bottom = top + getOrientationHelper().getDecoratedMeasurementInOther(view)
 
             if (layoutState.mLayoutDirection == LayoutState.LAYOUT_START) {
                 right = layoutState.mOffsetFirst
@@ -445,10 +450,10 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
             }
             return
         }
-        val limit = mOrientationHelper!!.end - dt
+        val limit = getOrientationHelper().end - dt
         for (i in childCount - 1 downTo 0) {
             val child = getChildAt(i)
-            if (mOrientationHelper!!.getDecoratedStart(child) < limit || mOrientationHelper!!.getTransformedStartWithDecoration(child) < limit) {
+            if (getOrientationHelper().getDecoratedStart(child) < limit || getOrientationHelper().getTransformedStartWithDecoration(child) < limit) {
                 // stop here
                 recycleChildren(recycler, childCount - 1, i)
                 return
@@ -473,7 +478,7 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
         val childCount = childCount
         for (i in 0 until childCount) {
             val child = getChildAt(i)
-            if (mOrientationHelper!!.getDecoratedEnd(child) > limit || mOrientationHelper!!.getTransformedEndWithDecoration(child) > limit) {
+            if (getOrientationHelper().getDecoratedEnd(child) > limit || getOrientationHelper().getTransformedEndWithDecoration(child) > limit) {
                 // stop here
                 recycleChildren(recycler, 0, i)
                 return
@@ -649,23 +654,23 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
 
         companion object {
 
-            val TAG = "LayoutState"
+            const val TAG = "LayoutState"
 
-            val LAYOUT_START = -1
+            const val LAYOUT_START = -1
 
-            val LAYOUT_END = 1
+            const val LAYOUT_END = 1
 
-            val INVALID_LAYOUT = Integer.MIN_VALUE
+            const val INVALID_LAYOUT = Integer.MIN_VALUE
 
-            val ITEM_DIRECTION_HEAD = -1
+            const val ITEM_DIRECTION_HEAD = -1
 
-            val ITEM_DIRECTION_TAIL = 1
+            const val ITEM_DIRECTION_TAIL = 1
 
-            val SCROLLING_OFFSET_NaN = Integer.MIN_VALUE
+            const val SCROLLING_OFFSET_NaN = Integer.MIN_VALUE
         }
     }
 
     companion object {
-        private val DEBUG = true
+        private const val DEBUG = true
     }
 }

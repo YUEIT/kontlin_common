@@ -1,4 +1,4 @@
-package cn.yue.base.common.widget.headerviewpager
+package cn.yue.base.common.widget.viewpager
 
 import android.annotation.SuppressLint
 import android.content.Context

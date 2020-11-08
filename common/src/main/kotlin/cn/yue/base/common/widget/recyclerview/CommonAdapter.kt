@@ -17,9 +17,9 @@ import java.util.*
 
 abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private val typeDivider = Integer.MAX_VALUE / 2
-    private val typeHeaderView = Integer.MIN_VALUE
-    private val typeFooterView = Integer.MIN_VALUE + 1
+    private val typeDivider = 0
+    private val typeHeaderView = Integer.MIN_VALUE/2
+    private val typeFooterView = Integer.MAX_VALUE/2
     /**
      * RecyclerView使用的，真正的Adapter
      */
@@ -238,6 +238,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (header == null) {
             throw RuntimeException("header is null")
         }
+        header.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         mHeaderViews.add(header)
         this.notifyDataSetChanged()
     }
@@ -320,12 +321,16 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val headerViewsCountCount = getHeaderViewsCount()
-        return if (viewType < typeHeaderView + headerViewsCountCount) {
-            ViewHolder(mHeaderViews[viewType - typeHeaderView])
-        } else if (viewType in typeFooterView until typeDivider) {
-            ViewHolder(mFooterViews[viewType - typeFooterView])
-        } else {
-            innerAdapter.onCreateViewHolder(parent, viewType - typeDivider)
+        return when {
+            viewType in typeHeaderView..-1 -> {
+                ViewHolder(mHeaderViews[viewType - typeHeaderView])
+            }
+            viewType >= typeFooterView -> {
+                ViewHolder(mFooterViews[viewType - typeFooterView])
+            }
+            else -> {
+                innerAdapter.onCreateViewHolder(parent, viewType)
+            }
         }
     }
 
@@ -348,19 +353,17 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     override fun getItemViewType(position: Int): Int {
-        val innerCount = innerAdapter.itemCount
+        val innerCount: Int = innerAdapter.itemCount
         val headerViewsCountCount = getHeaderViewsCount()
-        if (position < headerViewsCountCount) {
-            return typeHeaderView + position
+        // min/2 ~ 0 header   0 ~ max/2 inner  max/2 ~ max  footer
+        return if (position < headerViewsCountCount) {
+            typeHeaderView + position
         } else if (headerViewsCountCount <= position && position < headerViewsCountCount + innerCount) {
-
-            val innerItemViewType = innerAdapter.getItemViewType(position - headerViewsCountCount)
-            if (innerItemViewType >= Integer.MAX_VALUE / 2) {
-                throw IllegalArgumentException("your adapter's return value of getViewTypeCount() must < Integer.MAX_VALUE / 2")
-            }
-            return innerItemViewType + Integer.MAX_VALUE / 2
+            val innerItemViewType: Int = innerAdapter.getItemViewType(position - headerViewsCountCount)
+            require(innerItemViewType < Int.MAX_VALUE / 2) { "your adapter's return value of getViewTypeCount() must < Integer.MAX_VALUE / 2" }
+            innerItemViewType
         } else {
-            return typeFooterView + position - innerCount
+            typeFooterView + position - headerViewsCountCount - innerCount
         }
     }
 
@@ -472,7 +475,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
     abstract fun getLayoutIdByType(viewType: Int): Int
 
     abstract fun bindData(holder: CommonViewHolder<T>, position: Int, t: T)
-    
+
 }
 
 

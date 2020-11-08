@@ -1,8 +1,10 @@
 package cn.yue.base.kotlin.test.component
 
 import android.os.Bundle
+import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
+import cn.yue.base.common.widget.recyclerview.SwipeLayoutManager
 import cn.yue.base.kotlin.test.R
 import cn.yue.base.middle.components.BaseListFragment
 import cn.yue.base.middle.net.wrapper.BaseListBean
@@ -23,6 +25,14 @@ class TestListFragment : BaseListFragment<BaseListBean<TestItemBean>, TestItemBe
     override fun initTopBar(topBar: TopBar) {
         super.initTopBar(topBar)
         topBar.setCenterTextStr("testPullList")
+    }
+
+    override fun initRecyclerView(baseRV: RecyclerView) {
+        super.initRecyclerView(baseRV)
+    }
+
+    override fun getLayoutManager(): RecyclerView.LayoutManager {
+        return SwipeLayoutManager()
     }
 
     override fun getLayoutId(): Int {
@@ -48,10 +58,15 @@ class TestListFragment : BaseListFragment<BaseListBean<TestItemBean>, TestItemBe
         val list: MutableList<TestItemBean> = ArrayList()
         for (i in 0..19) {
             val testItemBean = TestItemBean()
-            testItemBean.name = "this is $i"
+            testItemBean.name = getItemString(i)
             list.add(testItemBean)
         }
         listBean.pageList = list
         return listBean
+    }
+
+    fun getItemString(item: Int): String {
+        val list = arrayListOf<String>("hehe", "bbbbbbbbbbbbbbbbbbbbbbbbb", "ccccccc", "iii", "oooooooooooooooooooooooo")
+        return list[item % list.size]
     }
 }

@@ -10,34 +10,28 @@ import android.view.Window
 import android.widget.ImageView
 import android.widget.TextView
 import cn.yue.base.common.R
-import cn.yue.base.common.image.ImageLoader
 
 /**
  * Description : 等待框
  * Created by yue on 2019/3/11
  */
 class WaitDialog(private val activity: Activity) {
-    private var dialog: Dialog? = null
-    private lateinit var handler: Handler
+
+    private var dialog: Dialog = Dialog(activity)
+    private var handler: Handler = Handler()
     private lateinit var waitText: TextView
     private lateinit var waitImage: ImageView
 
     init {
-        init()
-    }
-
-    private fun init() {
-        handler = Handler()
-        dialog = Dialog(activity)
-        dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog!!.window!!.setGravity(Gravity.CENTER)
-        dialog!!.setCanceledOnTouchOutside(false)
-        dialog!!.window!!.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window!!.setGravity(Gravity.CENTER)
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
         val view = View.inflate(activity, R.layout.layout_wait_dialog, null)
         waitText = view.findViewById(R.id.waitText)
-        waitImage = view.findViewById(R.id.waitImage)
-        ImageLoader.getLoader().loadGif(waitImage, R.drawable.app_icon_wait)
-        dialog!!.setContentView(view)
+//        waitImage = view.findViewById(R.id.waitImage)
+//        ImageLoader.getLoader().loadGif(waitImage, R.drawable.app_icon_wait)
+        dialog.setContentView(view)
     }
 
 
@@ -48,18 +42,13 @@ class WaitDialog(private val activity: Activity) {
      * @param imgRes     显示滚动条的时候该值传递null
      */
     fun show(title: String?, isProgress: Boolean, imgRes: Int?) {
-        if (null == dialog) {
-            init()
-        }
         if (activity.isFinishing) {
             return
         }
-        if (null != dialog) {
-            if (dialog!!.isShowing) {
-                dialog!!.cancel()
-            }
-            dialog!!.show()
+        if (dialog.isShowing) {
+            dialog.cancel()
         }
+        dialog.show()
         setDialog(title, isProgress, imgRes)
     }
 
@@ -76,13 +65,13 @@ class WaitDialog(private val activity: Activity) {
             waitImage.visibility = View.VISIBLE
         }
         if (null != imgRes) {
-            waitImage.setBackgroundDrawable(activity.resources.getDrawable(imgRes))
+            waitImage.background = activity.resources.getDrawable(imgRes)
         }
     }
 
     fun cancel() {
-        if (null != dialog && !activity.isFinishing) {
-            dialog!!.cancel()
+        if (!activity.isFinishing) {
+            dialog.cancel()
         }
     }
 
@@ -98,15 +87,11 @@ class WaitDialog(private val activity: Activity) {
     }
 
     fun isShowing(): Boolean {
-        return if (null != dialog) {
-            dialog!!.isShowing
-        } else false
+        return dialog.isShowing
     }
 
     fun setCancelable(cancelable: Boolean) {
-        if (null != dialog) {
-            dialog!!.setCancelable(cancelable)
-        }
+        dialog.setCancelable(cancelable)
     }
 
     interface DelayCancelListener {

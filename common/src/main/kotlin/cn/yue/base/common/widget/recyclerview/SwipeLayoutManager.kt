@@ -10,7 +10,6 @@ class SwipeLayoutManager : CommonLayoutManager() {
         return if (mOrientation == OrientationHelper.HORIZONTAL) { 0 } else 0
     }
 
-
     private val fillCachedView = ArrayList<View>()
     private var lastView: View? = null
 
@@ -21,7 +20,6 @@ class SwipeLayoutManager : CommonLayoutManager() {
     override fun canScrollVertically(): Boolean {
         return true
     }
-
 
     override fun getWidthMode(): Int {
         //默认情况下如果设置setAutoMeasureEnabled(true)，测量模式为EXACTLY
@@ -77,19 +75,19 @@ class SwipeLayoutManager : CommonLayoutManager() {
                     lastView = null
                 }
                 measureChildWithMargins(view!!, 0, 0)
-                if (layoutState.mOffsetSecond + mOrientationHelper!!.getDecoratedMeasurementInOther(view) > width) {
+                if (layoutState.mOffsetSecond + getOrientationHelper().getDecoratedMeasurementInOther(view) > width) {
                     lastView = view
                     break
                 }
                 fillCachedView.add(view)
-                layoutState.mOffsetSecond = layoutState.mOffsetSecond + mOrientationHelper!!.getDecoratedMeasurementInOther(view)
+                layoutState.mOffsetSecond = layoutState.mOffsetSecond + getOrientationHelper().getDecoratedMeasurementInOther(view)
             }
             if (layoutState.mItemDirection == CommonLayoutManager.LayoutState.ITEM_DIRECTION_TAIL) {
                 layoutState.mOffsetSecond = getOffsetSecond()
                 for (i in fillCachedView.indices) {
                     val view = fillCachedView[i]
                     measureChildWithMargins(view, 0, 0)
-                    layoutState.mOffsetSecond = layoutState.mOffsetSecond + mOrientationHelper!!.getDecoratedMeasurementInOther(view)
+                    layoutState.mOffsetSecond = layoutState.mOffsetSecond + getOrientationHelper().getDecoratedMeasurementInOther(view)
                     addView(view, layoutState, layoutChunkResult)
                     onLayout(view, state, layoutState, layoutChunkResult)
                 }
@@ -99,7 +97,7 @@ class SwipeLayoutManager : CommonLayoutManager() {
                     measureChildWithMargins(view, 0, 0)
                     addView(view, layoutState, layoutChunkResult)
                     onLayout(view, state, layoutState, layoutChunkResult)
-                    layoutState.mOffsetSecond = layoutState.mOffsetSecond - mOrientationHelper!!.getDecoratedMeasurementInOther(view)
+                    layoutState.mOffsetSecond = layoutState.mOffsetSecond - getOrientationHelper().getDecoratedMeasurementInOther(view)
                 }
             }
 
@@ -108,13 +106,13 @@ class SwipeLayoutManager : CommonLayoutManager() {
     }
 
     override fun onLayout(view: View, state: RecyclerView.State?, layoutState: CommonLayoutManager.LayoutState, result: CommonLayoutManager.LayoutChunkResult) {
-        result.mConsumed = mOrientationHelper!!.getDecoratedMeasurement(view) //源码为实际高度+marginTop+marginBottom，即item的高度
+        result.mConsumed = getOrientationHelper().getDecoratedMeasurement(view) //源码为实际高度+marginTop+marginBottom，即item的高度
         val left: Int
         val top: Int
         val right: Int
         val bottom: Int
         if (mOrientation === OrientationHelper.VERTICAL) {
-            left = layoutState.mOffsetSecond - mOrientationHelper!!.getDecoratedMeasurementInOther(view)
+            left = layoutState.mOffsetSecond - getOrientationHelper().getDecoratedMeasurementInOther(view)
             right = layoutState.mOffsetSecond
             if (layoutState.mLayoutDirection == CommonLayoutManager.LayoutState.LAYOUT_START) {
                 bottom = layoutState.mOffsetFirst
@@ -124,7 +122,7 @@ class SwipeLayoutManager : CommonLayoutManager() {
                 bottom = layoutState.mOffsetFirst + result.mConsumed
             }
         } else {
-            top = layoutState.mOffsetSecond - mOrientationHelper!!.getDecoratedMeasurementInOther(view)
+            top = layoutState.mOffsetSecond - getOrientationHelper().getDecoratedMeasurementInOther(view)
             bottom = layoutState.mOffsetSecond
             if (layoutState.mLayoutDirection == CommonLayoutManager.LayoutState.LAYOUT_START) {
                 right = layoutState.mOffsetFirst

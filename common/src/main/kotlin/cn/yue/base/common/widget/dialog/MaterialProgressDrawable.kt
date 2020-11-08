@@ -22,44 +22,54 @@ import java.util.*
  */
 class MaterialProgressDrawable : Drawable, Animatable {
 
-    private val LINEAR_INTERPOLATOR = LinearInterpolator()
-    private val MATERIAL_INTERPOLATOR = FastOutSlowInInterpolator()
-    private val FULL_ROTATION = 1080.0f
-
     @Retention(RetentionPolicy.CLASS)
     @IntDef(0, 1)
     annotation class ProgressDrawableSize
 
-    // Maps to ProgressBar.Large style
-    val LARGE = 0
-    // Maps to ProgressBar default style
-    val DEFAULT = 1
+    companion object {
+        private val LINEAR_INTERPOLATOR = LinearInterpolator()
+        private val MATERIAL_INTERPOLATOR = FastOutSlowInInterpolator()
+        private const val FULL_ROTATION = 1080.0f
+        // Maps to ProgressBar.Large style
+        const val LARGE = 0
+        // Maps to ProgressBar default style
+        const val DEFAULT = 1
+        // Maps to ProgressBar default style
+        private const val CIRCLE_DIAMETER = 40
+        private const val CENTER_RADIUS = 8.75f //should add up to 10 when + stroke_width
+        private const val STROKE_WIDTH = 2.5f
 
-    // Maps to ProgressBar default style
-    private val CIRCLE_DIAMETER = 40
-    private val CENTER_RADIUS = 8.75f //should add up to 10 when + stroke_width
-    private val STROKE_WIDTH = 2.5f
+        // Maps to ProgressBar.Large style
+        private const val CIRCLE_DIAMETER_LARGE = 56
+        private const val CENTER_RADIUS_LARGE = 12.5f
+        private const val STROKE_WIDTH_LARGE = 3f
 
-    // Maps to ProgressBar.Large style
-    private val CIRCLE_DIAMETER_LARGE = 56
-    private val CENTER_RADIUS_LARGE = 12.5f
-    private val STROKE_WIDTH_LARGE = 3f
+        private val COLORS = intArrayOf(Color.BLACK)
 
-    private val COLORS = intArrayOf(Color.BLACK)
+        /**
+         * The value in the linear interpolator for animating the drawable at which
+         * the color transition should start
+         */
+        private const val COLOR_START_DELAY_OFFSET = 0.75f
+        private const val END_TRIM_START_DELAY_OFFSET = 0.5f
+        private const val START_TRIM_DURATION_OFFSET = 0.5f
 
-    /**
-     * The value in the linear interpolator for animating the drawable at which
-     * the color transition should start
-     */
-    private val COLOR_START_DELAY_OFFSET = 0.75f
-    private val END_TRIM_START_DELAY_OFFSET = 0.5f
-    private val START_TRIM_DURATION_OFFSET = 0.5f
+        /** The duration of a single progress spin in milliseconds.  */
+        private const val ANIMATION_DURATION = 1332
 
-    /** The duration of a single progress spin in milliseconds.  */
-    private val ANIMATION_DURATION = 1332
+        /** The number of points in the progress "star".  */
+        private const val NUM_POINTS = 5f
+        /** Layout info for the arrowhead in dp  */
+        private const val ARROW_WIDTH = 10
+        private const val ARROW_HEIGHT = 5
+        private const val ARROW_OFFSET_ANGLE = 5f
 
-    /** The number of points in the progress "star".  */
-    private val NUM_POINTS = 5f
+        /** Layout info for the arrowhead for the large spinner in dp  */
+        private const val ARROW_WIDTH_LARGE = 12
+        private const val ARROW_HEIGHT_LARGE = 6
+        private const val MAX_PROGRESS_ARC = .8f
+    }
+
     /** The list of animators operating on this drawable.  */
     private val mAnimators = ArrayList<Animation>()
 
@@ -68,16 +78,6 @@ class MaterialProgressDrawable : Drawable, Animatable {
 
     /** Canvas rotation in degrees.  */
     private var mRotation: Float = 0.toFloat()
-
-    /** Layout info for the arrowhead in dp  */
-    private val ARROW_WIDTH = 10
-    private val ARROW_HEIGHT = 5
-    private val ARROW_OFFSET_ANGLE = 5f
-
-    /** Layout info for the arrowhead for the large spinner in dp  */
-    private val ARROW_WIDTH_LARGE = 12
-    private val ARROW_HEIGHT_LARGE = 6
-    private val MAX_PROGRESS_ARC = .8f
 
     private var mResources: Resources
     private lateinit var mParent: View
@@ -226,8 +226,7 @@ class MaterialProgressDrawable : Drawable, Animatable {
 
     override fun isRunning(): Boolean {
         val animators = mAnimators
-        val N = animators.size
-        for (i in 0 until N) {
+        for (i in 0 until animators.size) {
             val animator = animators[i]
             if (animator.hasStarted() && !animator.hasEnded()) {
                 return true
@@ -237,6 +236,9 @@ class MaterialProgressDrawable : Drawable, Animatable {
     }
 
     override fun start() {
+        if (mAnimation == null) {
+            return
+        }
         mAnimation!!.reset()
         mRing.storeOriginals()
         // Already showing some part of the ring
@@ -267,17 +269,15 @@ class MaterialProgressDrawable : Drawable, Animatable {
 
     // Adapted from ArgbEvaluator.java
     private fun evaluateColorChange(fraction: Float, startValue: Int, endValue: Int): Int {
-        val startInt = startValue
-        val startA = startInt shr 24 and 0xff
-        val startR = startInt shr 16 and 0xff
-        val startG = startInt shr 8 and 0xff
-        val startB = startInt and 0xff
+        val startA = startValue shr 24 and 0xff
+        val startR = startValue shr 16 and 0xff
+        val startG = startValue shr 8 and 0xff
+        val startB = startValue and 0xff
 
-        val endInt = endValue
-        val endA = endInt shr 24 and 0xff
-        val endR = endInt shr 16 and 0xff
-        val endG = endInt shr 8 and 0xff
-        val endB = endInt and 0xff
+        val endA = endValue shr 24 and 0xff
+        val endR = endValue shr 16 and 0xff
+        val endG = endValue shr 8 and 0xff
+        val endB = endValue and 0xff
 
         return startA + (fraction * (endA - startA)).toInt() shl 24 or
                 (startR + (fraction * (endR - startR)).toInt() shl 16) or
@@ -393,7 +393,7 @@ class MaterialProgressDrawable : Drawable, Animatable {
         mAnimation = animation
     }
 
-    private val mCallback = object : Drawable.Callback {
+    private val mCallback = object : Callback {
         override fun invalidateDrawable(d: Drawable) {
             invalidateSelf()
         }
@@ -407,10 +407,10 @@ class MaterialProgressDrawable : Drawable, Animatable {
         }
     }
 
-    private class Ring(private val mCallback: Drawable.Callback) {
-        private val mTempBounds = RectF()
-        private val mPaint = Paint()
-        private val mArrowPaint = Paint()
+    internal class Ring(private val mCallback: Callback) {
+        val mTempBounds = RectF()
+        val mPaint = Paint()
+        val mArrowPaint = Paint()
 
         var startTrim = 0.0f
             set(startTrim) {
@@ -437,32 +437,30 @@ class MaterialProgressDrawable : Drawable, Animatable {
                 invalidateSelf()
             }
         var insets = 2.5f
-            private set
 
-        private var mColors: IntArray? = null
+        var mColors: IntArray? = null
         // mColorIndex represents the offset into the available mColors that the
         // progress circle should currently display. As the progress circle is
         // animating, the mColorIndex moves by one to the next available color.
-        private var mColorIndex: Int = 0
+        var mColorIndex: Int = 0
         var startingStartTrim: Float = 0.toFloat()
-            private set
+
         var startingEndTrim: Float = 0.toFloat()
-            private set
+
         /**
          * @return The amount the progress spinner is currently rotated, between [0..1].
          */
         var startingRotation: Float = 0.toFloat()
-            private set
-        private var mShowArrow: Boolean = false
-        private var mArrow: Path? = null
-        private var mArrowScale: Float = 0.toFloat()
+        var mShowArrow: Boolean = false
+        var mArrow: Path? = null
+        var mArrowScale: Float = 0.toFloat()
         /**
          * @param centerRadius Inner radius in px of the circle the progress
          * spinner arc traces.
          */
         var centerRadius: Double = 0.toDouble()
-        private var mArrowWidth: Int = 0
-        private var mArrowHeight: Int = 0
+        var mArrowWidth: Int = 0
+        var mArrowHeight: Int = 0
         /**
          * @return Current alpha of the progress spinner and arrowhead.
          */
@@ -470,9 +468,9 @@ class MaterialProgressDrawable : Drawable, Animatable {
          * @param alpha Set the alpha of the progress spinner and associated arrowhead.
          */
         var alpha: Int = 0
-        private val mCirclePaint = Paint(Paint.ANTI_ALIAS_FLAG)
-        private var mBackgroundColor: Int = 0
-        private var mCurrentColor: Int = 0
+        val mCirclePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        var mBackgroundColor: Int = 0
+        var mCurrentColor: Int = 0
 
         /**
          * @return int describing the next color the progress spinner should use when drawing.
@@ -480,7 +478,7 @@ class MaterialProgressDrawable : Drawable, Animatable {
         val nextColor: Int
             get() = mColors!![nextColorIndex]
 
-        private val nextColorIndex: Int
+        val nextColorIndex: Int
             get() = (mColorIndex + 1) % mColors!!.size
 
         val startingColor: Int

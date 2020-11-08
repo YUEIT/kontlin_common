@@ -11,7 +11,7 @@ import kotlinx.coroutines.delay
 class TestPullViewModel(application: Application) : PullViewModel(application) {
     override fun loadData() {
         viewModelScope.request({
-            delay(1000)
+            delay(10000)
             "ssss"
         }, object : BasePullSingleObserver<String>(this@TestPullViewModel) {
             override fun onNext(t: String) {

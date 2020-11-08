@@ -1,8 +1,7 @@
-package cn.yue.base.common.widget.headerviewpager
+package cn.yue.base.common.widget.viewpager
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.TypedArray
 import android.database.DataSetObserver
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -11,7 +10,6 @@ import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
-import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
