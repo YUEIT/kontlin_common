@@ -27,6 +27,10 @@ abstract class PullViewModel(application: Application) : BaseViewModel(applicati
         loadData()
     }
 
+    fun loadRefresh() {
+        refresh(false)
+    }
+
     protected abstract fun loadData()
 
     private fun startRefresh() {

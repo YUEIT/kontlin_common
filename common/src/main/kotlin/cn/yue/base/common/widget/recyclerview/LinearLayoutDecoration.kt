@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class LinearLayoutDecoration : RecyclerView.ItemDecoration {
 
-    protected var mDivider: Drawable? = null
+    var mDivider: Drawable? = null
 
     private var mOrientation: Int = 0
 
@@ -18,7 +18,7 @@ class LinearLayoutDecoration : RecyclerView.ItemDecoration {
     private var dividerSize: Int = 0
 
     constructor(context: Context, orientation: Int) {
-        val a = context.obtainStyledAttributes(ATTRS)
+        val a = context.obtainStyledAttributes(intArrayOf(android.R.attr.listDivider))
         mDivider = a.getDrawable(0)
         a.recycle()
         setOrientation(orientation)
@@ -32,16 +32,15 @@ class LinearLayoutDecoration : RecyclerView.ItemDecoration {
         setOrientation(orientation)
     }
 
-    fun setOrientation(orientation: Int) {
-        if (orientation != HORIZONTAL_LIST && orientation != VERTICAL_LIST) {
+    private fun setOrientation(orientation: Int) {
+        if (orientation != LinearLayoutManager.HORIZONTAL && orientation != LinearLayoutManager.VERTICAL) {
             throw IllegalArgumentException("invalid orientation")
         }
         mOrientation = orientation
     }
 
     override fun onDraw(c: Canvas, parent: RecyclerView) {
-
-        if (mOrientation == VERTICAL_LIST) {
+        if (mOrientation == LinearLayoutManager.VERTICAL) {
             drawVertical(c, parent)
         } else {
             drawHorizontal(c, parent)
@@ -50,8 +49,8 @@ class LinearLayoutDecoration : RecyclerView.ItemDecoration {
     }
 
 
-    fun drawVertical(c: Canvas?, parent: RecyclerView?) {
-        val left = parent!!.paddingLeft
+    private fun drawVertical(c: Canvas, parent: RecyclerView) {
+        val left = parent.paddingLeft
         val right = parent.width - parent.paddingRight
 
         val childCount = parent.childCount
@@ -62,18 +61,20 @@ class LinearLayoutDecoration : RecyclerView.ItemDecoration {
                     .layoutParams as RecyclerView.LayoutParams
 
             if (mPaint != null) {
-                c!!.drawRect(child.left.toFloat(), child.bottom.toFloat(), child.right.toFloat(), (child.bottom + dividerSize).toFloat(), mPaint!!)//画底下分割线
+                c.drawRect(child.left.toFloat(), child.bottom.toFloat(), child.right.toFloat(), (child.bottom + dividerSize).toFloat(), mPaint!!)//画底下分割线
             } else {
-                val top = child.bottom + params.bottomMargin
-                val bottom = top + mDivider!!.intrinsicHeight
-                mDivider!!.setBounds(left, top, right, bottom)
-                mDivider!!.draw(c!!)
+                mDivider?.let {
+                    val top = child.bottom + params.bottomMargin
+                    val bottom = top + it.intrinsicHeight
+                    it.setBounds(left, top, right, bottom)
+                    it.draw(c)
+                }
             }
         }
     }
 
-    fun drawHorizontal(c: Canvas?, parent: RecyclerView?) {
-        val top = parent!!.paddingTop
+    private fun drawHorizontal(c: Canvas, parent: RecyclerView) {
+        val top = parent.paddingTop
         val bottom = parent.height - parent.paddingBottom
 
         val childCount = parent.childCount
@@ -82,38 +83,38 @@ class LinearLayoutDecoration : RecyclerView.ItemDecoration {
             val params = child
                     .layoutParams as RecyclerView.LayoutParams
             if (mPaint != null) {
-                c!!.drawRect(child.right.toFloat(), child.top.toFloat(), (child.right + dividerSize).toFloat(), child.bottom.toFloat(), mPaint!!)//画底下分割线
+                //画底下分割线
+                c.drawRect(child.right.toFloat(), child.top.toFloat(),
+                        (child.right + dividerSize).toFloat(), child.bottom.toFloat(), mPaint!!)
             } else {
-                val left = child.right + params.rightMargin
-                val right = left + mDivider!!.intrinsicHeight
-                mDivider!!.setBounds(left, top, right, bottom)
-                mDivider!!.draw(c!!)
+                mDivider?.let {
+                    val left = child.right + params.rightMargin
+                    val right = left + it.intrinsicHeight
+                    it.setBounds(left, top, right, bottom)
+                    it.draw(c)
+                }
             }
         }
     }
 
     override fun getItemOffsets(outRect: Rect, itemPosition: Int, parent: RecyclerView) {
-        if (mOrientation == VERTICAL_LIST) {
+        if (mOrientation == LinearLayoutManager.VERTICAL) {
             if (mPaint != null) {
                 outRect.set(0, 0, 0, dividerSize)
             } else {
-                outRect.set(0, 0, 0, mDivider!!.intrinsicHeight)
+                mDivider?.let {
+                    outRect.set(0, 0, 0, it.intrinsicHeight)
+                }
             }
         } else {
             if (mPaint != null) {
                 outRect.set(0, 0, dividerSize, 0)
             } else {
-                outRect.set(0, 0, mDivider!!.intrinsicWidth, 0)
+                mDivider?.let {
+                    outRect.set(0, 0, it.intrinsicWidth, 0)
+                }
             }
         }
     }
 
-    companion object {
-
-        private val ATTRS = intArrayOf(android.R.attr.listDivider)
-
-        val HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL
-
-        val VERTICAL_LIST = LinearLayoutManager.VERTICAL
-    }
 }

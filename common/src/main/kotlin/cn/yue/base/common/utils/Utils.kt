@@ -1,6 +1,10 @@
 package cn.yue.base.common.utils
 
+import android.app.Application
 import android.content.Context
+import cn.yue.base.common.utils.app.ActivityLifecycleImpl
+import cn.yue.base.common.utils.code.MMKVUtils
+import cn.yue.base.common.utils.file.BitmapFileUtils
 
 
 /**
@@ -68,6 +72,9 @@ object Utils {
     @JvmStatic
     fun init(mContext: Context) {
         Utils.mContext = mContext.applicationContext
+        BitmapFileUtils.init()
+        MMKVUtils.init()
+        ActivityLifecycleImpl.INSTANCE.init(mContext as Application)
     }
 
     /**

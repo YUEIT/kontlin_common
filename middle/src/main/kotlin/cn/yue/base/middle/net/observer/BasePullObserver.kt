@@ -10,7 +10,7 @@ import cn.yue.base.middle.net.ResultException
  * Description :
  * Created by yue on 2019/4/1
  */
-abstract class BasePullSingleObserver<T>(private val iPullView: IPullView?) : BaseNetSingleObserver<T>() {
+abstract class BasePullObserver<T>(private val iPullView: IPullView?) : BaseNetObserver<T>() {
     override fun onStart() {
         super.onStart()
     }
@@ -50,6 +50,6 @@ abstract class BasePullSingleObserver<T>(private val iPullView: IPullView?) : Ba
         iPullView?.finishRefresh()
     }
 
-    abstract fun onNext(t: T)
+    open fun onNext(t: T) {}
 
 }

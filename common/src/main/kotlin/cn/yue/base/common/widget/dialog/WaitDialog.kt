@@ -2,12 +2,14 @@ package cn.yue.base.common.widget.dialog
 
 import android.app.Activity
 import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Handler
 import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.view.Window
-import android.widget.ImageView
+import android.view.WindowManager
 import android.widget.TextView
 import cn.yue.base.common.R
 
@@ -19,14 +21,17 @@ class WaitDialog(private val activity: Activity) {
 
     private var dialog: Dialog = Dialog(activity)
     private var handler: Handler = Handler()
-    private lateinit var waitText: TextView
-    private lateinit var waitImage: ImageView
+    private var waitText: TextView
+//    private lateinit var waitImage: ImageView
 
     init {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.window!!.setGravity(Gravity.CENTER)
         dialog.setCanceledOnTouchOutside(false)
-        dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.window?.apply {
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            setGravity(Gravity.CENTER)
+            clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        }
         val view = View.inflate(activity, R.layout.layout_wait_dialog, null)
         waitText = view.findViewById(R.id.waitText)
 //        waitImage = view.findViewById(R.id.waitImage)
@@ -59,14 +64,14 @@ class WaitDialog(private val activity: Activity) {
         } else {
             waitText.visibility = View.GONE
         }
-        if (isProgress) {
-            waitImage.visibility = View.VISIBLE
-        } else {
-            waitImage.visibility = View.VISIBLE
-        }
-        if (null != imgRes) {
-            waitImage.background = activity.resources.getDrawable(imgRes)
-        }
+//        if (isProgress) {
+//            waitImage.visibility = View.VISIBLE
+//        } else {
+//            waitImage.visibility = View.GONE
+//        }
+//        if (null != imgRes) {
+//            waitImage.background = activity.resources.getDrawable(imgRes)
+//        }
     }
 
     fun cancel() {

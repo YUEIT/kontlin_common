@@ -6,14 +6,14 @@ package cn.yue.base.middle.init
  */
 object BaseUrlAddress {
 
-    var upLoadUrl: String = ""
+    var baseUrl: String = UrlEnvironment.RELEASE.url
 
     private fun debugModel() {
-        upLoadUrl = "http://imgsvc.com"
+        baseUrl = InitConstant.getServiceEnvironment().url
     }
 
     private fun releaseModel() {
-        upLoadUrl = "https://imgsvc.com.cn"
+        baseUrl = UrlEnvironment.RELEASE.url
     }
 
     @JvmStatic
@@ -24,9 +24,9 @@ object BaseUrlAddress {
             releaseModel()
         }
     }
+}
 
-    //开发环境，着急调试的话加上，一般不用
-    private fun developModel() {
-        upLoadUrl = "https://imgsvc.com.cn"
-    }
+enum class UrlEnvironment(val url: String) {
+    TEST("http://apijxtest.shanghaicang.com.cn"),
+    RELEASE("http://apijxtest.shanghaicang.com.cn")
 }

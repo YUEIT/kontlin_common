@@ -39,7 +39,7 @@ class SelectPhotoFolderFragment : BaseFragment() {
                 return R.layout.item_select_photo_folder
             }
 
-            override fun bindData(holder: CommonViewHolder<MediaFolderVO>, position: Int, mediaFolderVO: MediaFolderVO) {
+            override fun bindData(holder: CommonViewHolder, position: Int, mediaFolderVO: MediaFolderVO) {
                 holder.setText(R.id.folderTV, mediaFolderVO.name + "（" + mediaFolderVO.count + "）")
                 ImageLoader.getLoader().loadImage(holder.getView(R.id.folderIV) as ImageView?, mediaFolderVO.coverUri)
                 holder.setOnItemClickListener{

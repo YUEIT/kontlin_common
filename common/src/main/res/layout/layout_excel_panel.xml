@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+   <cn.yue.base.common.widget.excel.InnerRecyclerView
+       android:id="@+id/leftRV"
+       android:layout_width="wrap_content"
+       android:layout_height="match_parent"/>
+
+   <cn.yue.base.common.widget.excel.InnerHorizontalScrollView
+       android:id="@+id/topHSV"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:scrollbars="none">
+      <cn.yue.base.common.widget.excel.InnerRecyclerView
+          android:id="@+id/topRV"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"/>
+   </cn.yue.base.common.widget.excel.InnerHorizontalScrollView>
+
+   <cn.yue.base.common.widget.excel.InnerHorizontalScrollView
+       android:id="@+id/contentHSV"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:scrollbars="none">
+      <cn.yue.base.common.widget.excel.InnerRecyclerView
+          android:id="@+id/contentRV"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"/>
+   </cn.yue.base.common.widget.excel.InnerHorizontalScrollView>
+
+</FrameLayout>

@@ -9,8 +9,8 @@ import android.text.TextUtils
 import android.util.SparseArray
 import cn.yue.base.common.activity.TransitionAnimation.getStartEnterAnim
 import cn.yue.base.common.activity.TransitionAnimation.getStartExitAnim
-import cn.yue.base.common.utils.debug.LogUtils
 import java.io.Serializable
+import java.lang.ref.WeakReference
 
 /**
  * Description : 路由数据
@@ -21,7 +21,7 @@ class RouterCard : INavigation, Parcelable {
 
     private var tag: Any? = null
 
-    private lateinit var extras: Bundle
+    private var extras: Bundle = Bundle()
 
     private var pactUrl: String? = null
 
@@ -39,19 +39,16 @@ class RouterCard : INavigation, Parcelable {
 
     private var isInterceptLogin = false //是否登录拦截
 
-    private var navigation: INavigation? = null
+    private var navigation: WeakReference<INavigation>? = null
 
-    constructor() {
-        clear()
-    }
+    constructor()
 
     constructor(navigation: INavigation?) {
-        clear()
-        this.navigation = navigation
+        this.navigation = WeakReference<INavigation>(navigation)
     }
 
     fun setNavigationImpl(navigation: INavigation) {
-        this.navigation = navigation
+        this.navigation = WeakReference<INavigation>(navigation)
     }
 
     fun clear() {
@@ -107,7 +104,6 @@ class RouterCard : INavigation, Parcelable {
                 path = "/" + split[1]
             }
         }
-        LogUtils.i("router path: $path")
         return path
     }
 
@@ -346,15 +342,9 @@ class RouterCard : INavigation, Parcelable {
         return null
     }
 
-    override fun navigation(context: Context, requestCode: Int) {
-        navigation?.apply {
-            navigation(context, requestCode)
-        }
-    }
-
-    override fun navigation(context: Context, toActivity: String?, requestCode: Int) {
-        navigation?.apply {
-            navigation(context, toActivity, requestCode)
+    override fun navigation(context: Context, requestCode: Int, toActivity: String?) {
+        navigation?.get()?.apply {
+            navigation(context, requestCode, toActivity)
         }
     }
 
@@ -390,5 +380,7 @@ class RouterCard : INavigation, Parcelable {
             override fun createFromParcel(source: Parcel): RouterCard = RouterCard(source)
             override fun newArray(size: Int): Array<RouterCard?> = arrayOfNulls(size)
         }
+
+        const val TAG = "RouterCard"
     }
 }

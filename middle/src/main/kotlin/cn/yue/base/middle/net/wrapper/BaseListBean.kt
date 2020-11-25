@@ -17,7 +17,7 @@ open class BaseListBean<T> : BaseUnityListBean<T>() {
     }
 
     fun getPageNo(): Int {
-        return mPageNo
+        return getRealPageNo()
     }
 
     fun getPageSize(): Int {
@@ -25,7 +25,7 @@ open class BaseListBean<T> : BaseUnityListBean<T>() {
     }
 
     fun getPageNt() : String? {
-        return nt
+        return getRealPageNt()
     }
 
     fun getCurrentPageTotal() : Int {

@@ -66,4 +66,5 @@ dependencies {
 //    api rootProject.ext.dependencies["rxlifecycle"]
 
     api rootProject.ext.dependencies["autosize"]
+    api rootProject.ext.dependencies["mmkv"]
 }

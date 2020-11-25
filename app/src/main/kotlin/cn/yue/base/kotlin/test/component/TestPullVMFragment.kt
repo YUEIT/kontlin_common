@@ -1,12 +1,11 @@
 package cn.yue.base.kotlin.test.component
 
 import android.os.Bundle
-import android.view.View
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.kotlin.test.R
 import cn.yue.base.kotlin.test.databinding.FragmentTestPullVmBinding
 import cn.yue.base.middle.mvvm.components.binding.BasePullVMBindFragment
-import cn.yue.base.middle.router.RouterCard
+import cn.yue.base.middle.mvvm.data.BR
 import com.alibaba.android.arouter.facade.annotation.Route
 
 @Route(path = "/app/testPullVM")
@@ -24,10 +23,13 @@ class TestPullVMFragment : BasePullVMBindFragment<TestPullViewModel, FragmentTes
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
         binding.jump1.setOnClickListener {
-            viewModel.navigation(RouterCard().setPath("/app/testPullPageVM"))
         }
         binding.jump2.setOnClickListener {
             viewModel.finish()
         }
+    }
+
+    override fun variableId(): Int {
+        return BR.viewModel
     }
 }

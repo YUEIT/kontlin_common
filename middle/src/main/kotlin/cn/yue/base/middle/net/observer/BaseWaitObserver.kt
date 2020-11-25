@@ -8,7 +8,7 @@ import cn.yue.base.middle.net.ResultException
  * Description :
  * Created by yue on 2019/6/18
  */
-abstract class BaseWaitSingleObserver<T> : BaseNetSingleObserver<T> {
+abstract class BaseWaitObserver<T> : BaseNetObserver<T> {
 
     private var iBaseView: IBaseView
     private var title: String = ""

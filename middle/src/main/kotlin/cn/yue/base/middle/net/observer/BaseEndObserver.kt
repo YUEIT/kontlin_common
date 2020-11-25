@@ -6,7 +6,7 @@ import cn.yue.base.middle.net.ResultException
  * Description :
  * Created by yue on 2018/7/26
  */
-abstract class BaseEndSingleObserver<T> : BaseNetSingleObserver<T>() {
+abstract class BaseEndObserver<T> : BaseNetObserver<T>() {
 
     override fun onSuccess(t: T) {
         onEnd(true, t, null)

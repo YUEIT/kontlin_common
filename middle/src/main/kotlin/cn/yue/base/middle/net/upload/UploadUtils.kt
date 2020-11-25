@@ -2,13 +2,11 @@ package cn.yue.base.middle.net.upload
 
 import cn.yue.base.common.activity.rx.ILifecycleProvider
 import cn.yue.base.common.utils.file.BitmapFileUtils
-import cn.yue.base.middle.init.BaseUrlAddress
 import cn.yue.base.middle.net.RetrofitManager
 import cn.yue.base.middle.net.observer.BaseUploadObserver
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -20,23 +18,18 @@ import java.util.*
  * Created by yue on 2019/6/18
  */
 object UploadUtils {
-    private val uploadServer = RetrofitManager.instance.getRetrofit(BaseUrlAddress.upLoadUrl).create(UploadServer::class.java)
+    private val uploadServer = RetrofitManager.instance.getRetrofit("upload").create(UploadServer::class.java)
 
     fun getUploadServer(): UploadServer {
         return uploadServer
     }
 
     fun <E> upload(files: List<String>, lifecycleProvider: ILifecycleProvider<E>, uploadObserver: BaseUploadObserver) {
-        UploadUtils.getCompressFileList(files)
+        getCompressFileList(files)
                 .subscribeOn(Schedulers.io())
                 .flatMap { files ->
-                    val url: String
-//                    if (InitConstant.isDebug) {
-//                        url = "4tpBNVAu7iPQgmQetUXvXA"
-//                    } else {
-                        url = getUploadKey()
-//                    }
-                    UploadUtils.getUploadServer().upload(url, filesToMultipartBodyParts(files))
+                    val url = getUploadKey()
+                    getUploadServer().upload(url, filesToMultipartBodyParts(files))
                 }
                 .subscribeOn(Schedulers.newThread())
                 .compose(lifecycleProvider.toBindLifecycle())

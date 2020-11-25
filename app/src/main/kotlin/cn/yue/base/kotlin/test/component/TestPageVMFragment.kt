@@ -5,6 +5,7 @@ import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.middle.mvvm.CommonVMAdapter
 import cn.yue.base.middle.mvvm.ItemViewModel
 import cn.yue.base.middle.mvvm.components.BasePageVMFragment
+import cn.yue.base.middle.mvvm.data.BR
 import com.alibaba.android.arouter.facade.annotation.Route
 
 @Route(path = "/app/testPageVM")
@@ -23,6 +24,10 @@ class TestPageVMFragment : BasePageVMFragment<TestPageViewModel, TestItemBean>()
                 } else {
                     TestItemViewModel2(itemBean, viewModel)
                 }
+            }
+
+            override fun getVariable(): Int {
+                return BR.viewModel
             }
         }
     }

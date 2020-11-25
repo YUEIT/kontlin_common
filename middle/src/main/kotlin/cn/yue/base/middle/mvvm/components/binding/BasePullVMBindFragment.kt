@@ -6,7 +6,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import cn.yue.base.middle.mvvm.PullViewModel
 import cn.yue.base.middle.mvvm.components.BasePullVMFragment
-import cn.yue.base.middle.mvvm.data.BR
 
 /**
  * Description :
@@ -19,7 +18,7 @@ abstract class BasePullVMBindFragment<VM : PullViewModel, T : ViewDataBinding> :
         binding.setVariable(variableId(), viewModel)
     }
 
-    open fun variableId(): Int = BR.viewModel
+    abstract fun variableId(): Int
 
     override fun bindLayout(inflated: View) {
         binding = DataBindingUtil.bind(inflated)!!

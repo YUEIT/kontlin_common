@@ -37,11 +37,39 @@
         <attr name="foreground" format="reference|color" />
     </declare-styleable>
 
+    <declare-styleable name="FormattedEditText">
+        <attr name="fet_mode" format="enum">
+            <enum name="mode_simple" value="0" />
+            <enum name="mode_complex" value="1" />
+            <enum name="mode_mask" value="2" />
+            <enum name="mode_hint" value="3" />
+        </attr>
+        <attr name="fet_formatStyle" format="string" />
+        <attr name="fet_placeholder" format="string" />
+        <attr name="fet_emptyPlaceholder" format="string" />
+        <attr name="fet_hintTextColor" format="color" />
+        <attr name="fet_hintText" format="string" />
+        <attr name="fet_mark" format="string" />
+        <attr name="fet_showHintWhileEmpty" format="boolean" />
+        <attr name="fet_clearDrawable" format="reference" />
+        <attr name="fet_drawablePadding" format="dimension" />
+        <attr name="fet_drawableGravity" format="enum">
+            <enum name="fet_top" value="0" />
+            <enum name="fet_center" value="1" />
+            <enum name="fet_bottom" value="2" />
+        </attr>
+    </declare-styleable>
+
     <declare-styleable name="Emojicon">
         <attr name="emojiconSize" format="dimension"/>
         <attr name="emojiconTextStart" format="integer"/>
         <attr name="emojiconTextLength" format="integer"/>
         <attr name="emojiconUseSystemDefault" format="boolean"/>
         <attr name="emojiconCopy" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="ExcelPanel">
+        <attr name="left_width" format="dimension" />
+        <attr name="top_height" format="dimension" />
     </declare-styleable>
 </resources>

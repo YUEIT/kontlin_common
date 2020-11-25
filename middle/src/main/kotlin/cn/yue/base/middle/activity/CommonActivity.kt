@@ -5,7 +5,7 @@ import cn.yue.base.common.activity.BaseFragmentActivity
 import cn.yue.base.common.activity.TransitionAnimation.getStopEnterAnim
 import cn.yue.base.common.activity.TransitionAnimation.getStopExitAnim
 import cn.yue.base.common.utils.debug.LogUtils
-import cn.yue.base.middle.router.FRouter
+import cn.yue.base.middle.router.RouterCard
 import com.alibaba.android.arouter.facade.Postcard
 import com.alibaba.android.arouter.facade.callback.NavigationCallback
 import com.alibaba.android.arouter.launcher.ARouter
@@ -18,13 +18,13 @@ open class CommonActivity : BaseFragmentActivity() {
     private var transition = 0 //入场动画
 
     override fun getFragment(): Fragment? {
-        val fRouter = intent?.extras?.getParcelable<FRouter>(FRouter.TAG)?: return null
-        transition = fRouter.getRouterCard().getTransition()
+        val routerCard = intent?.extras?.getParcelable<RouterCard>(RouterCard.TAG)?: return null
+        transition = routerCard.getTransition()
         return try {
             ARouter.getInstance()
-                    .build(fRouter.getRouterCard().getPath())
+                    .build(routerCard.getPath())
                     .with(intent.extras)
-                    .setTimeout(fRouter.getRouterCard().getTimeout())
+                    .setTimeout(routerCard.getTimeout())
 //                        .withTransition(fRouter.getEnterAnim(), fRouter.getExitAnim())
                     .navigation(this, object : NavigationCallback {
                         override fun onFound(postcard: Postcard) {}

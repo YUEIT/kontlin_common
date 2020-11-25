@@ -25,18 +25,16 @@ import java.util.*
  */
 object BitmapFileUtils {
 
-    fun init(application: Context) {
+    fun init() {
         var file: File? = File(Constant.cachePath)
         if (file != null && !file.exists()) {
             file.mkdirs()
         }
-
         file = File(Constant.imagePath)
         if (file != null && !file.exists()) {
             file.mkdirs()
         }
     }
-
 
     fun clearCache() {
         var file = File(Constant.cachePath)
@@ -47,10 +45,13 @@ object BitmapFileUtils {
         if (file.exists()) {
             file.deleteOnExit()
         }
+        file = File(Constant.audioPath)
+        if (file.exists()) {
+            file.deleteOnExit()
+        }
     }
 
-
-    fun getPhotoCameraPath(): String {
+    fun getMediaFilePath(): String {
         return Constant.imagePath
     }
 
@@ -58,6 +59,9 @@ object BitmapFileUtils {
         return Constant.cachePath
     }
 
+    fun getAudioFilePath(): String {
+        return Constant.audioPath
+    }
 
     private fun getSaveBitmapPath(): String {
         val sb = StringBuilder()
@@ -79,10 +83,8 @@ object BitmapFileUtils {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
         return false
     }
-
 
     fun getBitmapFormLoaclPath(url: String): Bitmap? {
         try {
@@ -91,7 +93,6 @@ object BitmapFileUtils {
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         }
-
         return null
     }
 
@@ -110,7 +111,6 @@ object BitmapFileUtils {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-
         return null
     }
 
@@ -201,7 +201,7 @@ object BitmapFileUtils {
                 return false
             }
             // 文件目录是否存在
-            val fileDir = File(getPhotoCameraPath())
+            val fileDir = File(getMediaFilePath())
             if (fileDir != null && !fileDir.exists()) {
                 fileDir.mkdirs()
             }

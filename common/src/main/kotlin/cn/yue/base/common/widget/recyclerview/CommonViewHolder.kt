@@ -4,15 +4,27 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import cn.yue.base.common.image.ImageLoader
 
-class CommonViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class CommonViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+    fun <V : View> requireView(id: Int): V {
+        return itemView.findViewById(id)
+                ?: throw NullPointerException("no found view with $id in $this")
+    }
 
     fun <V : View> getView(id: Int): V? {
-        return itemView.findViewById<V>(id)
+        return itemView.findViewById(id)
+    }
+
+    fun <V: View> viewToAction(id: Int, action: ((it: V) -> Unit)) {
+        val view = getView<V>(id)
+        if (view != null) {
+            action.invoke(view)
+        }
     }
 
     fun setText(id: Int, s: String?) {
@@ -24,7 +36,19 @@ class CommonViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
             }
             t.text = str.trim { it <= ' ' }
         }
+    }
 
+    fun setVisible(id: Int, visible: Int) {
+        val t = getView<View>(id)
+        if (null != t) {
+            t.visibility = visible
+        }
+    }
+
+    fun setImageUrl(id: Int, url: String?) {
+        viewToAction<ImageView>(id) {
+            ImageLoader.getLoader().loadImage(it, url)
+        }
     }
 
     fun setImageResource(id: Int, resId: Int) {
@@ -55,6 +79,8 @@ class CommonViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun setOnItemClickListener(onItemClickListener: (() -> Unit)?) {
         if (onItemClickListener != null) {
             itemView.setOnClickListener { onItemClickListener() }
+        } else {
+            itemView.setOnClickListener(null)
         }
     }
 
@@ -64,14 +90,16 @@ class CommonViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
                 onItemLongClickListener()
                 true
             }
+        } else {
+            itemView.setOnClickListener(null)
         }
     }
 
     companion object {
 
-        fun <T> getHolder(context: Context, id: Int, root: ViewGroup): CommonViewHolder<T> {
+        fun getHolder(context: Context, id: Int, root: ViewGroup): CommonViewHolder {
             val itemView = LayoutInflater.from(context).inflate(id, root, false)
-            return CommonViewHolder<T>(itemView)
+            return CommonViewHolder(itemView)
         }
     }
 

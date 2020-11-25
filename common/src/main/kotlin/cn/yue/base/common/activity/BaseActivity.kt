@@ -4,10 +4,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import androidx.fragment.app.FragmentActivity
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.Lifecycle
 import cn.yue.base.common.activity.rx.ILifecycleProvider
 import cn.yue.base.common.activity.rx.RxLifecycleProvider
@@ -16,7 +15,7 @@ import cn.yue.base.common.utils.app.RunTimePermissionUtil
 import cn.yue.base.common.utils.debug.ToastUtils
 import cn.yue.base.common.widget.dialog.HintDialog
 
-abstract class BaseActivity : FragmentActivity() {
+abstract class BaseActivity : ComponentActivity() {
 
     private lateinit var lifecycleProvider: ILifecycleProvider<Lifecycle.Event>
 
@@ -25,10 +24,11 @@ abstract class BaseActivity : FragmentActivity() {
         lifecycleProvider = initLifecycleProvider()
         lifecycle.addObserver(lifecycleProvider)
         if (hasContentView()) {
+            setSystemBar()
             setContentView(getLayoutId())
         }
         if (intent != null && intent.extras != null) {
-            initBundle(intent.extras)
+            initBundle(intent.extras!!)
         }
         initView()
     }
@@ -43,18 +43,11 @@ abstract class BaseActivity : FragmentActivity() {
 
     open fun hasContentView(): Boolean = true
 
-    open fun initBundle(bundle: Bundle?) {}
+    open fun initBundle(bundle: Bundle) {}
 
-    fun setSystemBar(isFillUpTop: Boolean, isDarkIcon: Boolean) {
-        setSystemBar(isFillUpTop, isDarkIcon, Color.TRANSPARENT)
-    }
-
-    fun setSystemBar(isFillUpTop: Boolean, isDarkIcon: Boolean, bgColor: Int) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return
-        }
+    fun setSystemBar(isFillScreen: Boolean = false, isDarkIcon: Boolean = true, bgColor: Int = Color.WHITE) {
         try {
-            BarUtils.setStyle(this, isFillUpTop, isDarkIcon, bgColor)
+            BarUtils.setStyle(this, isFillScreen, isDarkIcon, bgColor)
         } catch (e: Exception) {
             e.printStackTrace()
         }

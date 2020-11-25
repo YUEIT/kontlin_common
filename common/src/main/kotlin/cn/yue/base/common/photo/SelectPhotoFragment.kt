@@ -50,7 +50,7 @@ class SelectPhotoFragment : BaseFragment() {
                 return R.layout.item_select_photo
             }
 
-            override fun bindData(holder: CommonViewHolder<MediaVO>, position: Int, mediaVO: MediaVO) {
+            override fun bindData(holder: CommonViewHolder, position: Int, mediaVO: MediaVO) {
                 val photoIV = holder.getView<ImageView>(R.id.photoIV)
                 val checkIV = holder.getView<CheckBox>(R.id.checkIV)
                 photoIV!!.setBackgroundColor(Color.parseColor("#ffffff"))
@@ -87,7 +87,7 @@ class SelectPhotoFragment : BaseFragment() {
     fun refresh(folderId: String?) {
         this.folderId = folderId
         allMedia = null
-        adapter!!.setList(null)
+        adapter!!.clear()
         page = 0
         photoList.clear()
         getPhotoList()

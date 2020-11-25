@@ -9,15 +9,12 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import cn.yue.base.common.R
 import cn.yue.base.common.activity.rx.ILifecycleProvider
 import cn.yue.base.common.activity.rx.RxLifecycleProvider
 import cn.yue.base.common.widget.TopBar
-import java.lang.NullPointerException
-import java.util.*
 
 
 abstract class BaseFragment : Fragment(), View.OnTouchListener {
@@ -70,13 +67,18 @@ abstract class BaseFragment : Fragment(), View.OnTouchListener {
         if (cacheView == null || !needCache()) {//如果view没有被初始化或者不需要缓存的情况下，重新初始化控件
             topBar = mActivity.getTopBar()
             initTopBar(topBar)
-            cacheView = if (getLayoutId() == 0) null
-            else inflater.inflate(getLayoutId(), container, false)
+            cacheView = if (getLayoutId() == 0) {
+                null
+            } else {
+                inflater.inflate(getLayoutId(), container, false)
+            }
             hasCache = false
         } else {
             hasCache = true
-            val v = cacheView!!.parent as ViewGroup
-            v.removeView(cacheView)
+            val v = cacheView?.parent
+            if (v != null && v is ViewGroup) {
+                v.removeView(cacheView)
+            }
         }
         return cacheView
     }
@@ -113,6 +115,10 @@ abstract class BaseFragment : Fragment(), View.OnTouchListener {
     override fun onDetach() {
         super.onDetach()
         mHandler.removeCallbacksAndMessages(null)
+    }
+
+    fun clearCacheView() {
+        cacheView = null
     }
 
     open fun onFragmentBackPressed(): Boolean {
@@ -165,12 +171,10 @@ abstract class BaseFragment : Fragment(), View.OnTouchListener {
         mActivity.overridePendingTransition(R.anim.left_in, R.anim.right_out)
     }
 
-
     @JvmOverloads
     fun finishAllWithResult(resultCode: Int, data: Intent? = null) {
         mActivity.setResult(resultCode, data)
         finishAll()
-
     }
 
     fun finishAllWithResult(data: Bundle) {

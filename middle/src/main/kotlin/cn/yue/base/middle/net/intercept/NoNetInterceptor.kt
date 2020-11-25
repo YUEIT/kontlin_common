@@ -10,7 +10,7 @@ import java.io.IOException
 class NoNetInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
-        return if (!NetworkUtils.isConnected()) {
+        return if (!NetworkUtils.isAvailable()) {
             throw ResultException(ResponseCode.ERROR_NO_NET, "无网络: ${chain.request().url}")
         } else {
             chain.proceed(chain.request())

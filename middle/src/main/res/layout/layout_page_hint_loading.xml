@@ -12,12 +12,12 @@
         android:padding="10dp"
         android:layout_gravity="center">
 
-        <ImageView
-            android:id="@+id/loadingIV"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_gravity="center_horizontal" />
-
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="@dimen/rdp50"
+            android:layout_height="@dimen/rdp50"
+            android:indeterminateTint="#ffba43"
+            android:indeterminateTintMode="src_atop" />
     </LinearLayout>
 
 </FrameLayout>

@@ -5,7 +5,7 @@ import androidx.lifecycle.lifecycleScope
 import cn.yue.base.middle.components.BaseHintFragment
 import cn.yue.base.middle.net.ResultException
 import cn.yue.base.middle.net.coroutine.request
-import cn.yue.base.middle.net.observer.BaseNetSingleObserver
+import cn.yue.base.middle.net.observer.BaseNetObserver
 import com.alibaba.android.arouter.facade.annotation.Route
 import kotlinx.android.synthetic.main.fragment_test_coroutine.*
 
@@ -34,7 +34,7 @@ class TestCoroutineFragment : BaseHintFragment() {
                 }, suspend {
                     ApiManager.getApi().getUuid()
                 }),
-                object : BaseNetSingleObserver<ArrayList<*>>() {
+                object : BaseNetObserver<ArrayList<*>>() {
                     override fun onException(e: ResultException) {
 
                     }

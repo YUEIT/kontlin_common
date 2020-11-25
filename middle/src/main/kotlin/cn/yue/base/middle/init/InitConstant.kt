@@ -7,10 +7,27 @@ import cn.yue.base.common.utils.device.PhoneUtils
  * Created by yue on 2018/11/12
  */
 object InitConstant {
+
     /**------------------------------------------------------------------------------------------ */
-    @JvmField
-    var isDebug = false
-    var logMode = false
+    fun isDebug(): Boolean {
+        return mDebug
+    }
+
+    fun setDebug(debug: Boolean) {
+        this.mDebug = debug
+    }
+
+    private var mDebug = false
+
+    private var mEnvironment: UrlEnvironment = UrlEnvironment.RELEASE
+
+    fun setServiceEnvironment(environment: UrlEnvironment) {
+        mEnvironment = environment
+    }
+
+    fun getServiceEnvironment(): UrlEnvironment {
+        return mEnvironment
+    }
 
     private var mVersionName: String? = null
 
@@ -31,7 +48,25 @@ object InitConstant {
         return PhoneUtils.getNullDeviceId(mDeviceId).also { mDeviceId = it }
     }
 
-    const val APP_CLIENT_TYPE = "2"
-    const val APP_SIGN_KEY = "nK!op4w9lB.alev0"
+    /**------------------------------------------------------------------------------------------ */
 
+    private var mLogged = false
+
+    fun setLogged(isLogin: Boolean) {
+        mLogged = isLogin
+    }
+
+    fun isLogged(): Boolean {
+        return mLogged
+    }
+
+    private var mToken = ""
+
+    fun setToken(token: String) {
+        mToken = token
+    }
+
+    fun getToken(): String {
+        return mToken
+    }
 }

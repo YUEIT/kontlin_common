@@ -63,4 +63,7 @@ dependencies {
     //aRouter
     implementation rootProject.ext.dependencies["arouter-api"]
     kapt rootProject.ext.dependencies["arouter-compiler"]
+
+    implementation rootProject.ext.refresh["smart-refresh"]
+    implementation rootProject.ext.refresh["header-classics"]
 }

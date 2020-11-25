@@ -8,6 +8,5 @@ import android.content.Context
  */
 interface INavigation {
     fun bindRouterCard(routerCard: RouterCard): INavigation?
-    fun navigation(context: Context, requestCode: Int = 0)
-    fun navigation(context: Context, toActivity: String?, requestCode: Int = 0)
+    fun navigation(context: Context, requestCode: Int = 0, toActivity: String? = null)
 }

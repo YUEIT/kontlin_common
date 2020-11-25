@@ -3,7 +3,8 @@ package cn.yue.base.middle.net.coroutine
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
-import cn.yue.base.middle.net.observer.BaseNetSingleObserver
+import cn.yue.base.middle.init.InitConstant
+import cn.yue.base.middle.net.observer.BaseNetObserver
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
@@ -14,8 +15,14 @@ import kotlin.coroutines.CoroutineContext
  * Description :
  * Created by yue on 2020/8/25
  */
-fun <T> CoroutineScope.request(block: suspend () -> T, observable: BaseNetSingleObserver<T>) {
-    this.launch(Dispatchers.Main) {
+fun <T> CoroutineScope.request(block: suspend () -> T, observable: BaseNetObserver<T>) {
+    val handler = CoroutineExceptionHandler { _, exception ->
+        if (InitConstant.isDebug()) {
+            exception.printStackTrace()
+        }
+        observable.onError(exception)
+    }
+    this.launch(handler) {
         try {
             observable.onStart()
             val deferred = withContext(Dispatchers.IO) {
@@ -23,12 +30,15 @@ fun <T> CoroutineScope.request(block: suspend () -> T, observable: BaseNetSingle
             }
             observable.onSuccess(deferred)
         } catch (e : Exception) {
+            if (InitConstant.isDebug()) {
+                e.printStackTrace()
+            }
             observable.onError(e)
         }
     }
 }
 
-fun CoroutineScope.request(block: List<suspend () -> Any>, observable: BaseNetSingleObserver<ArrayList<*>>) {
+fun CoroutineScope.request(block: List<suspend () -> Any>, observable: BaseNetObserver<ArrayList<*>>) {
     val handler = CoroutineExceptionHandler { _, exception ->
         observable.onError(exception)
     }

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,7 +27,7 @@ import cn.yue.base.middle.mvp.photo.PhotoHelper
 import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
 import cn.yue.base.middle.net.coroutine.request
-import cn.yue.base.middle.net.observer.BaseNetSingleObserver
+import cn.yue.base.middle.net.observer.BaseNetObserver
 import cn.yue.base.middle.net.wrapper.BaseListBean
 import cn.yue.base.middle.view.PageHintView
 import cn.yue.base.middle.view.refresh.IRefreshLayout
@@ -59,7 +58,7 @@ abstract class BaseListFragment<P : BaseListBean<S>, S> : BaseFragment(), IStatu
     override fun initView(savedInstanceState: Bundle?) {
         hintView = findViewById(R.id.hintView)
         hintView.setOnReloadListener{
-            if (NetworkUtils.isConnected()) {
+            if (NetworkUtils.isAvailable()) {
                 if (autoRefresh()) {
                     refresh()
                 }
@@ -68,13 +67,12 @@ abstract class BaseListFragment<P : BaseListBean<S>, S> : BaseFragment(), IStatu
             }
         }
         refreshL = (findViewById<View>(R.id.refreshL) as IRefreshLayout)
-        refreshL.init()
-        refreshL.setEnabled(canPullDown())
+        refreshL.setEnabledRefresh(canPullDown())
         refreshL.setOnRefreshListener {
             refresh()
         }
         if (canPullDown()) {
-            hintView.setRefreshTarget(refreshL as ViewGroup?)
+            hintView.setRefreshTarget(refreshL)
         }
         footer = BaseFooter(mActivity)
         footer.setOnReloadListener {
@@ -117,7 +115,7 @@ abstract class BaseListFragment<P : BaseListBean<S>, S> : BaseFragment(), IStatu
 
     override fun initOther() {
         super.initOther()
-        if (NetworkUtils.isConnected()) {
+        if (NetworkUtils.isAvailable()) {
             if (autoRefresh()) {
                 refresh()
             }
@@ -156,8 +154,8 @@ abstract class BaseListFragment<P : BaseListBean<S>, S> : BaseFragment(), IStatu
                 return getItemLayoutId(viewType)
             }
 
-            override fun bindData(holder: CommonViewHolder<S>, position: Int, s: S) {
-                bindItemData(holder, position, s)
+            override fun bindData(holder: CommonViewHolder, position: Int, itemData: S) {
+                bindItemData(holder, position, itemData)
             }
         }
     }
@@ -177,7 +175,7 @@ abstract class BaseListFragment<P : BaseListBean<S>, S> : BaseFragment(), IStatu
     /**
      * 布局
      */
-    abstract fun bindItemData(holder: CommonViewHolder<S>, position: Int, s: S)
+    abstract fun bindItemData(holder: CommonViewHolder, position: Int, itemData: S)
 
     fun getFooter(): BaseFooter {
         return footer
@@ -216,7 +214,7 @@ abstract class BaseListFragment<P : BaseListBean<S>, S> : BaseFragment(), IStatu
     open suspend fun getRequestScope(nt: String?): P? = null
 
     private fun loadData() {
-        val observer = object : BaseNetSingleObserver<P>() {
+        val observer = object : BaseNetObserver<P>() {
             private var isLoadingRefresh = false
             override fun onStart() {
                 super.onStart()
@@ -394,16 +392,16 @@ abstract class BaseListFragment<P : BaseListBean<S>, S> : BaseFragment(), IStatu
     }
 
     private var waitDialog: WaitDialog? = null
-    override fun showWaitDialog(title: String?) {
+    override fun showWaitDialog(title: String) {
         if (waitDialog == null) {
             waitDialog = WaitDialog(mActivity)
         }
-        waitDialog!!.show(title!!, true, null)
+        waitDialog?.show(title, true, null)
     }
 
     override fun dismissWaitDialog() {
         if (waitDialog != null && waitDialog!!.isShowing()) {
-            waitDialog!!.cancel()
+            waitDialog?.cancel()
         }
     }
 

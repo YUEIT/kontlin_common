@@ -1,7 +1,6 @@
 package cn.yue.base.kotlin.test.component
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +10,7 @@ import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
 import cn.yue.base.kotlin.test.R
 import cn.yue.base.middle.components.BasePullFragment
-import cn.yue.base.middle.net.observer.BasePullSingleObserver
+import cn.yue.base.middle.net.observer.BasePullObserver
 import com.alibaba.android.arouter.facade.annotation.Route
 import io.reactivex.Single
 import java.util.*
@@ -42,7 +41,7 @@ class TestPullFragment : BasePullFragment() {
                 return R.layout.item_test
             }
 
-            override fun bindData(holder: CommonViewHolder<String>, position: Int, s: String) {
+            override fun bindData(holder: CommonViewHolder, position: Int, s: String) {
                 holder.setText(R.id.testTV, s)
             }
         }
@@ -54,7 +53,7 @@ class TestPullFragment : BasePullFragment() {
         Single.just("ssss")
                 .delay(1000, TimeUnit.MILLISECONDS)
                 .compose(getLifecycleProvider().toBindLifecycle())
-                .subscribe(object : BasePullSingleObserver<String>(this@TestPullFragment) {
+                .subscribe(object : BasePullObserver<String>(this@TestPullFragment) {
                     override fun onNext(s: String) {
                         showShortToast(s)
                     }

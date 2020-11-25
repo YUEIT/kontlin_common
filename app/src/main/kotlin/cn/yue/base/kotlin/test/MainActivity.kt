@@ -4,9 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import cn.yue.base.common.activity.BaseActivity
-import cn.yue.base.kotlin.test.component.TestDialogFragment
-import cn.yue.base.middle.module.IAppModule
-import cn.yue.base.middle.module.manager.ModuleManager
 import cn.yue.base.middle.router.FRouter
 import com.alibaba.android.arouter.facade.annotation.Route
 import kotlinx.android.synthetic.main.activity_main.*
@@ -30,8 +27,6 @@ class MainActivity : BaseActivity() {
             FRouter.instance.build("/app/testPullList").navigation(this)
         }
         jump3.setOnClickListener {
-            ModuleManager.getModuleService(IAppModule::class).test("hehe")
-            TestDialogFragment().show(supportFragmentManager, "")
         }
         jump4.setOnClickListener {
             FRouter.instance.build("/app/testPageVM").navigation(this)

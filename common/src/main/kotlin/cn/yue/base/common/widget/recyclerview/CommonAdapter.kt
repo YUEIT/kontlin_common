@@ -2,7 +2,6 @@ package cn.yue.base.common.widget.recyclerview
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
@@ -17,35 +16,36 @@ import java.util.*
 
 abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private val typeDivider = 0
-    private val typeHeaderView = Integer.MIN_VALUE/2
-    private val typeFooterView = Integer.MAX_VALUE/2
+    private val dividerType = 0
+    private val inHeaderType = Integer.MIN_VALUE/2
+    private val inFooterType = Integer.MAX_VALUE/2
     /**
      * RecyclerView使用的，真正的Adapter
      */
     private var innerAdapter: RealAdapter
 
-    private var onItemClickListenerBlock: (() -> Unit)? = null
-    private var onItemLongClickListenerBlock: (() -> Unit)? = null
+    private var onItemClickListenerBlock: ((position: Int, itemData: T) -> Unit)? = null
+    private var onItemLongClickListenerBlock: ((position: Int, itemData: T) -> Boolean)? = null
 
     private val mHeaderViews = ArrayList<View>()
     private val mFooterViews = ArrayList<View>()
 
-    protected var context: Context
-    private var list: MutableList<T>? = null
-    protected var inflater: LayoutInflater
+    protected lateinit var context: Context
+    private var list: MutableList<T> = arrayListOf()
 
-    constructor(context: Context) {
-        this.context = context
-        inflater = LayoutInflater.from(context)
+    constructor(context: Context? = null) {
+        if (context != null) {
+            this.context = context
+        }
         innerAdapter = RealAdapter()
         setAdapter(innerAdapter)
     }
 
-    constructor(context: Context, list: MutableList<T>) {
-        this.context = context
+    constructor(context: Context?, list: MutableList<T>) {
+        if (context != null) {
+            this.context = context
+        }
         this.list = list
-        inflater = LayoutInflater.from(context)
         innerAdapter = RealAdapter()
         setAdapter(innerAdapter)
     }
@@ -79,19 +79,25 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     /**
-     * 返回第一个FooterView
-     * @return
+     * 返回最后一个FooterView
      */
     fun getFooterView(): View? {
         return if (getFooterViewsCount() > 0) mFooterViews[getFooterViewsCount() - 1] else null
     }
 
+    fun getFooterView(position: Int): View? {
+        return if (getFooterViewsCount() > position) mFooterViews[position] else null
+    }
+
     /**
      * 返回第一个HeaderView
-     * @return
      */
     fun getHeaderView(): View? {
         return if (getHeaderViewsCount() > 0) mHeaderViews[0] else null
+    }
+
+    fun getHeaderView(position: Int): View? {
+        return if (getHeaderViewsCount() > position) mHeaderViews[position] else null
     }
 
     fun getHeaderViewsCount(): Int = mHeaderViews.size
@@ -100,13 +106,13 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     fun getReallyItemCount(): Int = innerAdapter.itemCount
 
-    fun getData(): List<T>? = list
+    fun getData(): List<T> = list
 
-    fun setOnItemClickListener(l: (() -> Unit)?) {
+    fun setOnItemClickListener(l: ((position: Int, itemData: T) -> Unit)?) {
         this.onItemClickListenerBlock = l
     }
 
-    fun setOnItemLongClickListener(l: (() -> Unit)?) {
+    fun setOnItemLongClickListener(l: ((position: Int, itemData: T) -> Boolean)?) {
         this.onItemLongClickListenerBlock = l
     }
 
@@ -119,7 +125,6 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     /**
      * 单条刷新
-     * @param position
      */
     fun notifyItemChangedReally(position: Int) {
         if (position > -1 && position < innerAdapter.itemCount) {
@@ -129,7 +134,6 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     /**
      * 单条插入
-     * @param position
      */
     fun notifyItemInsertedReally(position: Int) {
         if (position > -1 && position < innerAdapter.itemCount) {
@@ -140,20 +144,16 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     /**
      * 单条删除
-     * @param position
      */
     fun notifyItemRemovedReally(position: Int) {
         if (position > -1 && position < innerAdapter.itemCount) {
             innerAdapter.notifyItemRemoved(position)
-            innerAdapter.notifyItemRangeChanged(position, list!!.size - position)
+            innerAdapter.notifyItemRangeChanged(position, list.size - position)
         }
     }
 
-
     /**
      * 单条移动
-     * @param fromPosition
-     * @param toPosition
      */
     fun notifyItemMovedReally(fromPosition: Int, toPosition: Int) {
         if (fromPosition > -1 && fromPosition < innerAdapter.itemCount
@@ -164,32 +164,33 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
 
-    fun getList(): List<T>? {
+    fun getList(): List<T> {
         return list
     }
 
     open fun clear() {
         if (list.hasValue()) {
-            list!!.clear()
+            list.clear()
         }
+        notifyDataSetChanged()
     }
 
     /**
      * 设置数据
      * @param list
      */
-    open fun setList(list: MutableList<T>?) {
-        this.list = list
-        notifyDataSetChanged()
+    open fun setList(list: List<T>?) {
+        if (list != null) {
+            this.list = list.toMutableList()
+            notifyDataSetChanged()
+        }
     }
 
     open fun addList(list: Collection<T>?) {
-        if (null != list) {
-            if (null != this.list) {
-                this.list!!.addAll(list)
-            }
+        if (list != null) {
+            this.list.addAll(list)
+            notifyDataSetChanged()
         }
-        notifyDataSetChanged()
     }
 
     /**
@@ -198,33 +199,27 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
      */
     open fun addItem(t: T?) {
         if (null != t) {
-            if (null != list) {
-                list!!.add(t)
-            }
+            list.add(t)
         }
         notifyDataSetChanged()
     }
 
     open fun remove(t: T?) {
         if (null != t) {
-            if (null != list) {
-                list!!.remove(t)
-            }
+            list.remove(t)
         }
         notifyDataSetChanged()
     }
 
     open fun remove(position: Int) {
-        if (position > -1 && null != list && list!!.size > position) {
-            list!!.removeAt(position)
+        if (position > -1 && list.size > position) {
+            list.removeAt(position)
             innerAdapter.notifyDataSetChanged()
         }
     }
 
-
     /**
      * 设置adapter
-     * @param adapter
      */
     private fun setAdapter(adapter: RealAdapter) {
         this.innerAdapter = adapter
@@ -234,19 +229,13 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
         notifyItemRangeInserted(getHeaderViewsCount(), innerAdapter.itemCount)
     }
 
-    fun addHeaderView(header: View?) {
-        if (header == null) {
-            throw RuntimeException("header is null")
-        }
+    fun addHeaderView(header: View) {
         header.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         mHeaderViews.add(header)
         this.notifyDataSetChanged()
     }
 
-    fun addFooterView(footer: View?) {
-        if (footer == null) {
-            throw RuntimeException("footer is null")
-        }
+    fun addFooterView(footer: View) {
         mFooterViews.add(footer)
         this.notifyDataSetChanged()
     }
@@ -263,8 +252,6 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     /**
      * 隐藏或展示Item
-     * @param v
-     * @param visible
      */
     protected fun setItemVisible(v: View?, visible: Boolean) {
         if (null != v) {
@@ -283,22 +270,17 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     fun isHeader(position: Int): Boolean {
-        return getHeaderViewsCount() > 0 && position == 0
+        return getHeaderViewsCount() > position
     }
 
     fun isFooter(position: Int): Boolean {
-        val lastPosition = itemCount - 1
-        return getFooterViewsCount() > 0 && position == lastPosition
-    }
-
-    fun getFooter(position: Int): View? {
-        val footerPosition = itemCount - getHeaderViewsCount() - position
-        return if (mFooterViews.size > footerPosition && footerPosition > -1) {
-            mFooterViews[footerPosition]
-        } else null
+        return getFooterViewsCount() > 0 && position >= getHeaderViewsCount() + itemCount
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        if (!this::context.isInitialized) {
+            context = recyclerView.context
+        }
         innerAdapter.onAttachedToRecyclerView(recyclerView)
         //为了兼容GridLayout
         val layoutManager = recyclerView.layoutManager
@@ -320,13 +302,12 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val headerViewsCountCount = getHeaderViewsCount()
         return when {
-            viewType in typeHeaderView..-1 -> {
-                ViewHolder(mHeaderViews[viewType - typeHeaderView])
+            viewType in inHeaderType..-1 -> {
+                ViewHolder(mHeaderViews[viewType - inHeaderType])
             }
-            viewType >= typeFooterView -> {
-                ViewHolder(mFooterViews[viewType - typeFooterView])
+            viewType >= inFooterType -> {
+                ViewHolder(mFooterViews[viewType - inFooterType])
             }
             else -> {
                 innerAdapter.onCreateViewHolder(parent, viewType)
@@ -357,13 +338,15 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
         val headerViewsCountCount = getHeaderViewsCount()
         // min/2 ~ 0 header   0 ~ max/2 inner  max/2 ~ max  footer
         return if (position < headerViewsCountCount) {
-            typeHeaderView + position
+            inHeaderType + position
         } else if (headerViewsCountCount <= position && position < headerViewsCountCount + innerCount) {
             val innerItemViewType: Int = innerAdapter.getItemViewType(position - headerViewsCountCount)
-            require(innerItemViewType < Int.MAX_VALUE / 2) { "your adapter's return value of getViewTypeCount() must < Integer.MAX_VALUE / 2" }
+            require(innerItemViewType < Int.MAX_VALUE / 2) {
+                "your adapter's return value of getViewTypeCount() must < Integer.MAX_VALUE / 2"
+            }
             innerItemViewType
         } else {
-            typeFooterView + position - headerViewsCountCount - innerCount
+            inFooterType + position - headerViewsCountCount - innerCount
         }
     }
 
@@ -383,66 +366,58 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     /**
      * 获取具体View
-     * @param context
-     * @param parent
-     * @param viewType
-     * @return
      */
-    fun getViewHolder(context: Context, parent: ViewGroup, viewType: Int): CommonViewHolder<T> {
+    fun getViewHolder(context: Context, parent: ViewGroup, viewType: Int): CommonViewHolder {
         return CommonViewHolder.getHolder(context, getLayoutIdByType(viewType), parent)
     }
 
     /**
      * 获取当前Item数据
-     * @param position
-     * @return
      */
     fun getItem(position: Int): T? {
-        return if (list != null && position < list!!.size && position >= 0) {
-            list!![position]
+        return if (position < list.size && position >= 0) {
+            list[position]
         } else null
     }
 
     /**
      * 还是兼容下DiffUtil
-     * @param holder
-     * @param position
-     * @param t
-     * @param bundle
      */
-    fun changeItem(holder: CommonViewHolder<T>, position: Int, t: T?, bundle: Bundle) {
-
+    open fun changeItem(holder: CommonViewHolder, position: Int, t: T?, bundle: Bundle) {
     }
 
     /**
      * 真实的Adapter
-     * @param <K>
-    </K> */
+    */
     private inner class RealAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return getViewHolder(context, parent, viewType)
+            return getViewHolder(parent.context, parent, viewType)
         }
 
-
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: List<Any>) {
-            if (holder is CommonViewHolder<*>) {
-                val m = holder as CommonViewHolder<T>
+            if (holder is CommonViewHolder) {
                 if (payloads.isEmpty()) {
                     val t = getItem(position)
                     setItemVisible(holder.itemView, t != null)
                     t?: return
-                    m.setOnItemClickListener(onItemClickListenerBlock)
-                    m.setOnItemLongClickListener(onItemLongClickListenerBlock)
-                    bindData(m, position, t)
+                    onItemClickListenerBlock?.let { block ->
+                        holder.itemView.setOnClickListener {
+                            block(position, t)
+                        }
+                    }
+                    onItemLongClickListenerBlock?.let { block ->
+                        holder.itemView.setOnLongClickListener {
+                            block(position, t)
+                        }
+                    }
+                    bindData(holder, position, t)
                 } else {
                     val t = getItem(position)
-                    changeItem(m, position, t, payloads[0] as Bundle)
+                    changeItem(holder, position, t, payloads[0] as Bundle)
                 }
             } else {
                 throw RuntimeException("Holder must be not null !")
@@ -450,7 +425,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
 
         override fun getItemCount(): Int {
-            return if (list != null) list!!.size else 0
+            return list.size
         }
 
         override fun getItemViewType(position: Int): Int {
@@ -458,24 +433,17 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-
     fun getInnerViewType(position: Int): Int {
         return getViewType(position)
     }
 
-    /**
-     * 为了方便不想每次都重写，默认设置0
-     * @param position
-     * @return
-     */
-    protected open fun getViewType(position: Int): Int {
+    open fun getViewType(position: Int): Int {
         return 0
     }
 
     abstract fun getLayoutIdByType(viewType: Int): Int
 
-    abstract fun bindData(holder: CommonViewHolder<T>, position: Int, t: T)
-
+    abstract fun bindData(holder: CommonViewHolder, position: Int, itemData: T)
 }
 
 

@@ -16,14 +16,12 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
  */
 
 class GridLayoutDecoration : RecyclerView.ItemDecoration {
-    private var mDivider: Drawable? = null
+    var mDivider: Drawable? = null
     private var mPaint: Paint? = null
     private var dividerSize: Int = 0
 
-    private val attrs = intArrayOf(android.R.attr.listDivider)
-
     constructor(context: Context) {
-        val a = context.obtainStyledAttributes(attrs)
+        val a = context.obtainStyledAttributes(intArrayOf(android.R.attr.listDivider))
         mDivider = a.getDrawable(0)
         a.recycle()
     }
@@ -52,7 +50,7 @@ class GridLayoutDecoration : RecyclerView.ItemDecoration {
         return spanCount
     }
 
-    fun drawHorizontal(c: Canvas, parent: RecyclerView) {
+    private fun drawHorizontal(c: Canvas, parent: RecyclerView) {
         val childCount = parent.childCount
         for (i in 0 until childCount) {
             val child = parent.getChildAt(i)
@@ -65,19 +63,20 @@ class GridLayoutDecoration : RecyclerView.ItemDecoration {
                 val bottom = top + dividerSize
                 c.drawRect(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat(), mPaint!!)//画底下分割线
             } else {
-                val right = child.right + params.rightMargin + mDivider!!.intrinsicWidth
-                val bottom = top + mDivider!!.intrinsicHeight
-                mDivider!!.setBounds(left, top, right, bottom)
-                mDivider!!.draw(c)
+                mDivider?.let {
+                    val right = child.right + params.rightMargin + it.intrinsicWidth
+                    val bottom = top + it.intrinsicHeight
+                    it.setBounds(left, top, right, bottom)
+                    it.draw(c)
+                }
             }
         }
     }
 
-    fun drawVertical(c: Canvas, parent: RecyclerView) {
+    private fun drawVertical(c: Canvas, parent: RecyclerView) {
         val childCount = parent.childCount
         for (i in 0 until childCount) {
             val child = parent.getChildAt(i)
-
             val params = child
                     .layoutParams as RecyclerView.LayoutParams
             val top = child.top - params.topMargin
@@ -87,9 +86,11 @@ class GridLayoutDecoration : RecyclerView.ItemDecoration {
                 val right = left + dividerSize
                 c.drawRect(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat(), mPaint!!)//画底下分割线
             } else {
-                val right = left + mDivider!!.intrinsicWidth
-                mDivider!!.setBounds(left, top, right, bottom)
-                mDivider!!.draw(c)
+                mDivider?.let {
+                    val right = left + it.intrinsicWidth
+                    it.setBounds(left, top, right, bottom)
+                    it.draw(c)
+                }
             }
         }
     }
@@ -97,8 +98,8 @@ class GridLayoutDecoration : RecyclerView.ItemDecoration {
     /**
      * 判断是否是最后一列
      */
-    private fun isLastColum(parent: RecyclerView, pos: Int, spanCount: Int, childCount: Int): Boolean {
-        var childCount = childCount
+    private fun isLastColumn(parent: RecyclerView, pos: Int, spanCount: Int, mChildCount: Int): Boolean {
+        var childCount = mChildCount
         val layoutManager = parent.layoutManager
         if (layoutManager is GridLayoutManager) {
             // 如果是最后一列，则不需要绘制右边
@@ -106,15 +107,14 @@ class GridLayoutDecoration : RecyclerView.ItemDecoration {
                 return true
             }
         } else if (layoutManager is StaggeredGridLayoutManager) {
-            val orientation = layoutManager
-                    .orientation
+            val orientation = layoutManager.orientation
             if (orientation == StaggeredGridLayoutManager.VERTICAL) {
                 // 如果是最后一列，则不需要绘制右边
                 if ((pos + 1) % spanCount == 0) {
                     return true
                 }
             } else {
-                childCount = childCount - childCount % spanCount
+                childCount -= childCount % spanCount
                 if (pos >= childCount)
                 // 如果是最后一列，则不需要绘制右边
                     return true
@@ -126,20 +126,19 @@ class GridLayoutDecoration : RecyclerView.ItemDecoration {
     /**
      * 是否是最后一行
      */
-    private fun isLastRaw(parent: RecyclerView, pos: Int, spanCount: Int, childCount: Int): Boolean {
-        var childCount = childCount
+    private fun isLastRaw(parent: RecyclerView, pos: Int, spanCount: Int, mChildCount: Int): Boolean {
+        var childCount = mChildCount
         val layoutManager = parent.layoutManager
         if (layoutManager is GridLayoutManager) {
-            childCount = childCount - childCount % spanCount
+            childCount -= childCount % spanCount
             // 如果是最后一行，则不需要绘制底部
             if (pos >= childCount)
                 return true
         } else if (layoutManager is StaggeredGridLayoutManager) {
-            val orientation = layoutManager
-                    .orientation
+            val orientation = layoutManager.orientation
             // StaggeredGridLayoutManager 且纵向滚动
             if (orientation == StaggeredGridLayoutManager.VERTICAL) {
-                childCount = childCount - childCount % spanCount
+                childCount -= childCount % spanCount
                 // 如果是最后一行，则不需要绘制底部
                 if (pos >= childCount)
                     return true
@@ -158,13 +157,15 @@ class GridLayoutDecoration : RecyclerView.ItemDecoration {
         val spanCount = getSpanCount(parent)
         val childCount = parent.adapter!!.itemCount
         // 如果是最后一行，则不需要绘制底部
-        if (isLastRaw(parent, itemPosition, spanCount, childCount)) {
-            outRect.set(0, 0, mDivider!!.intrinsicWidth, 0)
-        } else if (isLastColum(parent, itemPosition, spanCount, childCount)) {
-            outRect.set(0, 0, 0, mDivider!!.intrinsicHeight)
-        } else {
-            outRect.set(0, 0, mDivider!!.intrinsicWidth,
-                    mDivider!!.intrinsicHeight)
+        mDivider?.let {
+            if (isLastRaw(parent, itemPosition, spanCount, childCount)) {
+                outRect.set(0, 0, it.intrinsicWidth, 0)
+            } else if (isLastColumn(parent, itemPosition, spanCount, childCount)) {
+                outRect.set(0, 0, 0, it.intrinsicHeight)
+            } else {
+                outRect.set(0, 0, it.intrinsicWidth,
+                        it.intrinsicHeight)
+            }
         }
     }
 

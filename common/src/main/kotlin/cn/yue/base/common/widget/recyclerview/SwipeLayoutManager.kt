@@ -61,7 +61,7 @@ class SwipeLayoutManager : CommonLayoutManager() {
      * @param state
      * @param layoutChunkResult
      */
-    private fun fillScrollLayout(recycler: RecyclerView.Recycler?, layoutState: CommonLayoutManager.LayoutState, state: RecyclerView.State?, layoutChunkResult: CommonLayoutManager.LayoutChunkResult) {
+    private fun fillScrollLayout(recycler: RecyclerView.Recycler?, layoutState: LayoutState, state: RecyclerView.State?, layoutChunkResult: LayoutChunkResult) {
         val remainingSpace = layoutState.mAvailable
         layoutState.mOffsetSecond = getOffsetSecond()
         if ((layoutState.mInfinite || remainingSpace > 0) && layoutState.hasMore(state)) {
@@ -111,10 +111,10 @@ class SwipeLayoutManager : CommonLayoutManager() {
         val top: Int
         val right: Int
         val bottom: Int
-        if (mOrientation === OrientationHelper.VERTICAL) {
+        if (mOrientation == OrientationHelper.VERTICAL) {
             left = layoutState.mOffsetSecond - getOrientationHelper().getDecoratedMeasurementInOther(view)
             right = layoutState.mOffsetSecond
-            if (layoutState.mLayoutDirection == CommonLayoutManager.LayoutState.LAYOUT_START) {
+            if (layoutState.mLayoutDirection == LayoutState.LAYOUT_START) {
                 bottom = layoutState.mOffsetFirst
                 top = layoutState.mOffsetFirst - result.mConsumed
             } else {
@@ -124,7 +124,7 @@ class SwipeLayoutManager : CommonLayoutManager() {
         } else {
             top = layoutState.mOffsetSecond - getOrientationHelper().getDecoratedMeasurementInOther(view)
             bottom = layoutState.mOffsetSecond
-            if (layoutState.mLayoutDirection == CommonLayoutManager.LayoutState.LAYOUT_START) {
+            if (layoutState.mLayoutDirection == LayoutState.LAYOUT_START) {
                 right = layoutState.mOffsetFirst
                 left = layoutState.mOffsetFirst - result.mConsumed
             } else {

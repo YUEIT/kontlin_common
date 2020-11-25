@@ -40,7 +40,7 @@ class RetrofitManager private constructor() {
         builder.connectTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
         builder.readTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
         builder.writeTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
-        if (InitConstant.isDebug) {
+        if (InitConstant.isDebug()) {
             val logging = HttpLoggingInterceptor()
             logging.level = HttpLoggingInterceptor.Level.BODY
             builder.addInterceptor(logging)

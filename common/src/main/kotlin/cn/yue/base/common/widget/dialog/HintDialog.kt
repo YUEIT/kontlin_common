@@ -136,7 +136,7 @@ class HintDialog: Dialog {
             } else {
                 hintDialog!!.titleTV.visibility = View.GONE
             }
-            if (titleColor > 0) {
+            if (titleColor != 0) {
                 hintDialog!!.titleTV.setTextColor(titleColor)
             }
             if (contentView == null) {
@@ -146,7 +146,7 @@ class HintDialog: Dialog {
                     contentTV.gravity = Gravity.CENTER
                     contentTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
                     contentTV.text = contentStr
-                    if (contentColor > 0) {
+                    if (contentColor != 0) {
                         contentTV.setTextColor(contentColor)
                     }
                     hintDialog!!.contentLL.addView(contentTV)
@@ -155,11 +155,11 @@ class HintDialog: Dialog {
                 hintDialog!!.contentLL.addView(contentView)
             }
             hintDialog!!.leftClickTV.text = leftClickStr
-            if (leftColor > 0) {
+            if (leftColor != 0) {
                 hintDialog!!.leftClickTV.setTextColor(leftColor)
             }
             hintDialog!!.rightClickTV.text = rightClickStr
-            if (rightColor > 0) {
+            if (rightColor != 0) {
                 hintDialog!!.rightClickTV.setTextColor(rightColor)
             }
             hintDialog!!.leftClickTV.setOnClickListener{

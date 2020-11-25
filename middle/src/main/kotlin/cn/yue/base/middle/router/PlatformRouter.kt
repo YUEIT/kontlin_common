@@ -38,15 +38,9 @@ class PlatformRouter : INavigation {
         return this
     }
 
-    override fun navigation(context: Context, requestCode: Int) {
+    override fun navigation(context: Context, requestCode: Int, toActivity: String?) {
         navigation?.apply {
-            navigation(context, requestCode)
-        }
-    }
-
-    override fun navigation(context: Context, toActivity: String?, requestCode: Int) {
-        navigation?.apply {
-            navigation(context, toActivity, requestCode)
+            navigation(context, requestCode, toActivity)
         }
     }
 

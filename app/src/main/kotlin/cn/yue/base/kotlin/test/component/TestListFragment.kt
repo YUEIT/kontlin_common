@@ -47,7 +47,7 @@ class TestListFragment : BaseListFragment<BaseListBean<TestItemBean>, TestItemBe
        return R.layout.item_test
     }
 
-    override fun bindItemData(holder: CommonViewHolder<TestItemBean>, position: Int, testItemBean: TestItemBean) {
+    override fun bindItemData(holder: CommonViewHolder, position: Int, testItemBean: TestItemBean) {
         holder.itemView.testTV.text = testItemBean.name
     }
 

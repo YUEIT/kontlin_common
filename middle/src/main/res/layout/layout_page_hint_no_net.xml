@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="23dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/ic_baseline_wifi_off"/>
+            android:src="@drawable/icon_wifi_off"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -28,26 +28,27 @@
 
         <TextView
             android:id="@+id/reloadTV"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="38dp"
             android:layout_marginTop="30dp"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
+            android:paddingStart="50dp"
+            android:paddingEnd="50dp"
             android:gravity="center"
-            android:background="@drawable/shape_bg_fed400_radius_18"
-            android:textColor="#040000"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/shape_bg_ffba43_radius_18"
+            android:textColor="#ffffff"
             android:textSize="12sp"
             android:text="重新加载" />
 
         <TextView
             android:id="@+id/checkNetTV"
-            android:layout_width="match_parent"
-            android:layout_height="38dp"
-            android:layout_marginTop="14dp"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_marginTop="10dp"
+            android:paddingStart="40dp"
+            android:paddingEnd="40dp"
             android:gravity="center"
-            android:background="@drawable/shape_bg_f3f3f3_radius_18"
+            android:layout_gravity="center_horizontal"
             android:textColor="#9b9b9b"
             android:textSize="12sp"
             android:text="检查网络" />

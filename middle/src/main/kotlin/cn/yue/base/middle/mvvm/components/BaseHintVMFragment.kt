@@ -27,7 +27,7 @@ abstract class BaseHintVMFragment<VM : BaseViewModel> : BaseVMFragment<VM>(), IS
     override fun initView(savedInstanceState: Bundle?) {
         hintView = findViewById(R.id.hintView)
         hintView.setOnReloadListener {
-            if (NetworkUtils.isConnected()) {
+            if (NetworkUtils.isAvailable()) {
                 viewModel.loader.pageStatus = PageStatus.NORMAL
             } else {
                 showShortToast("网络不给力，请检查您的网络设置~")
@@ -43,7 +43,7 @@ abstract class BaseHintVMFragment<VM : BaseViewModel> : BaseVMFragment<VM>(), IS
 
     override fun initOther() {
         super.initOther()
-        if (NetworkUtils.isConnected()) {
+        if (NetworkUtils.isAvailable()) {
             viewModel.loader.pageStatus = PageStatus.NORMAL
         } else {
             viewModel.loader.pageStatus = PageStatus.NO_NET

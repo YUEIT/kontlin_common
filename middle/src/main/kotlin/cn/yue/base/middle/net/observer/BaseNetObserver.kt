@@ -1,6 +1,8 @@
 package cn.yue.base.middle.net.observer
 
 import cn.yue.base.common.utils.debug.ToastUtils
+import cn.yue.base.middle.module.IAppModule
+import cn.yue.base.middle.module.manager.ModuleManager
 import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
 import io.reactivex.observers.DisposableSingleObserver
@@ -11,7 +13,7 @@ import java.util.concurrent.CancellationException
  * Created by yue on 2018/7/26
  */
 
-abstract class BaseNetSingleObserver<T> : DisposableSingleObserver<T>() {
+abstract class BaseNetObserver<T> : DisposableSingleObserver<T>() {
 
 
     public override fun onStart() {
@@ -40,22 +42,8 @@ abstract class BaseNetSingleObserver<T> : DisposableSingleObserver<T>() {
     }
 
     private fun onLoginInvalid() {
-        if (invalid != null) {
-            ToastUtils.showShortToast("登录失效~")
-            invalid!!.onInvalid()
-        }
+        ToastUtils.showShortToast("登录失效~")
+        ModuleManager.getModuleService(IAppModule::class).loginInvalid()
     }
 
-    interface LoginInvalidListener {
-        fun onInvalid()
-    }
-
-    companion object {
-
-        private var invalid: LoginInvalidListener? = null
-
-        fun setLoginInvalidListener(invalid: LoginInvalidListener) {
-            BaseNetSingleObserver.invalid = invalid
-        }
-    }
 }

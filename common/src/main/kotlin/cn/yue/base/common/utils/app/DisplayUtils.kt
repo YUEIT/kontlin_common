@@ -1,6 +1,5 @@
 package cn.yue.base.common.utils.app
 
-import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import cn.yue.base.common.utils.Utils
@@ -12,6 +11,12 @@ object DisplayUtils {
      */
     @JvmStatic
     fun dip2px(dpValue: Float): Int {
+        val scale = Utils.getContext().resources.displayMetrics.density
+        return (dpValue * scale + 0.5f).toInt()
+    }
+
+    @JvmStatic
+    fun dp2px(dpValue: Float): Int {
         val scale = Utils.getContext().resources.displayMetrics.density
         return (dpValue * scale + 0.5f).toInt()
     }

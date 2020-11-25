@@ -1,13 +1,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_gravity="center"
-    android:background="@android:color/transparent"
+    android:background="@drawable/shape_bg_70202020_radius_3"
     android:gravity="center"
-    android:paddingBottom="10dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:paddingTop="10dp" >
+    android:padding="@dimen/rdp10">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -19,17 +17,19 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true" >
 
-            <!--<include-->
-                <!--android:id="@+id/cst_wait_dialog_progressBar"-->
-                <!--layout="@layout/layout_app_progress"-->
-                <!--android:visibility="invisible" />-->
+<!--            <ImageView-->
+<!--                android:id="@+id/waitImage"-->
+<!--                android:layout_width="50dp"-->
+<!--                android:layout_height="50dp"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:contentDescription="@null" />-->
 
-            <ImageView
-                android:id="@+id/waitImage"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center"
-                android:contentDescription="@null" />
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="@dimen/rdp50"
+                android:layout_height="@dimen/rdp50"
+                android:indeterminateTint="#ffba43"
+                android:indeterminateTintMode="src_atop" />
         </FrameLayout>
 
         <TextView
@@ -42,6 +42,7 @@
             android:layout_marginTop="10dp"
             android:gravity="left|center_vertical"
             android:textColor="#ffffff"
+            tools:text="请稍等..."
             />
     </RelativeLayout>
 

@@ -122,5 +122,4 @@ class BaseFooter(context: Context?) : RelativeLayout(context) {
     fun setOnReloadListener(onReloadListener: (() -> Unit)?) {
         this.onReloadListener = onReloadListener
     }
-
 }

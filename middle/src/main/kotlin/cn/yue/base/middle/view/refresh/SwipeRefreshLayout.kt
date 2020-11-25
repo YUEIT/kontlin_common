@@ -18,12 +18,16 @@ class SwipeRefreshLayout(context: Context, attributeSet: AttributeSet): SwipeRef
             R.color.progress_color_4
     )
 
-    override fun init() {
+    init {
         setColorSchemeResources(*colors)
     }
 
     override fun setTargetView(targetView: View) {
 
+    }
+
+    override fun setEnabledRefresh(enable: Boolean) {
+        super.setEnabled(enable)
     }
 
     override fun startRefresh() {

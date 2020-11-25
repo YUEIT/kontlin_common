@@ -1,30 +1,64 @@
 package cn.yue.base.common.utils.debug
 
+import android.content.Context
+import android.graphics.Color
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.os.Message
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.Toast
+import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-
+import cn.yue.base.common.R
 import cn.yue.base.common.utils.Utils
+import cn.yue.base.common.utils.app.DisplayUtils
+import java.lang.ref.WeakReference
+import java.lang.reflect.Field
 
 object ToastUtils {
 
+    private const val DEFAULT_COLOR = Color.WHITE
+    private var gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
+    private var xOffset = 0
+    private var yOffset = DisplayUtils.dip2px(100f)
+    private var bgResource = R.drawable.shape_bg_99000000_radius_10_padding_10
+    private var bgResourceOneTime = -1
+    private var messageColor = DEFAULT_COLOR
+    private var messageColorOneTime = DEFAULT_COLOR
+
+    private var sViewWeakReference: WeakReference<View>? = null
     private var sToast: Toast? = null
     private val sHandler = Handler(Looper.getMainLooper())
-    private var isJumpWhenMore: Boolean = false
 
-    /**
-     * 吐司初始化
-     *
-     * @param isJumpWhenMore 当连续弹出吐司时，是要弹出新吐司还是只修改文本内容
-     *
-     * `true`: 弹出新吐司<br></br>`false`: 只修改文本内容
-     *
-     * 如果为`false`的话可用来做显示任意时长的吐司
-     */
-    @JvmStatic
-    fun init(isJumpWhenMore: Boolean) {
-        ToastUtils.isJumpWhenMore = isJumpWhenMore
+    fun setGravity(mGravity: Int, mXOffset: Int, mYOffset: Int) {
+        gravity = mGravity
+        xOffset = mXOffset
+        yOffset = mYOffset
+    }
+
+    fun setView(@LayoutRes layoutId: Int) {
+        val inflate = Utils.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        sViewWeakReference = WeakReference(inflate.inflate(layoutId, null))
+    }
+
+    fun setView(view: View?) {
+        sViewWeakReference = view?.let { WeakReference(it) }
+    }
+
+    fun getView(): View? {
+        sViewWeakReference?.apply {
+            val view = get()
+            if (view != null) {
+                return view
+            }
+        }
+        return getToast().view
     }
 
     /**
@@ -33,7 +67,10 @@ object ToastUtils {
      * @param text 文本
      */
     @JvmStatic
-    fun showShortToastSafe(text: CharSequence) {
+    fun showShortToastSafe(text: CharSequence?) {
+        if (text.isNullOrEmpty()) {
+            return
+        }
         sHandler.post { showToast(text, Toast.LENGTH_SHORT) }
     }
 
@@ -53,7 +90,10 @@ object ToastUtils {
      * @param text 文本
      */
     @JvmStatic
-    fun showLongToastSafe(text: CharSequence) {
+    fun showLongToastSafe(text: CharSequence?) {
+        if (text.isNullOrEmpty()) {
+            return
+        }
         sHandler.post { showToast(text, Toast.LENGTH_LONG) }
     }
 
@@ -73,7 +113,10 @@ object ToastUtils {
      * @param text 文本
      */
     @JvmStatic
-    fun showShortToast(text: CharSequence) {
+    fun showShortToast(text: CharSequence?) {
+        if (text.isNullOrEmpty()) {
+            return
+        }
         showToast(text, Toast.LENGTH_SHORT)
     }
 
@@ -93,7 +136,10 @@ object ToastUtils {
      * @param text 文本
      */
     @JvmStatic
-    fun showLongToast(text: CharSequence) {
+    fun showLongToast(text: CharSequence?) {
+        if (text.isNullOrEmpty()) {
+            return
+        }
         showToast(text, Toast.LENGTH_LONG)
     }
 
@@ -117,22 +163,55 @@ object ToastUtils {
         showToast(Utils.getContext().resources.getText(resId).toString(), duration)
     }
 
-
     /**
      * 显示吐司
      *
      * @param text     文本
      * @param duration 显示时长
      */
-    fun showToast(text: CharSequence, duration: Int) {
-        if (isJumpWhenMore) cancelToast()
-        if (sToast == null) {
-            sToast = Toast.makeText(Utils.getContext(), text, duration)
-        } else {
-            sToast!!.setText(text)
-            sToast!!.duration = duration
+    private fun showToast(text: CharSequence, duration: Int) {
+        cancelToast()
+        var custom = false
+        // android 11 setView方法失效
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            sViewWeakReference?.apply {
+                val view: View? = get()
+                if (view != null) {
+                    getToast().view = view
+                    getToast().duration = duration
+                    custom = true
+                }
+            }
         }
-        sToast!!.show()
+        if (!custom) {
+            val spannableString = SpannableString(text)
+            val currentMessageColor = if (messageColorOneTime != DEFAULT_COLOR) messageColorOneTime else messageColor
+            val colorSpan = ForegroundColorSpan(currentMessageColor)
+            spannableString.setSpan(colorSpan, 0, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            sToast = Toast.makeText(Utils.getContext(), spannableString, duration)
+            messageColorOneTime = DEFAULT_COLOR
+        }
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            val view = getToast().view ?: return
+            if (bgResourceOneTime != -1) {
+                view.setBackgroundResource(bgResourceOneTime)
+                bgResourceOneTime = -1
+            } else {
+                view.setBackgroundResource(bgResource)
+            }
+            getToast().setGravity(gravity, xOffset, yOffset)
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1) {
+                hook(getToast())
+            }
+        }
+        getToast().show()
+    }
+
+    private fun getToast(): Toast {
+        if (sToast == null) {
+            sToast = Toast(Utils.getContext())
+        }
+        return sToast!!
     }
 
     /**
@@ -144,5 +223,49 @@ object ToastUtils {
             sToast!!.cancel()
             sToast = null
         }
+    }
+
+    /**
+     * 7.1.1版本问题
+     * 来自腾讯解决方案
+     */
+    private var sField_TN: Field? = null
+    private var sField_TN_Handler: Field? = null
+    private fun initHook() {
+        try {
+            sField_TN = Toast::class.java.getDeclaredField("mTN")
+            if (sField_TN != null) {
+                sField_TN!!.isAccessible = true
+                sField_TN_Handler = sField_TN!!.type.getDeclaredField("mHandler")
+                sField_TN_Handler!!.isAccessible = true
+            }
+        } catch (e: Exception) {
+        }
+    }
+
+    private fun hook(toast: Toast) {
+        try {
+            if (sField_TN == null || sField_TN_Handler == null) {
+                initHook()
+            }
+            val tn = sField_TN!![toast]
+            val preHandler = sField_TN_Handler!![tn] as Handler
+            sField_TN_Handler!![tn] = SafelyHandlerWrapper(preHandler)
+        } catch (e: Exception) {
+        }
+    }
+
+    private class SafelyHandlerWrapper(private val impl: Handler) : Handler() {
+        override fun dispatchMessage(msg: Message) {
+            try {
+                super.dispatchMessage(msg)
+            } catch (e: Exception) {
+            }
+        }
+
+        override fun handleMessage(msg: Message) {
+            impl.handleMessage(msg) //需要委托给原Handler执行
+        }
+
     }
 }

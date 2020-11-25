@@ -25,7 +25,7 @@ open class BaseUnityListBean<T>(
         var pt: String? = null    //版本Id，用作上一页版本号
     ) {
 
-    fun isDataEmpty(): Boolean = getRealList() == null || getRealList()!!.size == 0
+    fun isDataEmpty(): Boolean = getRealList().isNullOrEmpty()
 
     fun getRealList(): MutableList<T>? {
         if (list != null) {
@@ -42,7 +42,11 @@ open class BaseUnityListBean<T>(
         return if (mCount == 0) mTotal else mCount
     }
 
-    fun getCount(): Int {
-        return if (mCount == 0) mTotal else mCount
+    fun getRealPageNo(): Int {
+        return mPageNo
+    }
+
+    fun getRealPageNt(): String? {
+        return nt
     }
 }

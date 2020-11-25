@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 /**
  * 介绍：通用LayoutManager 即简化编写流程
-**/
+ **/
 
 open class CommonLayoutManager : RecyclerView.LayoutManager {
 
@@ -51,7 +51,7 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
         }
         return mOrientationHelper!!
     }
-    
+
     private fun getLayoutState(): LayoutState {
         if (mLayoutState == null) {
             mLayoutState = LayoutState()
@@ -70,7 +70,7 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
         getOrientationHelper()
     }
 
-    internal fun resolveIsInfinite(): Boolean {
+    private fun resolveIsInfinite(): Boolean {
         return getOrientationHelper().mode == View.MeasureSpec.UNSPECIFIED && getOrientationHelper().end == 0
     }
 

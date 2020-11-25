@@ -3,9 +3,7 @@ package cn.yue.base.middle.components
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewStub
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import cn.yue.base.common.activity.BaseFragment
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.common.utils.device.NetworkUtils
@@ -31,7 +29,7 @@ abstract class BasePullFragment : BaseFragment(), IStatusView, IWaitView, IBaseV
     private val loader = Loader()
     private lateinit var refreshL: IRefreshLayout
     private lateinit var hintView: PageHintView
-    private lateinit var baseVS: ViewStub
+    private lateinit var contentView: View
 
     override fun getLayoutId(): Int {
         return R.layout.fragment_base_pull
@@ -40,7 +38,7 @@ abstract class BasePullFragment : BaseFragment(), IStatusView, IWaitView, IBaseV
     override fun initView(savedInstanceState: Bundle?) {
         hintView = findViewById(R.id.hintView)
         hintView.setOnReloadListener {
-            if (NetworkUtils.isConnected()) {
+            if (NetworkUtils.isAvailable()) {
                 refresh()
             } else {
                 showShortToast("网络不给力，请检查您的网络设置~")
@@ -50,20 +48,23 @@ abstract class BasePullFragment : BaseFragment(), IStatusView, IWaitView, IBaseV
         refreshL.setOnRefreshListener {
             refresh()
         }
-        refreshL.setEnabled(canPullDown())
+        refreshL.setEnabledRefresh(canPullDown())
         if (canPullDown()) {
-            hintView.setRefreshTarget(refreshL as ViewGroup?)
+            hintView.setRefreshTarget(refreshL)
         }
-        baseVS = findViewById(R.id.baseVS)
+        val baseVS = findViewById<ViewStub>(R.id.baseVS)
         baseVS.layoutResource = getContentLayoutId()
-        baseVS.setOnInflateListener { stub, inflated -> stubInflate(stub, inflated) }
+        baseVS.setOnInflateListener { _, inflated ->
+            contentView = inflated
+            bindLayout(inflated)
+        }
         baseVS.inflate()
     }
 
-    open fun stubInflate(stub: ViewStub?, inflated: View?) {}
+    open fun bindLayout(inflated: View) {}
 
     override fun initOther() {
-        if (NetworkUtils.isConnected()) {
+        if (NetworkUtils.isAvailable()) {
             refresh()
         } else {
             showStatusView(loader.setPageStatus(PageStatus.NO_NET))
@@ -89,7 +90,7 @@ abstract class BasePullFragment : BaseFragment(), IStatusView, IWaitView, IBaseV
             return
         }
         if (isPageRefreshAnim) {
-            baseVS.visibility = View.GONE
+            contentView.visibility = View.GONE
             showStatusView(loader.setPageStatus(PageStatus.LOADING))
         } else {
             startRefresh()
@@ -111,17 +112,20 @@ abstract class BasePullFragment : BaseFragment(), IStatusView, IWaitView, IBaseV
         showStatusView(loader.setPageStatus(status!!))
     }
 
+    /**
+     * @hide 子类切勿直接调用
+     */
     override fun showStatusView(status: PageStatus?) {
         if (loader.isFirstLoad) {
             hintView.show(status)
             if (loader.pageStatus === PageStatus.NORMAL) {
-                baseVS.visibility = View.VISIBLE
+                contentView.visibility = View.VISIBLE
             } else {
-                baseVS.visibility = View.GONE
+                contentView.visibility = View.GONE
             }
         } else {
             hintView.show(PageStatus.NORMAL)
-            baseVS.visibility = View.VISIBLE
+            contentView.visibility = View.VISIBLE
         }
         if (status === PageStatus.NORMAL) {
             loader.isFirstLoad = false
@@ -129,16 +133,16 @@ abstract class BasePullFragment : BaseFragment(), IStatusView, IWaitView, IBaseV
     }
 
     private var waitDialog: WaitDialog? = null
-    override fun showWaitDialog(title: String?) {
+    override fun showWaitDialog(title: String) {
         if (waitDialog == null) {
             waitDialog = WaitDialog(mActivity)
         }
-        waitDialog!!.show(title!!, true, null)
+        waitDialog?.show(title, true, null)
     }
 
     override fun dismissWaitDialog() {
         if (waitDialog != null && waitDialog!!.isShowing()) {
-            waitDialog!!.cancel()
+            waitDialog?.cancel()
         }
     }
 

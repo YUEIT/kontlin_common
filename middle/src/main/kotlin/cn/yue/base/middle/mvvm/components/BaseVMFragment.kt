@@ -2,7 +2,6 @@ package cn.yue.base.middle.mvvm.components
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.TextUtils
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -33,7 +32,9 @@ abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment(), IWaitView {
             }
             viewModel = createViewModel(modelClass)
         }
-        this.viewModel = viewModel
+        if (!this::viewModel.isInitialized) {
+            this.viewModel = viewModel
+        }
         super.onCreate(savedInstanceState)
     }
 
@@ -52,7 +53,7 @@ abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment(), IWaitView {
     override fun initOther() {
         super.initOther()
         viewModel.waitEvent.observe(this, Observer { s ->
-            if (TextUtils.isEmpty(s)) {
+            if (null == s) {
                 dismissWaitDialog()
             } else {
                 showWaitDialog(s)
@@ -61,10 +62,10 @@ abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment(), IWaitView {
         viewModel.routerEvent.observe(this, Observer { (routerCard, requestCode, toActivity) ->
             FRouter.instance
                     .bindRouterCard(routerCard)
-                    .navigation(mActivity, toActivity, requestCode)
+                    .navigation(mActivity, requestCode, toActivity)
         })
         viewModel.finishEvent.observe(this, Observer { (resultCode, bundle) ->
-            if (resultCode < 0) {
+            if (resultCode == 0) {
                 finishAll()
             } else {
                 val intent = Intent()
@@ -77,22 +78,26 @@ abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment(), IWaitView {
     }
 
     private var waitDialog: WaitDialog? = null
-    override fun showWaitDialog(title: String?) {
+    override fun showWaitDialog(title: String) {
         if (waitDialog == null) {
             waitDialog = WaitDialog(mActivity)
         }
-        waitDialog!!.show(title, true, null)
+        waitDialog?.show(title, true, null)
     }
 
     override fun dismissWaitDialog() {
         if (waitDialog != null && waitDialog!!.isShowing()) {
-            waitDialog!!.cancel()
+            waitDialog?.cancel()
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         lifecycle.removeObserver(viewModel)
+        // 通过Transaction的移除再添加或者替换的操作，会出现复用已经被destroy的fragment情况
+        // 这种情况下如果使用缓存，会出现liveData无法监听，因为liveData的观察者已经在destroy时被移除了
+        // 这里就不使用缓存了，那么重复初始化的逻辑就需要检查了
+        clearCacheView()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

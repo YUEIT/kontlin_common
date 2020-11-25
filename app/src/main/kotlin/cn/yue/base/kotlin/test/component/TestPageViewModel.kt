@@ -8,7 +8,7 @@ import java.util.*
 
 class TestPageViewModel(application: Application) : PageViewModel<TestItemBean>(application) {
 
-    override suspend fun getRequestScope(nt: String?): BaseListBean<TestItemBean>? {
+    override suspend fun getRequestScope(nt: String): BaseListBean<TestItemBean>? {
         delay(3000)
         val listBean = BaseListBean<TestItemBean>()
         listBean.mPageSize = 20

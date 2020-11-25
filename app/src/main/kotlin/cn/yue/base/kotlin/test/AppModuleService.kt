@@ -8,7 +8,9 @@ import cn.yue.base.middle.module.IAppModule
  * Created by yue on 2020/8/17
  */
 class AppModuleService : IAppModule{
-    override fun test(str: String) {
+
+    override fun loginInvalid() {
+
     }
 
     override fun init(context: Context) {

@@ -36,7 +36,7 @@ abstract class BaseHintFragment : BaseFragment(), IStatusView, IWaitView, IBaseV
         loader.setPageStatus(PageStatus.NORMAL)
         hintView = findViewById(R.id.hintView)
         hintView.setOnReloadListener {
-            if (NetworkUtils.isConnected()) {
+            if (NetworkUtils.isAvailable()) {
                 showStatusView(loader.setPageStatus(PageStatus.NORMAL))
             } else {
                 showShortToast("网络不给力，请检查您的网络设置~")
@@ -44,13 +44,13 @@ abstract class BaseHintFragment : BaseFragment(), IStatusView, IWaitView, IBaseV
         }
         baseVS = findViewById(R.id.baseVS)
         baseVS.layoutResource = getContentLayoutId()
-        baseVS.setOnInflateListener { stub, inflated -> stubInflate(stub, inflated) }
+        baseVS.setOnInflateListener { _, inflated -> bindLayout(inflated) }
         baseVS.inflate()
     }
 
     override fun initOther() {
         super.initOther()
-        if (NetworkUtils.isConnected()) {
+        if (NetworkUtils.isAvailable()) {
             showStatusView(loader.setPageStatus(PageStatus.NORMAL))
         } else {
             showStatusView(loader.setPageStatus(PageStatus.NO_NET))
@@ -59,7 +59,7 @@ abstract class BaseHintFragment : BaseFragment(), IStatusView, IWaitView, IBaseV
 
     abstract fun getContentLayoutId(): Int
 
-    open fun stubInflate(stub: ViewStub?, inflated: View?) {}
+    open fun bindLayout(inflated: View) {}
 
     fun getPageHintView(): PageHintView {
         return hintView
@@ -77,16 +77,16 @@ abstract class BaseHintFragment : BaseFragment(), IStatusView, IWaitView, IBaseV
     }
 
     private var waitDialog: WaitDialog? = null
-    override fun showWaitDialog(title: String?) {
+    override fun showWaitDialog(title: String) {
         if (waitDialog == null) {
             waitDialog = WaitDialog(mActivity)
         }
-        waitDialog!!.show(title!!, true, null)
+        waitDialog?.show(title, true, null)
     }
 
     override fun dismissWaitDialog() {
         if (waitDialog != null && waitDialog!!.isShowing()) {
-            waitDialog!!.cancel()
+            waitDialog?.cancel()
         }
     }
 

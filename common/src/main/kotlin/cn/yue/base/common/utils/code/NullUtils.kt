@@ -1,7 +1,5 @@
 package cn.yue.base.common.utils.code
 
-import kotlin.contracts.contract
-
 /**
  * Description :
  * Created by yue on 2020/8/6
@@ -21,3 +19,16 @@ inline fun <T> Iterable<T>?.forEachIndexedNullable(action: (index: Int, T) -> Un
     var index = 0
     for (item in this) action(index++, item)
 }
+
+inline fun CharSequence?.hasValue(): Boolean {
+    return this != null && this.isNotEmpty()
+}
+
+inline fun <T : CharSequence> T?.hasValue(action: (data: T) -> Unit): Boolean {
+    val value = (this != null && this.isNotEmpty())
+    if (value) {
+        action.invoke(this!!)
+    }
+    return value
+}
+

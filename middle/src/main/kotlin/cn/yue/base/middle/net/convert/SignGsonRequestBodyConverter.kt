@@ -57,7 +57,7 @@ internal class SignGsonRequestBodyConverter<T>(private val gson: Gson, private v
 //            val sign = EncryptUtils.encryptMD5ToString((appVersion + InitConstant.APP_CLIENT_TYPE
 //                    + encodeData + deviceId + time + InitConstant.APP_SIGN_KEY).toByteArray())
             tmp["app_version"] = appVersion.toString()
-            tmp["client_type"] = InitConstant.APP_CLIENT_TYPE + ""
+            tmp["client_type"] = "1"
             tmp["data"] = encodeData
             tmp["device_id"] = deviceId.toString()
             tmp["time"] = time.toString() + ""

@@ -6,8 +6,12 @@ object LogUtils {
 
     private var logSwitch = true
     private var logFilter = 'v'
-    private var tag = "YUE"
+    private var tag = "YPC_OA"
     private var stackIndex = 0
+
+    public fun setDebug(debug: Boolean) {
+        logSwitch = debug
+    }
 
     /**
      * Verbose日志
@@ -183,7 +187,7 @@ object LogUtils {
      * @param type 日志类型
      */
     
-    fun log(tag: String, msg: String?, tr: Throwable?, type: Char) {
+    private fun log(tag: String, msg: String?, tr: Throwable?, type: Char) {
         if (msg == null || msg.isEmpty()) return
         if (logSwitch) {
             if ('e' == type && ('e' == logFilter || 'v' == logFilter)) {
@@ -207,7 +211,7 @@ object LogUtils {
      * @param type 日志类型
      */
     
-    fun printLog(tag: String, msg: String, tr: Throwable?, type: Char) {
+    private fun printLog(tag: String, msg: String, tr: Throwable?, type: Char) {
         val maxLen = 4000
         var i = 0
         val len = msg.length
@@ -228,13 +232,16 @@ object LogUtils {
      *
      * @return tag
      */
-    fun generateTag(tag: String): String {
+    private fun generateTag(tag: String): String {
         val stacks = Thread.currentThread().stackTrace
         if (stackIndex == 0) {
-            while (stacks[stackIndex].methodName != "generateTag") {
+            while (stacks.size > stackIndex && stacks[stackIndex].methodName != "generateTag") {
                 ++stackIndex
             }
             stackIndex += 3
+            if (stackIndex >= stacks.size) {
+                stackIndex = stacks.size - 1
+            }
         }
         val caller = stacks[stackIndex]
         var callerClazzName = caller.className

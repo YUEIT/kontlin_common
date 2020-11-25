@@ -2,7 +2,6 @@ package cn.yue.base.middle.mvvm.components
 
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewStub
 import androidx.lifecycle.Observer
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
@@ -31,7 +30,7 @@ abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>(), IS
     override fun initView(savedInstanceState: Bundle?) {
         hintView = findViewById(R.id.hintView)
         hintView.setOnReloadListener {
-            if (NetworkUtils.isConnected()) {
+            if (NetworkUtils.isAvailable()) {
                 viewModel.refresh()
             } else {
                 showShortToast("网络不给力，请检查您的网络设置~")
@@ -41,9 +40,9 @@ abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>(), IS
         refreshL.setOnRefreshListener {
             viewModel.refresh()
         }
-        refreshL.setEnabled(canPullDown())
+        refreshL.setEnabledRefresh(canPullDown())
         if (canPullDown()) {
-            hintView.setRefreshTarget(refreshL as ViewGroup?)
+            hintView.setRefreshTarget(refreshL)
         }
         val baseVS = findViewById<ViewStub>(R.id.baseVS)
         baseVS.layoutResource = getContentLayoutId()
@@ -58,7 +57,7 @@ abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>(), IS
 
     override fun initOther() {
         super.initOther()
-        if (NetworkUtils.isConnected()) {
+        if (NetworkUtils.isAvailable()) {
             viewModel.refresh()
         } else {
             viewModel.loader.pageStatus = PageStatus.NO_NET

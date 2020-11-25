@@ -33,7 +33,7 @@ abstract class EmotionBottomSortLayout(context: Context, attrs: AttributeSet?) :
                 return R.layout.item_emotion_bottom_sort
             }
 
-            override fun bindData(holder: CommonViewHolder<IEmotionSort>, position: Int, iEmotionSort: IEmotionSort) {
+            override fun bindData(holder: CommonViewHolder, position: Int, iEmotionSort: IEmotionSort) {
                 if (position == currentIndex) {
                     holder.itemView.setBackgroundColor(Color.parseColor("#efefef"))
                 } else {
@@ -41,7 +41,7 @@ abstract class EmotionBottomSortLayout(context: Context, attrs: AttributeSet?) :
                 }
                 //                ImageLoader.getLoader().loadImage((ImageView) holder.getView(R.id.emotionImageIV), iEmotionSort.getIconUrl());
                 val imageView = holder.getView<ImageView>(R.id.emotionImageIV)
-                setOnItemClickListener {
+                holder.setOnItemClickListener {
                     if (mListener != null) {
                         mListener!!(iEmotionSort)
                     }

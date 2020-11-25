@@ -50,7 +50,7 @@ abstract class BaseFragmentActivity : FragmentActivity() {
         lifecycleProvider = initLifecycleProvider()
         lifecycle.addObserver(lifecycleProvider)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
-        setSystemBar(false, true, Color.WHITE)
+        setSystemBar()
         setContentView(getContentViewLayoutId())
         initView()
         replace(getFragment(), null, false)
@@ -64,9 +64,9 @@ abstract class BaseFragmentActivity : FragmentActivity() {
         return lifecycleProvider
     }
 
-    open fun getContentViewLayoutId(): Int = R.layout.base_activity_layout
+    open fun getContentViewLayoutId(): Int = R.layout.activity_base_layout
 
-    abstract fun getFragment(): Fragment?
+    open fun getFragment(): Fragment? = null
 
     private fun initView() {
         topFL = findViewById(R.id.topBar)
@@ -83,11 +83,7 @@ abstract class BaseFragmentActivity : FragmentActivity() {
         })
     }
 
-    fun setSystemBar(isFillUpTop: Boolean, isDarkIcon: Boolean) {
-        setSystemBar(isFillUpTop, isDarkIcon, Color.TRANSPARENT)
-    }
-
-    fun setSystemBar(isFillUpTop: Boolean, isDarkIcon: Boolean, bgColor: Int) {
+    fun setSystemBar(isFillUpTop: Boolean = false, isDarkIcon: Boolean = true, bgColor: Int = Color.WHITE) {
         try {
             BarUtils.setStyle(this, true, isDarkIcon, bgColor)
         } catch (e: Exception) {

@@ -21,15 +21,15 @@ object PhoneUtils {
      *
      * @return
      */
-    var KEY_CST_DEVICE_ID = "key_cst_device_id"
 
     fun getNullDeviceId(deviceId: String?): String? {
+        val keyDeviceId = "key_device_id"
         if (TextUtils.isEmpty(deviceId) || deviceId!!.length < 16) {//说明获取不到了，或者小于16
             //先从本地持久化取
-            var cstDeviceId = SPUtils.getInstance().getString(KEY_CST_DEVICE_ID, "")
-            if (TextUtils.isEmpty(cstDeviceId)) {//娶不到自己构造一个随机字符串，并保存
+            var cstDeviceId = SPUtils.getInstance().getString(keyDeviceId, "")
+            if (TextUtils.isEmpty(cstDeviceId)) {//取不到自己构造一个随机字符串，并保存
                 cstDeviceId = UUID.randomUUID().toString()
-                SPUtils.getInstance().put(KEY_CST_DEVICE_ID, cstDeviceId)
+                SPUtils.getInstance().put(keyDeviceId, cstDeviceId)
             }
             return cstDeviceId
         }

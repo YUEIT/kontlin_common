@@ -6,15 +6,12 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.Handler
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import cn.yue.base.common.R
 import cn.yue.base.common.activity.TransitionAnimation.TRANSITION_BOTTOM
@@ -26,9 +23,7 @@ import cn.yue.base.common.activity.TransitionAnimation.getWindowEnterStyle
 import cn.yue.base.common.activity.rx.ILifecycleProvider
 import cn.yue.base.common.activity.rx.RxLifecycleProvider
 import cn.yue.base.common.widget.dialog.WaitDialog
-import java.lang.NullPointerException
 import java.lang.ref.WeakReference
-import java.util.*
 
 /**
  * Description :
@@ -72,18 +67,24 @@ abstract class BaseDialogFragment : DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (cacheView == null || !needCache()) {//如果view没有被初始化或者不需要缓存的情况下，重新初始化控件
-            cacheView = if (getLayoutId() == 0) null else inflater.inflate(getLayoutId(), container, false)
+            cacheView = if (getLayoutId() == 0) {
+                null
+            } else {
+                inflater.inflate(getLayoutId(), container, false)
+            }
             hasCache = false
         } else {
             hasCache = true
-            val v = cacheView!!.parent as ViewGroup
-            v.removeView(cacheView)
+            val v = cacheView?.parent
+            if (v != null && v is ViewGroup) {
+                v.removeView(cacheView)
+            }
         }
         return cacheView
     }
 
     /**
-     * true 避免当前Fragment被repalce后回退回来重走oncreateview，导致重复初始化View和数据
+     * true 避免当前Fragment被replace后回退回来重走onCreateView，导致重复初始化View和数据
      */
     open fun needCache(): Boolean {
         return true

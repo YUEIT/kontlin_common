@@ -5,7 +5,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
-import cn.yue.base.middle.mvvm.data.BR
 import java.util.*
 /**
  * Description :
@@ -18,31 +17,33 @@ abstract class CommonVMAdapter<T> : CommonAdapter<T> {
     // key为data.hashCode; value为ItemViewModel
     private val modelList: MutableMap<Int, ItemViewModel> = LinkedHashMap()
 
-    constructor(context: Context) : super(context)
+    constructor(context: Context? = null) : super(context)
 
-    constructor(context: Context, list: MutableList<T>) : super(context, list) {
+    constructor(context: Context?, list: MutableList<T>) : super(context, list) {
         modelList.clear()
         addAllModel(list)
     }
 
     abstract fun initItemViewModel(t: T): ItemViewModel
 
-    override fun setList(list: MutableList<T>?) {
-        modelList.clear()
-        addAllModel(list)
-        super.setList(list)
+    override fun setList(list: List<T>?) {
+        if (list != null) {
+            modelList.clear()
+            addAllModel(list)
+            super.setList(list)
+        }
     }
 
     override fun addList(list: Collection<T>?) {
-        addAllModel(list)
-        super.addList(list)
+        if (list != null) {
+            addAllModel(list)
+            super.addList(list)
+        }
     }
 
-    private fun addAllModel(list: Collection<T>?) {
-        if (list != null) {
-            for (t in list) {
-                addModel(t)
-            }
+    private fun addAllModel(list: Collection<T>) {
+        for (t in list) {
+            addModel(t)
         }
     }
 
@@ -75,18 +76,18 @@ abstract class CommonVMAdapter<T> : CommonAdapter<T> {
     }
 
     override fun remove(position: Int) {
-        if (getData() != null && getData()!!.size > position && getData()!![position] != null) {
-            modelList.remove(getData()!![position].hashCode())
+        if (getData().size > position && getData()[position] != null) {
+            modelList.remove(getData()[position].hashCode())
         }
         super.remove(position)
     }
 
-    open fun getVariable(): Int = BR.viewModel
+    abstract fun getVariable(): Int
 
     override fun getViewType(position: Int): Int {
         var itemViewModel:ItemViewModel? = null
-        if (getData() != null && getData()!!.size > position && getData()!![position] != null) {
-            itemViewModel = modelList[getData()!![position].hashCode()]
+        if (getData().size > position && getData()[position] != null) {
+            itemViewModel = modelList[getData()[position].hashCode()]
         }
         return itemViewModel?.itemType ?: super.getViewType(position)
     }
@@ -96,7 +97,7 @@ abstract class CommonVMAdapter<T> : CommonAdapter<T> {
         return layoutId ?: 0
     }
 
-    override fun bindData(holder: CommonViewHolder<T>, position: Int, t: T) {
+    override fun bindData(holder: CommonViewHolder, position: Int, t: T) {
         val binding: ViewDataBinding? = DataBindingUtil.bind(holder.itemView)
         if (binding != null) {
             binding.setVariable(getVariable(), modelList[t.hashCode()])

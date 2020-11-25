@@ -2,30 +2,44 @@ package cn.yue.base.common.utils.device
 
 import android.content.Context
 import android.net.ConnectivityManager
-import android.net.NetworkInfo
+import android.net.NetworkCapabilities
+import android.os.Build
 import cn.yue.base.common.utils.Utils
+
 
 object NetworkUtils {
 
-    /**
-     * 获取活动网络信息
-     *
-     * 需添加权限 `<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>`
-     *
-     * @return NetworkInfo
-     */
-    private val activeNetworkInfo: NetworkInfo?
-        get() = (Utils.getContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo
+    fun isAvailable(): Boolean {
+        val manager = Utils.getContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+                ?: return false
+        val info = manager.activeNetworkInfo
+        return null != info && info.isConnected && info.isAvailable
+    }
 
-    /**
-     * 判断网络是否连接
-     *
-     * 需添加权限 `<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>`
-     *
-     * @return `true`: 是<br></br>`false`: 否
-     */
-    fun isConnected(): Boolean {
-        val info = activeNetworkInfo
-        return info != null && info.isConnected
+    fun isWifi(): Boolean {
+        val connectivityManager = Utils.getContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+                ?: return false
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+                    ?: return false
+            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+        } else {
+            val activeNetInfo = connectivityManager.activeNetworkInfo
+            activeNetInfo != null && activeNetInfo.type == ConnectivityManager.TYPE_WIFI
+        }
+
+    }
+
+    fun isMobile(): Boolean {
+        val connectivityManager = Utils.getContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+                ?: return false
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+                    ?: return false
+            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+        } else {
+            val activeNetInfo = connectivityManager.activeNetworkInfo
+            activeNetInfo != null && activeNetInfo.type == ConnectivityManager.TYPE_MOBILE
+        }
     }
 }

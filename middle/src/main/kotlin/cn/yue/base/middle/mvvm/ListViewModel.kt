@@ -14,14 +14,14 @@ import cn.yue.base.middle.mvvm.data.MutableListLiveData
 import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
 import cn.yue.base.middle.net.coroutine.request
-import cn.yue.base.middle.net.observer.BaseNetSingleObserver
+import cn.yue.base.middle.net.observer.BaseNetObserver
 import cn.yue.base.middle.net.wrapper.BaseListBean
 import io.reactivex.Single
 import java.util.*
 
 abstract class ListViewModel<P : BaseListBean<S>, S>(application: Application) : BaseViewModel(application) {
-    private var pageNt: String? = "1"
-    private var lastNt: String? = "1"
+    private var pageNt: String = "1"
+    private var lastNt: String = "1"
     var total = 0 //当接口返回总数时，为返回数量；接口未返回数量，为统计数量；
     @JvmField
     var dataLiveData = MutableListLiveData<S>()
@@ -33,7 +33,7 @@ abstract class ListViewModel<P : BaseListBean<S>, S>(application: Application) :
      * 刷新
      */
     @JvmOverloads
-    fun refresh(isPageRefreshAnim: Boolean = loader.isFirstLoad) {
+    open fun refresh(isPageRefreshAnim: Boolean = loader.isFirstLoad) {
         if (loader.loadStatus == LoadStatus.LOADING
                 || loader.loadStatus == LoadStatus.REFRESH
                 || loader.pageStatus == PageStatus.LOADING) {
@@ -48,12 +48,16 @@ abstract class ListViewModel<P : BaseListBean<S>, S>(application: Application) :
         loadData()
     }
 
-    open fun getRequestSingle(nt: String?): Single<P>? = null
+    fun loadRefresh() {
+        refresh(false)
+    }
 
-    open suspend fun getRequestScope(nt: String?): P? = null
+    open fun getRequestSingle(nt: String): Single<P>? = null
+
+    open suspend fun getRequestScope(nt: String): P? = null
 
     fun loadData() {
-        val observer = object : BaseNetSingleObserver<P>() {
+        val observer = object : BaseNetObserver<P>() {
             private var isLoadingRefresh = false
             override fun onStart() {
                 super.onStart()
@@ -123,7 +127,7 @@ abstract class ListViewModel<P : BaseListBean<S>, S>(application: Application) :
                 e.printStackTrace()
             }
         } else {
-            pageNt = p.getPageNt()
+            pageNt = p.getPageNt() ?: ""
         }
         if (p.getTotal() > 0) {
             total = p.getTotal()

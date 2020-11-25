@@ -7,19 +7,21 @@ package cn.yue.base.common.widget.recyclerview
 
 import android.content.Context
 import android.os.Bundle
-
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import java.util.*
 
-abstract class AutoRefreshAdapter<T>(protected var context: Context)
-    : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+abstract class AutoRefreshAdapter<T>
+    : RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private val dividerType = 0
+    private val inHeaderType = Integer.MIN_VALUE/2
+    private val inFooterType = Integer.MAX_VALUE/2
+
     /**
      * RecyclerView使用的，真正的Adapter
      */
@@ -31,11 +33,42 @@ abstract class AutoRefreshAdapter<T>(protected var context: Context)
     private var onItemClickListenerBlock: (() -> Unit)? = null
     private var onItemLongClickListenerBlock: (() -> Unit)? = null
 
-    private var list: SortedList<T>? = null
-    protected var inflater: LayoutInflater
+    protected lateinit var context: Context
 
-    init {
-        inflater = LayoutInflater.from(context)
+    /**
+     * 先初始化，然后才能setAdapter
+     */
+    private lateinit var list: SortedList<T>
+
+    /**
+     * 最好直接用这个Callback，自定义需要方法中回调mInnerAdapter的notify方法
+     * 使用SortedListAdapterCallback时需要覆盖onInserted、onRemoved、onMoved、onChanged
+     * SortedListAdapterCallback回调不是包装类的notify如果有header/footer会刷新出错
+     * 继承这个Callback，会需要重写compare方法（比较排序）、areContentsTheSame（比较内容是否相等）、areItemsTheSame（比较是否为同一项）
+     */
+    abstract inner class AutoSortedListCallback<T2> : SortedList.Callback<T2>() {
+        override fun onInserted(position: Int, count: Int) {
+            notifyItemInsertedReally(position)
+        }
+
+        override fun onRemoved(position: Int, count: Int) {
+            notifyItemRemovedReally(position)
+        }
+
+        override fun onMoved(fromPosition: Int, toPosition: Int) {
+            notifyItemMovedReally(fromPosition, toPosition)
+        }
+
+        override fun onChanged(position: Int, count: Int) {
+            notifyItemChangedReally(position)
+        }
+
+    }
+
+    constructor(context: Context? = null) {
+        if (context != null) {
+            this.context = context
+        }
         innerAdapter = RealAdapter()
         setAdapter(innerAdapter)
     }
@@ -69,19 +102,25 @@ abstract class AutoRefreshAdapter<T>(protected var context: Context)
     }
 
     /**
-     * 返回第一个FooterView
-     * @return
+     * 返回最后一个FooterView
      */
     fun getFooterView(): View? {
         return if (getFooterViewsCount() > 0) mFooterViews[getFooterViewsCount() - 1] else null
     }
 
+    fun getFooterView(position: Int): View? {
+        return if (getFooterViewsCount() > position) mFooterViews[position] else null
+    }
+
     /**
      * 返回第一个HeaderView
-     * @return
      */
     fun getHeaderView(): View? {
         return if (getHeaderViewsCount() > 0) mHeaderViews[0] else null
+    }
+
+    fun getHeaderView(position: Int): View? {
+        return if (getHeaderViewsCount() > position) mHeaderViews[position] else null
     }
 
     fun getHeaderViewsCount(): Int = mHeaderViews.size
@@ -114,26 +153,23 @@ abstract class AutoRefreshAdapter<T>(protected var context: Context)
     fun notifyItemInsertedReally(position: Int) {
         if (position > -1 && position < innerAdapter.itemCount) {
             innerAdapter.notifyItemInserted(position)
-            innerAdapter.notifyItemRangeChanged(position, list!!.size() - position)
+            innerAdapter.notifyItemRangeChanged(position, list.size() - position)
         }
     }
 
     /**
      * 单条删除
-     * @param position
      */
     fun notifyItemRemovedReally(position: Int) {
         if (position > -1 && position < innerAdapter.itemCount) {
             innerAdapter.notifyItemRemoved(position)
-            innerAdapter.notifyItemRangeChanged(position, list!!.size() - position)
+            innerAdapter.notifyItemRangeChanged(position, list.size() - position)
         }
     }
 
 
     /**
      * 单条移动
-     * @param fromPosition
-     * @param toPosition
      */
     fun notifyItemMovedReally(fromPosition: Int, toPosition: Int) {
         if (fromPosition > -1 && fromPosition < innerAdapter.itemCount
@@ -144,9 +180,16 @@ abstract class AutoRefreshAdapter<T>(protected var context: Context)
     }
 
     fun clear() {
-        if (list != null && list!!.size() > 0) {
-            list!!.clear()
+        if (list.size() > 0) {
+            list.clear()
         }
+    }
+
+    /**
+     * 设置数据
+     */
+    fun setList(list: SortedList<T>) {
+        this.list = list
     }
 
     /**
@@ -154,12 +197,8 @@ abstract class AutoRefreshAdapter<T>(protected var context: Context)
      * Collection 必须以升序排列，不管sortedList以什么规则排序的
      * @param list
      */
-    fun addList(list: Collection<T>?) {
-        if (null != list) {
-            if (null != this.list) {
-                this.list!!.addAll(list)
-            }
-        }
+    fun addList(list: Collection<T>) {
+        this.list.addAll(list)
     }
 
     /**
@@ -167,13 +206,13 @@ abstract class AutoRefreshAdapter<T>(protected var context: Context)
      * @param list
      */
     fun addAll(list: List<T>) {
-        this.list!!.beginBatchedUpdates()
+        this.list.beginBatchedUpdates()
         try {
             for (t in list) {
-                this.list!!.add(t)
+                this.list.add(t)
             }
         } finally {
-            this.list!!.endBatchedUpdates()
+            this.list.endBatchedUpdates()
         }
     }
 
@@ -181,47 +220,35 @@ abstract class AutoRefreshAdapter<T>(protected var context: Context)
      * 添加单条数据
      * @param t
      */
-    fun addItem(t: T?) {
+    fun addItem(t: T) {
         if (null != t) {
-            if (null != list) {
-                list!!.add(t)
-            }
+            list.add(t)
         }
     }
 
-    fun removeItem(t: T?) {
+    fun removeItem(t: T) {
         if (null != t) {
-            if (null != list) {
-                list!!.remove(t)
-            }
+            list.remove(t)
         }
     }
 
     fun removeItemAt(index: Int) {
         if (index > 0) {
-            if (null != list) {
-                list!!.removeItemAt(index)
-            }
+            list.removeItemAt(index)
         }
     }
 
     /**
      * 更新位置index的数据，更新后会根据排序规则调用move
-     * @param index
-     * @param t
      */
-    fun updateItemAt(index: Int, t: T?) {
+    fun updateItemAt(index: Int, t: T) {
         if (null != t && index > 0) {
-            if (null != list) {
-                list!!.updateItemAt(index, t)
-            }
+            list.updateItemAt(index, t)
         }
     }
 
-
     /**
      * 设置adapter
-     * @param adapter
      */
     private fun setAdapter(adapter: RealAdapter) {
         this.innerAdapter = adapter
@@ -230,22 +257,13 @@ abstract class AutoRefreshAdapter<T>(protected var context: Context)
         notifyItemRangeInserted(getHeaderViewsCount(), innerAdapter.itemCount)
     }
 
-    fun addHeaderView(header: View?) {
-
-        if (header == null) {
-            throw RuntimeException("header is null")
-        }
-
+    fun addHeaderView(header: View) {
+        header.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         mHeaderViews.add(header)
         this.notifyDataSetChanged()
     }
 
-    fun addFooterView(footer: View?) {
-
-        if (footer == null) {
-            throw RuntimeException("footer is null")
-        }
-
+    fun addFooterView(footer: View) {
         mFooterViews.add(footer)
         this.notifyDataSetChanged()
     }
@@ -262,8 +280,6 @@ abstract class AutoRefreshAdapter<T>(protected var context: Context)
 
     /**
      * 隐藏或展示Item
-     * @param v
-     * @param visible
      */
     protected fun setItemVisible(v: View?, visible: Boolean) {
         if (null != v) {
@@ -282,22 +298,17 @@ abstract class AutoRefreshAdapter<T>(protected var context: Context)
     }
 
     fun isHeader(position: Int): Boolean {
-        return getHeaderViewsCount() > 0 && position == 0
+        return getHeaderViewsCount() > position
     }
 
     fun isFooter(position: Int): Boolean {
-        val lastPosition = itemCount - 1
-        return getFooterViewsCount() > 0 && position == lastPosition
-    }
-
-    fun getFooter(position: Int): View? {
-        val footerPosition = itemCount - getHeaderViewsCount() - position
-        return if (mFooterViews.size > footerPosition && footerPosition > -1) {
-            mFooterViews[footerPosition]
-        } else null
+        return getFooterViewsCount() > 0 && position >= getHeaderViewsCount() + itemCount
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        if (!this::context.isInitialized) {
+            context = recyclerView.context
+        }
         innerAdapter.onAttachedToRecyclerView(recyclerView)
         //为了兼容GridLayout
         val layoutManager = recyclerView.layoutManager
@@ -319,13 +330,16 @@ abstract class AutoRefreshAdapter<T>(protected var context: Context)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val headerViewsCountCount = getHeaderViewsCount()
-        return if (viewType < TYPE_HEADER_VIEW + headerViewsCountCount) {
-            ViewHolder(mHeaderViews[viewType - TYPE_HEADER_VIEW])
-        } else if (viewType in TYPE_FOOTER_VIEW until TYPE_DIVIDER) {
-            ViewHolder(mFooterViews[viewType - TYPE_FOOTER_VIEW])
-        } else {
-            innerAdapter.onCreateViewHolder(parent, viewType - TYPE_DIVIDER)
+        return when {
+            viewType in inHeaderType..-1 -> {
+                CommonAdapter.ViewHolder(mHeaderViews[viewType - inHeaderType])
+            }
+            viewType >= inFooterType -> {
+                CommonAdapter.ViewHolder(mFooterViews[viewType - inFooterType])
+            }
+            else -> {
+                innerAdapter.onCreateViewHolder(parent, viewType)
+            }
         }
     }
 
@@ -348,134 +362,88 @@ abstract class AutoRefreshAdapter<T>(protected var context: Context)
     }
 
     override fun getItemViewType(position: Int): Int {
-        val innerCount = innerAdapter.itemCount
+        val innerCount: Int = innerAdapter.itemCount
         val headerViewsCountCount = getHeaderViewsCount()
-        if (position < headerViewsCountCount) {
-            return TYPE_HEADER_VIEW + position
+        // min/2 ~ 0 header   0 ~ max/2 inner  max/2 ~ max  footer
+        return if (position < headerViewsCountCount) {
+            inHeaderType + position
         } else if (headerViewsCountCount <= position && position < headerViewsCountCount + innerCount) {
-
-            val innerItemViewType = innerAdapter.getItemViewType(position - headerViewsCountCount)
-            if (innerItemViewType >= Integer.MAX_VALUE / 2) {
-                throw IllegalArgumentException("your adapter's return value of getViewTypeCount() must < Integer.MAX_VALUE / 2")
+            val innerItemViewType: Int = innerAdapter.getItemViewType(position - headerViewsCountCount)
+            require(innerItemViewType < Int.MAX_VALUE / 2) {
+                "your adapter's return value of getViewTypeCount() must < Integer.MAX_VALUE / 2"
             }
-            return innerItemViewType + Integer.MAX_VALUE / 2
+            innerItemViewType
         } else {
-            return TYPE_FOOTER_VIEW + position - innerCount
+            inFooterType + position - headerViewsCountCount - innerCount
         }
     }
 
-    fun getData(): SortedList<T>? {
+    fun getData(): SortedList<T> {
         return list
     }
 
-
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-
-
-    protected fun setText(t: TextView?, s: String?) {
-        if (null != t) {
-            if (null == s) {
-                t.text = ""
-            } else {
-                t.text = s.trim { it <= ' ' }
-            }
-
-        }
-    }
-
-
-    protected fun setVisible(view: View?, visible: Boolean) {
-        if (null != view) {
-            if (visible) {
-                view.visibility = View.VISIBLE
-            } else {
-                view.visibility = View.GONE
-            }
-        }
-    }
-
     fun remove(position: Int) {
-        if (position > -1 && null != list && list!!.size() > position) {
-            list!!.removeItemAt(position)
+        if (position > -1 && list.size() > position) {
+            list.removeItemAt(position)
             innerAdapter.notifyDataSetChanged()
         }
+    }
+
+    fun getItem(position: Int): T? {
+        return if (position < list.size() && position >= 0) {
+            list.get(position)
+        } else null
     }
 
     /**
      * 返回具体位置
      * 源码中会调用 mCallback.compare(myItem, item);
      * 以排序规则来判断位置，如果排序比较项和areItemsTheSame的比较项不同，不要使用这个方法
-     * @param t
-     * @return
      */
     fun indexOf(t: T): Int {
-        return list!!.indexOf(t)
+        return list.indexOf(t)
     }
-
-    /**
-     * 获取具体View
-     * @param context
-     * @param parent
-     * @param viewType
-     * @return
-     */
+    
     fun getViewHolder(context: Context, parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return CommonViewHolder.getHolder<Any>(context, getLayoutIdByType(viewType), parent)
+        return CommonViewHolder.getHolder(context, getLayoutIdByType(viewType), parent)
+    }
+    
+    abstract fun bindData(holder: CommonViewHolder, position: Int, t: T)
+
+    open fun changeItem(holder: CommonViewHolder, position: Int, t: T?, bundle: Bundle){
     }
 
-
-    /**
-     * 设置Item
-     * @param holder
-     * @param position
-     * @param t
-     */
-    abstract fun bindData(holder: CommonViewHolder<T>, position: Int, t: T)
-
-    abstract fun changeItem(holder: CommonViewHolder<T>, position: Int, t: T?, bundle: Bundle)
-
-
-    /**
-     * 获取当前Item数据
-     * @param position
-     * @return
-     */
-    fun getItem(position: Int): T? {
-        return if (list != null && position < list!!.size() && position >= 0) {
-            list!!.get(position)
-        } else null
+    open fun getViewType(position: Int): Int {
+        return 0
     }
+
+    abstract fun getLayoutIdByType(viewType: Int): Int
 
     /**
      * 真实的Adapter
-     * @param <K>
-    </K> */
+    */
     private inner class RealAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-
+        
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return getViewHolder(context, parent, viewType)
+            return getViewHolder(parent.context, parent, viewType)
         }
-
-
+        
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: List<Any>) {
-            if (null != holder && holder is CommonViewHolder<*>) {
-                val m = holder as CommonViewHolder<T>
+            if (holder is CommonViewHolder) {
                 if (payloads.isEmpty()) {
-                    m.setOnItemClickListener(onItemClickListenerBlock)
-                    m.setOnItemLongClickListener(onItemLongClickListenerBlock)
+                    holder.setOnItemClickListener(onItemClickListenerBlock)
+                    holder.setOnItemLongClickListener(onItemLongClickListenerBlock)
                     val t = getItem(position)
                     setItemVisible(holder.itemView, t != null)
                     if (t != null) {
-                        bindData(m, position, t)
+                        bindData(holder, position, t)
                     }
                 } else {
                     val t = getItem(position)
-                    changeItem(m, position, t, payloads[0] as Bundle)
+                    changeItem(holder, position, t, payloads[0] as Bundle)
                 }
             } else {
                 throw RuntimeException("Holder must be not null !")
@@ -483,53 +451,15 @@ abstract class AutoRefreshAdapter<T>(protected var context: Context)
         }
 
         override fun getItemCount(): Int {
-            return if (list != null) list!!.size() else 0
+            return list.size()
         }
 
         override fun getItemViewType(position: Int): Int {
             return getInnerViewType(position)
         }
     }
-
-
+    
     fun getInnerViewType(position: Int): Int {
         return getViewType(position)
-    }
-
-    protected fun getViewType(position: Int): Int {
-        return 0
-    }
-
-    abstract fun getLayoutIdByType(viewType: Int): Int
-
-    /**
-     * 最好直接用这个Callback，自定义需要方法中回调mInnerAdapter的notify方法
-     * 使用SortedListAdapterCallback时需要覆盖onInserted、onRemoved、onMoved、onChanged
-     * SortedListAdapterCallback回调不是包装类的notify如果有header/footer会刷新出错
-     * 继承这个Callback，会需要重写compare方法（比较排序）、areContentsTheSame（比较内容是否相等）、areItemsTheSame（比较是否为同一项）
-     */
-    abstract inner class AutoSortedListCallback<T2> : SortedList.Callback<T2>() {
-        override fun onInserted(position: Int, count: Int) {
-            notifyItemInsertedReally(position)
-        }
-
-        override fun onRemoved(position: Int, count: Int) {
-            notifyItemRemovedReally(position)
-        }
-
-        override fun onMoved(fromPosition: Int, toPosition: Int) {
-            notifyItemMovedReally(fromPosition, toPosition)
-        }
-
-        override fun onChanged(position: Int, count: Int) {
-            notifyItemChangedReally(position)
-        }
-
-    }
-
-    companion object {
-        private val TYPE_DIVIDER = Integer.MAX_VALUE / 2
-        private val TYPE_HEADER_VIEW = Integer.MIN_VALUE
-        private val TYPE_FOOTER_VIEW = Integer.MIN_VALUE + 1
     }
 }

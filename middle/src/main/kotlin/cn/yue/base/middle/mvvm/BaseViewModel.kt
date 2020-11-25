@@ -8,22 +8,22 @@ import androidx.lifecycle.*
 import cn.yue.base.common.activity.rx.ILifecycleProvider
 import cn.yue.base.common.activity.rx.LifecycleTransformer
 import cn.yue.base.common.activity.rx.RxLifecycle.bindUntilEvent
+import cn.yue.base.common.activity.rx.RxLifecycleTransformer
 import cn.yue.base.middle.mvp.IWaitView
 import cn.yue.base.middle.mvvm.data.FinishModel
+import cn.yue.base.middle.mvvm.data.IRouterNavigation
 import cn.yue.base.middle.mvvm.data.LoaderLiveData
 import cn.yue.base.middle.mvvm.data.RouterModel
-import cn.yue.base.middle.router.RouterCard
 import io.reactivex.Observable
-import io.reactivex.SingleTransformer
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import java.util.*
+
 /**
  * Description :
  * Created by yue on 2020/8/8
  */
-open class BaseViewModel(application: Application) : AndroidViewModel(application), ILifecycleProvider<Lifecycle.Event>, IWaitView {
+open class BaseViewModel(application: Application) : AndroidViewModel(application),
+        ILifecycleProvider<Lifecycle.Event>, IWaitView, IRouterNavigation {
     @JvmField
     var loader = LoaderLiveData()
     @JvmField
@@ -50,20 +50,12 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
         return bindUntilEvent(lifecycleSubject, event)
     }
 
-    override fun <T> toBindLifecycle(): SingleTransformer<T, T> {
-        return SingleTransformer {
-            it.compose(bindUntilEvent(Lifecycle.Event.ON_DESTROY))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-        }
+    override fun <T> toBindLifecycle(): RxLifecycleTransformer<T> {
+        return RxLifecycleTransformer<T>(bindUntilEvent(Lifecycle.Event.ON_DESTROY))
     }
 
-    override fun <T> toBindLifecycle(e: Lifecycle.Event): SingleTransformer<T, T> {
-        return SingleTransformer {
-            it.compose(bindUntilEvent(e))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-        }
+    override fun <T> toBindLifecycle(e: Lifecycle.Event): RxLifecycleTransformer<T> {
+        return RxLifecycleTransformer<T>(bindUntilEvent(e))
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
@@ -145,24 +137,15 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    override fun showWaitDialog(title: String?) {
+    override fun showWaitDialog(title: String) {
         waitEvent.postValue(title)
     }
 
     override fun dismissWaitDialog() {
-        waitEvent.postValue("")
+        waitEvent.postValue(null)
     }
 
-    open fun navigation(routerCard: RouterCard) {
-        navigation(routerCard, 0)
-    }
-
-    open fun navigation(routerCard: RouterCard, requestCode: Int) {
-        navigation(routerCard, requestCode, null)
-    }
-
-    open fun navigation(routerCard: RouterCard, requestCode: Int, toActivity: String?) {
-        val routerModel = RouterModel(routerCard, requestCode, toActivity)
+    override fun navigation(routerModel: RouterModel) {
         routerEvent.postValue(routerModel)
     }
 
@@ -170,7 +153,7 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
         finishEvent.postValue(FinishModel())
     }
 
-    open fun finishForResult(resultCode: Int, bundle: Bundle?) {
+    open fun finishForResult(resultCode: Int, bundle: Bundle? = null) {
         val finishModel = FinishModel()
         finishModel.resultCode = resultCode
         finishModel.bundle = bundle

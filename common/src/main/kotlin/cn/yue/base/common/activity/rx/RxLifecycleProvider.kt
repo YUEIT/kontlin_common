@@ -6,9 +6,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import io.reactivex.Observable
-import io.reactivex.SingleTransformer
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 
 /**
@@ -23,20 +20,12 @@ class RxLifecycleProvider : ILifecycleProvider<Lifecycle.Event>, LifecycleObserv
         return lifecycleSubject.hide()
     }
 
-    override fun <T> toBindLifecycle(): SingleTransformer<T, T> {
-        return SingleTransformer {
-            it.compose(bindUntilEvent(Lifecycle.Event.ON_DESTROY))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-        }
+    override fun <T> toBindLifecycle(): RxLifecycleTransformer<T> {
+        return RxLifecycleTransformer<T>(bindUntilEvent(Lifecycle.Event.ON_DESTROY))
     }
 
-    override fun <T> toBindLifecycle(e: Lifecycle.Event): SingleTransformer<T, T> {
-        return SingleTransformer {
-            it.compose(bindUntilEvent(e))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-        }
+    override fun <T> toBindLifecycle(e: Lifecycle.Event): RxLifecycleTransformer<T> {
+        return RxLifecycleTransformer<T>(bindUntilEvent(e))
     }
 
     private fun <T> bindUntilEvent(@NonNull event: Lifecycle.Event) : LifecycleTransformer<T> {

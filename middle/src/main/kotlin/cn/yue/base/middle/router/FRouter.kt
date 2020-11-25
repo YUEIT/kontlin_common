@@ -45,7 +45,7 @@ class FRouter() : INavigation, Parcelable {
 
     fun getRouteType(): RouteType {
         if (TextUtils.isEmpty(mRouterCard.getPath())) {
-            throw NullPointerException("path is null")
+            return RouteType.UNKNOWN
         }
         val postcard = ARouter.getInstance().build(mRouterCard.getPath())
         try {
@@ -62,11 +62,7 @@ class FRouter() : INavigation, Parcelable {
         return this
     }
 
-    override fun navigation(context: Context, requestCode: Int) {
-        this.navigation(context, null, requestCode)
-    }
-
-    override fun navigation(context: Context, toActivity: String?, requestCode: Int) {
+    override fun navigation(context: Context, requestCode: Int, toActivity: String?) {
         if (mRouterCard.isInterceptLogin() && interceptLogin(context)) {
             return
         }
@@ -99,7 +95,7 @@ class FRouter() : INavigation, Parcelable {
 
     private fun jumpToFragment(context: Context, toActivity: String? = null, requestCode: Int) {
         val intent = Intent()
-        intent.putExtra(TAG, this)
+        intent.putExtra(RouterCard.TAG, mRouterCard)
         intent.putExtras(mRouterCard.getExtras())
         intent.flags = mRouterCard.getFlags()
         if (toActivity == null) {
@@ -139,7 +135,10 @@ class FRouter() : INavigation, Parcelable {
     }
 
     private fun interceptLogin(context: Context): Boolean {
-        return onInterceptLoginListener!!(context)
+        onInterceptLoginListener?.let {
+            return it.invoke(context)
+        }
+        return false
     }
 
     constructor(source: Parcel) : this() {
@@ -170,7 +169,7 @@ class FRouter() : INavigation, Parcelable {
         val instance: FRouter
             get() {
                 val fRouter = FRouterHolder.instance
-                fRouter.mRouterCard.clear()
+                fRouter.mRouterCard = RouterCard(fRouter)
                 return fRouter
             }
 

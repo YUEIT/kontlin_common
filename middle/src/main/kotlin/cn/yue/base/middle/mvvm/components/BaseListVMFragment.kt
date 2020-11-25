@@ -2,7 +2,6 @@ package cn.yue.base.middle.mvvm.components
 
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,7 +35,7 @@ abstract class BaseListVMFragment<VM : ListViewModel<*, *>> : BaseVMFragment<VM>
     override fun initView(savedInstanceState: Bundle?) {
         hintView = findViewById(R.id.hintView)
         hintView.setOnReloadListener {
-            if (NetworkUtils.isConnected()) {
+            if (NetworkUtils.isAvailable()) {
                 if (autoRefresh()) {
                     viewModel.refresh()
                 }
@@ -45,13 +44,12 @@ abstract class BaseListVMFragment<VM : ListViewModel<*, *>> : BaseVMFragment<VM>
             }
         }
         refreshL = findViewById<View>(R.id.refreshL) as IRefreshLayout
-        refreshL.init()
-        refreshL.setEnabled(canPullDown())
+        refreshL.setEnabledRefresh(canPullDown())
         refreshL.setOnRefreshListener {
             viewModel.refresh()
         }
         if (canPullDown()) {
-            hintView.setRefreshTarget(refreshL as ViewGroup?)
+            hintView.setRefreshTarget(refreshL)
         }
         footer = initFooter()
         footer.setOnReloadListener {
@@ -69,7 +67,7 @@ abstract class BaseListVMFragment<VM : ListViewModel<*, *>> : BaseVMFragment<VM>
 
     override fun initOther() {
         super.initOther()
-        if (NetworkUtils.isConnected()) {
+        if (NetworkUtils.isAvailable()) {
             if (autoRefresh()) {
                 viewModel.refresh()
             }

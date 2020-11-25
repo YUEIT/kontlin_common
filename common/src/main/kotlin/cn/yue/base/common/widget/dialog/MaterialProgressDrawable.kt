@@ -12,8 +12,6 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.Transformation
 import androidx.annotation.IntDef
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
 import java.util.*
 
 /**
@@ -22,7 +20,7 @@ import java.util.*
  */
 class MaterialProgressDrawable : Drawable, Animatable {
 
-    @Retention(RetentionPolicy.CLASS)
+    @kotlin.annotation.Retention(AnnotationRetention.BINARY)
     @IntDef(0, 1)
     annotation class ProgressDrawableSize
 

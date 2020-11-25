@@ -2,8 +2,11 @@ package cn.yue.base.middle.net.intercept
 
 import android.text.TextUtils
 import cn.yue.base.middle.init.InitConstant
-import cn.yue.base.middle.net.*
+import cn.yue.base.middle.net.CharsetConfig
+import cn.yue.base.middle.net.ResponseCode
+import cn.yue.base.middle.net.ResultException
 import cn.yue.base.middle.net.convert.RequestConverterData
+import cn.yue.base.middle.net.netLog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import okhttp3.HttpUrl
@@ -71,7 +74,7 @@ class SignInterceptor : Interceptor {
             url = original.url.newBuilder().query(null)
                     .addQueryParameter("data", encodeData)
                     .addQueryParameter("app_version", appVersion)
-                    .addQueryParameter("client_type", InitConstant.APP_CLIENT_TYPE + "")
+                    .addQueryParameter("client_type",  "1")
                     .addQueryParameter("device_id", deviceId)
                     .addQueryParameter("time", time.toString() + "")
                     .addQueryParameter("sign", sign)
@@ -170,7 +173,7 @@ class SignInterceptor : Interceptor {
 //            val sign = encryptMD5ToString((appVersion + InitConstant.APP_CLIENT_TYPE
 //                    + encodeData + deviceId + time + InitConstant.APP_SIGN_KEY).toByteArray())
             tmp["app_version"] = appVersion.toString()
-            tmp["client_type"] = InitConstant.APP_CLIENT_TYPE + ""
+            tmp["client_type"] = "1"
             tmp["data"] = encodeData
             tmp["device_id"] = deviceId.toString()
             tmp["time"] = time.toString() + ""

@@ -1,0 +1,14 @@
+package cn.yue.base.middle.components.binding
+
+import android.view.View
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
+import cn.yue.base.middle.components.BasePullFragment
+
+abstract class BasePullBindFragment<T : ViewDataBinding> : BasePullFragment() {
+    lateinit var binding: T
+    override fun bindLayout(inflated: View) {
+        super.bindLayout(inflated)
+        binding = DataBindingUtil.bind(inflated)!!
+    }
+}

@@ -15,9 +15,7 @@ object TransitionAnimation{
     const val TRANSITION_CENTER = 4
 
     /**
-     * 启动一个activitiy时，入场的组件的动画
-     * @param transition
-     * @return
+     * 启动一个activity时，入场的组件的动画
      */
     fun getStartEnterAnim(transition: Int): Int {
         return when (transition) {
@@ -31,8 +29,6 @@ object TransitionAnimation{
 
     /**
      * 启动一个activity时，退场的组件的动画
-     * @param transition
-     * @return
      */
     fun getStartExitAnim(transition: Int): Int {
         return when (transition) {
@@ -45,9 +41,7 @@ object TransitionAnimation{
     }
 
     /**
-     * 退出activity时，入场的activity的动画
-     * @param transition
-     * @return
+     * 退出activity时，入场的组件的动画
      */
     fun getStopEnterAnim(transition: Int): Int {
         return when (transition) {
@@ -60,9 +54,7 @@ object TransitionAnimation{
     }
 
     /**
-     * 退出activity时，退出的activity的动画
-     * @param transition
-     * @return
+     * 退出activity时，退出的组件的动画
      */
     fun getStopExitAnim(transition: Int): Int {
         return when (transition) {
@@ -75,9 +67,7 @@ object TransitionAnimation{
     }
 
     /**
-     * 启动一个activitiy时，入场的组件的动画
-     * @param transition
-     * @return
+     * 启动一个window时，入场的组件的动画
      */
     fun getWindowEnterStyle(transition: Int): Int {
         return when (transition) {
