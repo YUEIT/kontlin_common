@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="cn.yue.base.kotlin.test">
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -23,6 +24,34 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name=".utils.UpdateService"/>
+
+        <!--适配android 7.0以及以上更新APK路径-->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="cn.yue.base.kotlin.test.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:replace="android:exported">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths_public" />
+        </provider>
+
+        <!-- 全面屏幕适配 -->
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.1" />
+
+        <!-- 屏幕适配基准 -->
+        <meta-data
+            android:name="design_width_in_dp"
+            android:value="360" />
+        <meta-data
+            android:name="design_height_in_dp"
+            android:value="666" />
     </application>
 
 </manifest>

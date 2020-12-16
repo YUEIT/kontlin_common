@@ -8,6 +8,9 @@
             type="cn.yue.base.kotlin.test.component.TestPullViewModel" />
     </data>
 
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -25,5 +28,6 @@
             android:layout_height="100dp"
             android:text="中文,bb,iai"/>
     </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </layout>
 

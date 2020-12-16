@@ -13,4 +13,13 @@
        android:textSize="15sp"
        android:gravity="center"
        android:text="sync"/>
+
+   <TextView
+       android:id="@+id/downTV"
+       android:layout_width="match_parent"
+       android:layout_height="50dp"
+       android:textColor="#333333"
+       android:textSize="15sp"
+       android:gravity="center"
+       android:text="down"/>
 </LinearLayout>

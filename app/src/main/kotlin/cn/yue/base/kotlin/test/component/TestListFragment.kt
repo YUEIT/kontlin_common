@@ -6,6 +6,7 @@ import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
 import cn.yue.base.common.widget.recyclerview.SwipeLayoutManager
 import cn.yue.base.kotlin.test.R
+
 import cn.yue.base.middle.components.BaseListFragment
 import cn.yue.base.middle.net.wrapper.BaseListBean
 import com.alibaba.android.arouter.facade.annotation.Route

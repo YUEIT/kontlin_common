@@ -1,7 +1,5 @@
-package cn.yue.base.kotlin.test
+package cn.yue.base.kotlin.test.mode
 
-import cn.yue.base.kotlin.test.mode.SlidesData
-import cn.yue.base.kotlin.test.mode.UuidData
 import cn.yue.base.middle.net.RetrofitManager
 import retrofit2.http.GET
 
@@ -16,7 +14,7 @@ interface Api {
 
 object ApiManager {
 
-    fun getApi() : Api{
+    fun getApi() : Api {
        return RetrofitManager.instance.getCoroutineRetrofit("https://httpbin.org").create(Api::class.java)
     }
 }

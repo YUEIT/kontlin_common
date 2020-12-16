@@ -11,6 +11,7 @@ import cn.yue.base.common.utils.Utils.getContext
 import cn.yue.base.common.utils.device.NotificationUtils
 import cn.yue.base.common.utils.device.NotificationUtils.ChannelConfig
 import cn.yue.base.common.utils.device.NotificationUtils.initChannelConfig
+import cn.yue.base.middle.R
 
 object NotificationConfig {
     private const val CHANNEL_ID = "YUE_CHANNEL"
@@ -25,20 +26,26 @@ object NotificationConfig {
     }
 
     fun notify(id: Int, title: String?, content: String?) {
-        val builder = getNotification(title, content)
+        val builder = getNotification(title, content, null)
+        val nm = getContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
+        nm?.notify(id, builder.build())
+    }
+
+    fun notify(id: Int, title: String?, content: String?, progress: Int?, intent: Intent? = null) {
+        val builder = getNotification(title, content, progress, intent)
         val nm = getContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
         nm?.notify(id, builder.build())
     }
 
     fun notify(id: Int, title: String?, content: String?, intent: Intent) {
-        val builder = getNotification(title, content)
+        val builder = getNotification(title, content, null)
         val pendingIntent = PendingIntent.getActivities(getContext(), 0, arrayOf(intent), PendingIntent.FLAG_UPDATE_CURRENT)
         builder.setContentIntent(pendingIntent)
         val nm = getContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
         nm?.notify(id, builder.build())
     }
 
-    fun getNotification(title: String?, content: String?): NotificationCompat.Builder {
+    fun getNotification(title: String?, content: String?, progress: Int?, intent: Intent? = null): NotificationCompat.Builder {
         var builder: NotificationCompat.Builder? = null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder = NotificationCompat.Builder(getContext(), CHANNEL_ID)
@@ -48,10 +55,24 @@ object NotificationConfig {
         }
         //标题
         builder.setContentTitle(title)
-        //文本内容
-        builder.setContentText(content)
         //小图标
-//        builder.setSmallIcon(R.mipmap.ic_launcher)
+        builder.setSmallIcon(R.drawable.ic_launcher)
+        if (progress != null) {
+            if (progress >= 100) {
+                builder.setContentText(content)
+                builder.setProgress(0, 0, false)
+            } else {
+                builder.setProgress(100, progress, false)
+            }
+        } else {
+            //文本内容
+            builder.setContentText(content)
+        }
+        if (intent != null) {
+            val pendingIntent = PendingIntent.getActivities(getContext(),
+                    0, arrayOf(intent), PendingIntent.FLAG_UPDATE_CURRENT)
+            builder.setContentIntent(pendingIntent)
+        }
         //设置点击信息后自动清除通知
         builder.setAutoCancel(true)
         return builder

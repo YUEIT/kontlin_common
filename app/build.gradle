@@ -26,8 +26,29 @@ android {
     }
     buildTypes {
         release {
+            ndk {
+                abiFilters "armeabi-v7a"
+            }
+            shrinkResources false
             minifyEnabled false
+            zipAlignEnabled true
+            // 移除无用的resource文件
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.release
+            buildConfigField("boolean", "DEBUG_MODE", "false")
+        }
+        debug {
+            ndk {
+                abiFilters "armeabi-v7a"
+                abiFilters "x86"
+            }
+            shrinkResources false
+            minifyEnabled false
+//            zipAlignEnabled true
+            // 移除无用的resource文件
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.debug
+            buildConfigField("boolean", "DEBUG_MODE", rootProject.ext.version.debug.toString())
         }
     }
     packagingOptions {

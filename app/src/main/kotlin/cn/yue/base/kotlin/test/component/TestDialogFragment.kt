@@ -4,6 +4,7 @@ import android.os.Bundle
 import cn.yue.base.common.activity.BaseDialogFragment
 import cn.yue.base.common.activity.TransitionAnimation
 import cn.yue.base.kotlin.test.R
+
 import com.alibaba.android.arouter.facade.annotation.Route
 
 @Route(path = "/app/testDialog")

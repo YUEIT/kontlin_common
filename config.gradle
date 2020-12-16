@@ -1,5 +1,11 @@
 ext {
 
+    version = [
+            'applicationId' : 'cn.yue.koltin.test',
+            'versionName' : '1.0.0',
+            'debug' : true
+    ]
+
     android = [
             'buildToolsVersion' : '29.0.2',
             'targetSdkVersion' : 29,
@@ -33,7 +39,9 @@ ext {
             'lifecycle-viewmodel-savestate'        : 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0',
             'lifecycle-compiler'                   : 'androidx.lifecycle:lifecycle-compiler:2.2.0',
             'lifecycle-runtime-ktx'                : 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0',
-            'lifecycle-viewmodel-ktx'              : 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+            'lifecycle-viewmodel-ktx'              : 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0',
+            'work'                                 : 'androidx.work:work-runtime-ktx:2.4.0',
+            'work-rxjava2'                         : 'androidx.work:work-rxjava2:2.4.0'
     ]
 
     dependencies = [
@@ -57,6 +65,7 @@ ext {
             'tkrefreshlayout'                      : 'com.lcodecorex:tkrefreshlayout:1.0.7',
             'autosize'                             : 'me.jessyan:autosize:1.2.1',
             'mmkv'                                 : 'com.tencent:mmkv-static:1.2.4',
+            'wechat'                               : 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.6.5'
     ]
 
     refresh = [

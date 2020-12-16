@@ -27,6 +27,6 @@ object BaseUrlAddress {
 }
 
 enum class UrlEnvironment(val url: String) {
-    TEST("http://apijxtest.shanghaicang.com.cn"),
-    RELEASE("http://apijxtest.shanghaicang.com.cn")
+    TEST("http://cn.yue.base"),
+    RELEASE("http://cn.yue.base")
 }

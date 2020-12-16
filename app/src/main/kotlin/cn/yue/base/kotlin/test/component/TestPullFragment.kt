@@ -9,6 +9,7 @@ import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
 import cn.yue.base.kotlin.test.R
+
 import cn.yue.base.middle.components.BasePullFragment
 import cn.yue.base.middle.net.observer.BasePullObserver
 import com.alibaba.android.arouter.facade.annotation.Route

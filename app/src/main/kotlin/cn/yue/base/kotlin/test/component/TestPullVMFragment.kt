@@ -4,6 +4,7 @@ import android.os.Bundle
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.kotlin.test.R
 import cn.yue.base.kotlin.test.databinding.FragmentTestPullVmBinding
+
 import cn.yue.base.middle.mvvm.components.binding.BasePullVMBindFragment
 import cn.yue.base.middle.mvvm.data.BR
 import com.alibaba.android.arouter.facade.annotation.Route
