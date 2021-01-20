@@ -2,7 +2,6 @@ package cn.yue.base.middle.wx
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.tencent.mm.opensdk.constants.ConstantsAPI
 import com.tencent.mm.opensdk.modelbase.BaseReq
@@ -28,7 +27,6 @@ open class WXHelperActivity: AppCompatActivity(), IWXAPIEventHandler {
     }
 
     override fun onResp(p0: BaseResp?) {
-        Log.d("luobiao", "onResp: " + p0?.type + " ; " + p0?.errCode)
         if (p0 == null) return
         if (p0.type == ConstantsAPI.COMMAND_SENDAUTH) {
             if (p0.errCode == BaseResp.ErrCode.ERR_OK) {

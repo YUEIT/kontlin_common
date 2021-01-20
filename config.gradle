@@ -24,7 +24,7 @@ ext {
     androidx = [
             'multidex'                             : 'androidx.multidex:multidex:2.0.0',
             'legacy'                               : 'androidx.legacy:legacy-support-v4:1.0.0',
-            'appcompat'                            : 'androidx.appcompat:appcompat:1.1.0',
+            'appcompat'                            : 'androidx.appcompat:appcompat:1.2.0',
             'recyclerview'                         : 'androidx.recyclerview:recyclerview:1.0.0',
             'cardview'                             : 'androidx.cardview:cardview:1.0.0',
             "constraintlayout"                     : 'androidx.constraintlayout:constraintlayout:2.0.0-beta3',
@@ -49,7 +49,7 @@ ext {
             "rxandroid"                            : "io.reactivex.rxjava2:rxandroid:2.1.1",
             "rxlifecycle"                          : "com.trello.rxlifecycle3:rxlifecycle-components:3.1.0",
             "okhttp"                               : "com.squareup.okhttp3:okhttp:4.8.1",
-            'okhttp-log'                           : 'com.squareup.okhttp3:logging-interceptor:3.11.0',
+            'okhttp-log'                           : 'com.squareup.okhttp3:logging-interceptor:4.8.1',
             "retrofit"                             : "com.squareup.retrofit2:retrofit:2.9.0",
             "retrofit-converter-gson"              : "com.squareup.retrofit2:converter-gson:2.9.0",
             "retrofit-adapter-rxjava"              : "com.squareup.retrofit2:adapter-rxjava2:2.9.0",

@@ -1,7 +1,8 @@
-package cn.yue.base.kotlin.test.component
+package cn.yue.base.kotlin.test.mvvm
 
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
+import cn.yue.base.kotlin.test.mode.ItemBean
 import cn.yue.base.middle.mvvm.CommonVMAdapter
 import cn.yue.base.middle.mvvm.ItemViewModel
 import cn.yue.base.middle.mvvm.components.BasePageVMFragment
@@ -9,16 +10,16 @@ import cn.yue.base.middle.mvvm.data.BR
 import com.alibaba.android.arouter.facade.annotation.Route
 
 @Route(path = "/app/testPageVM")
-class TestPageVMFragment : BasePageVMFragment<TestPageViewModel, TestItemBean>() {
+class TestPageVMFragment : BasePageVMFragment<TestPageViewModel, ItemBean>() {
 
     override fun initTopBar(topBar: TopBar) {
         super.initTopBar(topBar)
         topBar.setCenterTextStr("testPageVM")
     }
 
-    override fun initAdapter(): CommonAdapter<TestItemBean>? {
-        return object : CommonVMAdapter<TestItemBean>(mActivity) {
-            override fun initItemViewModel(itemBean: TestItemBean): ItemViewModel {
+    override fun initAdapter(): CommonAdapter<ItemBean>? {
+        return object : CommonVMAdapter<ItemBean>(mActivity) {
+            override fun initItemViewModel(itemBean: ItemBean): ItemViewModel {
                 return if (itemBean.index % 2 == 0) {
                     TestItemViewModel(itemBean, viewModel)
                 } else {

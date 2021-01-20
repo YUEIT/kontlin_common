@@ -32,7 +32,7 @@ import java.io.Writer
  * request请求 body参数解析
  * Created by yue on 2018/7/25.
  */
-internal class GsonRequestBodyConverter<T>(private val gson: Gson, private val adapter: TypeAdapter<T>)
+internal class GsonRequestBodyConverter<T>(private val json: Gson, private val adapter: TypeAdapter<T>)
     : Converter<T, RequestBody> {
 
     //body 里的内容直接修改为统一的参数；并且拦截器会判断直接使用该requestBody
@@ -40,7 +40,7 @@ internal class GsonRequestBodyConverter<T>(private val gson: Gson, private val a
     override fun convert(value: T): RequestBody {
         val buffer = Buffer()
         val writer: Writer = OutputStreamWriter(buffer.outputStream(), CharsetConfig.ENCODING)
-        val jsonWriter: JsonWriter = gson.newJsonWriter(writer)
+        val jsonWriter: JsonWriter = json.newJsonWriter(writer)
         adapter.write(jsonWriter, value)
         jsonWriter.close()
         return buffer.readByteArray().toRequestBody(CharsetConfig.CONTENT_TYPE)

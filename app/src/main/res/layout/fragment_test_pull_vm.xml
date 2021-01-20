@@ -1,33 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
         <variable
             name="viewModel"
-            type="cn.yue.base.kotlin.test.component.TestPullViewModel" />
+            type="cn.yue.base.kotlin.test.mvvm.TestPullViewModel" />
     </data>
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#dfdfdf"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/jump1"
-            android:layout_width="200dp"
-            android:layout_height="100dp"
-            android:text="jump"/>
-        <TextView
-            android:id="@+id/jump2"
-            android:layout_width="200dp"
-            android:layout_height="100dp"
-            android:text="中文,bb,iai"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+
 </layout>
 

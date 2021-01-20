@@ -1,10 +1,7 @@
 package cn.yue.base.middle.net.wrapper
 
-import com.google.gson.annotations.SerializedName
-
-
 data class BaseBean<T>(var message: String?,
-                       @SerializedName("flag")var code: String?,
+                       var code: String?,
                        var data: T?) {
 
     override fun toString(): String {

@@ -43,8 +43,8 @@ class WXHelper: LifecycleObserver {
         }
     }
 
-    private var appId: String = "wxff15efaf15adc6f8"
-    private var appSecret: String = "83d6dbe46f84bde4cf78d0b58764d797"
+    private var appId: String = ""
+    private var appSecret: String = ""
     private var api: IWXAPI
     private var loginCallback: LoginCallback? = null
     private var wxAuthReceiver: BroadcastReceiver? = null

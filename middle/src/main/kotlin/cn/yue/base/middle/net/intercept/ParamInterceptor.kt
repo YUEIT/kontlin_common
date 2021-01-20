@@ -12,14 +12,13 @@ class ParamInterceptor : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
-        val url = original.url.newBuilder()
-                .addQueryParameter("version", InitConstant.getVersionName())
-                .addQueryParameter("device", "android")
-                .addQueryParameter("deviceId", InitConstant.getDeviceId())
-                .build()
         val request = original.newBuilder()
-                .url(url)
+                .url(original.url)
                 .addHeader("Content-Type", "application/json")
+                .addHeader("device", "android")
+                .addHeader("version", InitConstant.getVersionName() ?: "")
+                .addHeader("deviceId", InitConstant.getDeviceId() ?: "")
+                .addHeader("token", InitConstant.getToken())
                 .build()
         return chain.proceed(request)
     }

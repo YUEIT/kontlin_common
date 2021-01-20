@@ -3,7 +3,6 @@ package cn.yue.base.middle.view.refresh
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import com.scwang.smart.refresh.header.ClassicsHeader
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
 /**
@@ -14,7 +13,7 @@ class SmartRefreshLayout(context: Context, attributeSet: AttributeSet) :
         SmartRefreshLayout(context, attributeSet), IRefreshLayout {
 
     init {
-        setRefreshHeader(ClassicsHeader(context))
+        setRefreshHeader(CustomClassicsHeader(context))
     }
 
     override fun setTargetView(targetView: View) {

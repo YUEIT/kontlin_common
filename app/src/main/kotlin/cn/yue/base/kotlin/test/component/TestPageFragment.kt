@@ -1,13 +1,12 @@
 package cn.yue.base.kotlin.test.component
 
-import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
 import cn.yue.base.common.widget.recyclerview.SwipeLayoutManager
 import cn.yue.base.kotlin.test.R
-
-import cn.yue.base.middle.components.BaseListFragment
+import cn.yue.base.kotlin.test.mode.ItemBean
+import cn.yue.base.middle.components.BasePageFragment
 import cn.yue.base.middle.net.wrapper.BaseListBean
 import com.alibaba.android.arouter.facade.annotation.Route
 import kotlinx.android.synthetic.main.item_test.view.*
@@ -17,19 +16,12 @@ import java.util.*
  * Description :
  * Created by yue on 2019/6/11
  */
-@Route(path = "/app/testPullList")
-class TestListFragment : BaseListFragment<BaseListBean<TestItemBean>, TestItemBean>() {
-    override fun initView(savedInstanceState: Bundle?) {
-        super.initView(savedInstanceState)
-    }
+@Route(path = "/app/testPage")
+class TestPageFragment : BasePageFragment<ItemBean>() {
 
     override fun initTopBar(topBar: TopBar) {
         super.initTopBar(topBar)
-        topBar.setCenterTextStr("testPullList")
-    }
-
-    override fun initRecyclerView(baseRV: RecyclerView) {
-        super.initRecyclerView(baseRV)
+        topBar.setCenterTextStr("testPage")
     }
 
     override fun getLayoutManager(): RecyclerView.LayoutManager {
@@ -40,25 +32,21 @@ class TestListFragment : BaseListFragment<BaseListBean<TestItemBean>, TestItemBe
         return R.layout.test_fragment_base_pull_page
     }
 
-    override fun getItemType(position: Int): Int {
-        return super.getItemType(position)
-    }
-
     override fun getItemLayoutId(viewType: Int): Int {
        return R.layout.item_test
     }
 
-    override fun bindItemData(holder: CommonViewHolder, position: Int, testItemBean: TestItemBean) {
-        holder.itemView.testTV.text = testItemBean.name
+    override fun bindItemData(holder: CommonViewHolder, position: Int, itemData: ItemBean) {
+        holder.itemView.testTV.text = itemData.name
     }
 
-    override suspend fun getRequestScope(nt: String?): BaseListBean<TestItemBean>? {
-        val listBean: BaseListBean<TestItemBean> = BaseListBean<TestItemBean>()
+    override suspend fun getRequestScope(nt: String?): BaseListBean<ItemBean>? {
+        val listBean: BaseListBean<ItemBean> = BaseListBean<ItemBean>()
         listBean.mPageSize = 20
         listBean.mTotal = 22
-        val list: MutableList<TestItemBean> = ArrayList()
+        val list: MutableList<ItemBean> = ArrayList()
         for (i in 0..19) {
-            val testItemBean = TestItemBean()
+            val testItemBean = ItemBean()
             testItemBean.name = getItemString(i)
             list.add(testItemBean)
         }

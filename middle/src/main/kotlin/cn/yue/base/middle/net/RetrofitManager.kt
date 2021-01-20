@@ -2,8 +2,7 @@ package cn.yue.base.middle.net
 
 
 import cn.yue.base.middle.init.InitConstant
-import cn.yue.base.middle.net.convert.GsonConverterFactory
-import cn.yue.base.middle.net.convert.SignGsonConverterFactory
+import cn.yue.base.middle.net.convert.SplitConverterFactory
 import cn.yue.base.middle.net.intercept.NoNetInterceptor
 import cn.yue.base.middle.net.intercept.ParamInterceptor
 import cn.yue.base.middle.net.intercept.ResponseInterceptor
@@ -44,11 +43,11 @@ class RetrofitManager private constructor() {
         baseBuilder.connectTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
         baseBuilder.readTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
         baseBuilder.writeTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
-//        if (InitConstant.isDebug()) {
-//            val logging = HttpLoggingInterceptor()
-//            logging.level = HttpLoggingInterceptor.Level.BODY
-//            baseBuilder.addInterceptor(logging)
-//        }
+        if (InitConstant.isDebug()) {
+            val logging = HttpLoggingInterceptor()
+            logging.level = HttpLoggingInterceptor.Level.BODY
+            baseBuilder.addInterceptor(logging)
+        }
         baseBuilder.addInterceptor(NoNetInterceptor())
         baseBuilder.retryOnConnectionFailure(true)
         okHttpClient = baseBuilder.build()
@@ -70,7 +69,7 @@ class RetrofitManager private constructor() {
                 .baseUrl(baseUrl)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 //注册自定义的工厂类
-                .addConverterFactory(SignGsonConverterFactory.create())
+                .addConverterFactory(SplitConverterFactory.create())
                 .build()
     }
 
@@ -78,7 +77,7 @@ class RetrofitManager private constructor() {
         return Retrofit.Builder()
                 .client(defaultClient)
                 .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(SplitConverterFactory.create())
                 .build()
     }
 

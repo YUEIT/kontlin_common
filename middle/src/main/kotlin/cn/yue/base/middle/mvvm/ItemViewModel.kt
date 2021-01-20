@@ -11,8 +11,8 @@ import cn.yue.base.middle.mvvm.data.RouterModel
 abstract class ItemViewModel(private val parentViewModel: BaseViewModel)
     : BaseViewModel(parentViewModel.getApplication()) {
 
-    open val itemType: Int = this::class.hashCode() % 100
-    abstract val layoutId: Int
+    open fun getItemType(): Int = this::class.hashCode() % 100
+    abstract fun getLayoutId(): Int
     override fun <T> toBindLifecycle(): RxLifecycleTransformer<T> {
         return parentViewModel.toBindLifecycle()
     }

@@ -6,11 +6,11 @@ import java.nio.charset.Charset
 
 object ResponseCode {
     //与服务器约定的
-    var SUCCESS_FLAG = "1"
-    var ERROR_SERVER = "0"
+    var SUCCESS_FLAG = "0"
+    var ERROR_SERVER = "1"
     //token 失效
     var ERROR_TOKEN_INVALID = "-1000"
-    var ERROR_LOGIN_INVALID = "-641"
+    var ERROR_LOGIN_INVALID = "-1001"
     //自定义的
     var ERROR_CANCEL = "-10000"
     var ERROR_NO_DATA = "-10001"

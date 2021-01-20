@@ -59,4 +59,36 @@ class LinearFillingHelper(private val linearLayout: LinearLayout) {
             fillingHelper?.notifyLayout()
         }
     }
+
+    abstract class SimpleAdapter<T> : Adapter {
+        private val dataList = ArrayList<T>()
+
+        constructor()
+
+        constructor(dataList: List<T>?) {
+            if (dataList != null) {
+                this.dataList.addAll(dataList)
+            }
+        }
+
+        fun setData(dataList: List<T>?) {
+            this.dataList.clear()
+            if (dataList != null) {
+                this.dataList.addAll(dataList)
+            }
+            notifyDataSetChanged()
+        }
+
+        override fun getItemCount(): Int {
+            return dataList.size
+        }
+
+        override fun bindView(contentView: View, position: Int) {
+            if (position < dataList.size) {
+                bindView(contentView, position, dataList[position])
+            }
+        }
+
+        abstract fun bindView(contentView: View, position: Int, itemData: T)
+    }
 }

@@ -8,16 +8,6 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent" />
 
-
-    <TextView
-        android:id="@+id/notifyTV"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center"
-        android:background="#efefef"
-        android:textSize="15sp"
-        android:textColor="#333333"
-        android:text="notification"/>
 </LinearLayout>

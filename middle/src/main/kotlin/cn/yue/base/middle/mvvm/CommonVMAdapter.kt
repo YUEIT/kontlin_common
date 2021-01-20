@@ -50,14 +50,14 @@ abstract class CommonVMAdapter<T> : CommonAdapter<T> {
     private fun addModel(t: T) {
         val itemViewModel = initItemViewModel(t)
         modelList[t.hashCode()] = itemViewModel
-        typeToLayoutMap[itemViewModel.itemType] = itemViewModel.layoutId
+        typeToLayoutMap[itemViewModel.getItemType()] = itemViewModel.getLayoutId()
     }
 
     override fun addItem(t: T?) {
         if (t != null) {
             val itemViewModel = initItemViewModel(t)
             modelList[t.hashCode()] = itemViewModel
-            typeToLayoutMap[itemViewModel.itemType] = itemViewModel.layoutId
+            typeToLayoutMap[itemViewModel.getItemType()] = itemViewModel.getLayoutId()
         }
         super.addItem(t)
     }
@@ -89,7 +89,7 @@ abstract class CommonVMAdapter<T> : CommonAdapter<T> {
         if (getData().size > position && getData()[position] != null) {
             itemViewModel = modelList[getData()[position].hashCode()]
         }
-        return itemViewModel?.itemType ?: super.getViewType(position)
+        return itemViewModel?.getItemType() ?: super.getViewType(position)
     }
 
     override fun getLayoutIdByType(viewType: Int): Int {

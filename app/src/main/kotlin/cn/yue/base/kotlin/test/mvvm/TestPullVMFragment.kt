@@ -1,36 +1,37 @@
-package cn.yue.base.kotlin.test.component
+package cn.yue.base.kotlin.test.mvvm
 
 import android.os.Bundle
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
 import cn.yue.base.kotlin.test.R
-import cn.yue.base.kotlin.test.mode.ApiManager
+import cn.yue.base.kotlin.test.databinding.FragmentTestPullVmBinding
 import cn.yue.base.kotlin.test.mode.UserBean
-import cn.yue.base.middle.components.BasePullFragment
-import cn.yue.base.middle.net.observer.BasePullObserver
-import com.alibaba.android.arouter.facade.annotation.Route
 
-@Route(path = "/app/testPull")
-class TestPullFragment : BasePullFragment() {
+import cn.yue.base.middle.mvvm.components.binding.BasePullVMBindFragment
+import cn.yue.base.middle.mvvm.data.BR
+import com.alibaba.android.arouter.facade.annotation.Route
+import kotlinx.android.synthetic.main.fragment_test_pull_vm.*
+
+@Route(path = "/app/testPullVM")
+class TestPullVMFragment : BasePullVMBindFragment<TestPullViewModel, FragmentTestPullVmBinding>() {
 
     override fun getContentLayoutId(): Int {
-        return R.layout.fragment_test_pull
+        return R.layout.fragment_test_pull_vm
     }
 
     override fun initTopBar(topBar: TopBar) {
         super.initTopBar(topBar)
-        topBar.setCenterTextStr("pull test")
+        topBar.setCenterTextStr("testPullVM")
     }
 
     private lateinit var adapter: CommonAdapter<UserBean>
 
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
-        val recyclerView = findViewById<RecyclerView>(R.id.rv)
-        recyclerView.layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false)
+        rv.layoutManager = LinearLayoutManager(mActivity)
         adapter = object : CommonAdapter<UserBean>(mActivity) {
             override fun getLayoutIdByType(viewType: Int): Int {
                 return R.layout.item_test
@@ -40,17 +41,16 @@ class TestPullFragment : BasePullFragment() {
                 holder.setText(R.id.testTV, itemData.name)
             }
         }
-        recyclerView.adapter = adapter
     }
 
-    override fun loadData() {
-        ApiManager.getRxApi().getAllUser()
-                .compose(getLifecycleProvider().toBindLifecycle())
-                .subscribe(object : BasePullObserver<List<UserBean>>(this) {
-                    override fun onNext(t: List<UserBean>) {
-                        super.onNext(t)
-                        adapter.setList(t)
-                    }
-                })
+    override fun initOther() {
+        super.initOther()
+        viewModel.userLiveData.observe(this, Observer {
+            adapter.setList(it)
+        })
+    }
+
+    override fun variableId(): Int {
+        return BR.viewModel
     }
 }

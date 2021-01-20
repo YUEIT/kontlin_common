@@ -5,7 +5,7 @@ import cn.yue.base.middle.init.InitConstant
 import cn.yue.base.middle.net.CharsetConfig
 import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
-import cn.yue.base.middle.net.convert.RequestConverterData
+import cn.yue.base.middle.net.convert.RequestConverterEntity
 import cn.yue.base.middle.net.netLog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -110,8 +110,8 @@ class SignInterceptor : Interceptor {
                         for (value in original.url.queryParameterValues(key)) {
                             //如果能解析成功，说明是bean类型,转成Object ; 失败：基本类型直接add
                             try {
-                                val data: RequestConverterData = gson.fromJson(value, RequestConverterData::class.javaObjectType)
-                                list.add(gson.fromJson(data.json, Class.forName(data.className)))
+                                val entity: RequestConverterEntity = gson.fromJson(value, RequestConverterEntity::class.javaObjectType)
+                                list.add(gson.fromJson(entity.json, Class.forName(entity.className)))
                             } catch (e: Exception) {
                                 list.add(value)
                             }
@@ -124,7 +124,7 @@ class SignInterceptor : Interceptor {
                         }
                         val value = original.url.queryParameterValues(key)[0]
                         try {
-                            val bean = gson.fromJson(value, RequestConverterData::class.javaObjectType)
+                            val bean = gson.fromJson(value, RequestConverterEntity::class.javaObjectType)
                             map[key] = gson.fromJson(bean.json, Class.forName(bean.className))
                         } catch (e: Exception) {
                             map[key] = value

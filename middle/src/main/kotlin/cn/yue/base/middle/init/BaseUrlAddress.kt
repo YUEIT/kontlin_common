@@ -27,6 +27,6 @@ object BaseUrlAddress {
 }
 
 enum class UrlEnvironment(val url: String) {
-    TEST("http://cn.yue.base"),
-    RELEASE("http://cn.yue.base")
+    TEST("http://101.133.164.46:8080"),
+    RELEASE("http://101.133.164.46:8080")
 }

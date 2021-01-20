@@ -3,7 +3,11 @@ package cn.yue.base.kotlin.test
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import cn.yue.base.common.activity.BaseActivity
+import cn.yue.base.common.widget.recyclerview.CommonAdapter
+import cn.yue.base.common.widget.recyclerview.CommonViewHolder
 import cn.yue.base.middle.router.FRouter
 import com.alibaba.android.arouter.facade.annotation.Route
 import kotlinx.android.synthetic.main.activity_main.*
@@ -20,31 +24,52 @@ class MainActivity : BaseActivity() {
     }
 
     override fun initView() {
-        jump1.setOnClickListener {
+        rv.layoutManager = LinearLayoutManager(this)
+        rv.adapter = object : CommonAdapter<ItemAction>(this, initItem()) {
+            override fun getLayoutIdByType(viewType: Int): Int {
+                return R.layout.item_activity_main
+            }
+
+            override fun bindData(holder: CommonViewHolder, position: Int, itemData: ItemAction) {
+                holder.viewToAction<TextView>(R.id.itemTV) {
+                    it.text = itemData.name
+                    it.setOnClickListener {
+                        itemData.block.invoke()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun initItem(): MutableList<ItemAction> {
+        val list = ArrayList<ItemAction>()
+        list.add(ItemAction("Pull") {
             FRouter.instance.build("/app/testPull").withString("test", "hehe").navigation(this)
-        }
-        jump2.setOnClickListener {
-            FRouter.instance.build("/app/testPullList").navigation(this)
-        }
-        jump3.setOnClickListener {
-        }
-        jump4.setOnClickListener {
-            FRouter.instance.build("/app/testPageVM").navigation(this)
-        }
-        jump5.setOnClickListener {
+        })
+        list.add(ItemAction("Page") {
+            FRouter.instance.build("/app/testPage").navigation(this)
+        })
+        list.add(ItemAction("Pull ViewModel") {
             FRouter.instance.build("/app/testPullVM").navigation(this)
-        }
-        jump6.setOnClickListener {
+        })
+        list.add(ItemAction("Page ViewModel") {
+            FRouter.instance.build("/app/testPageVM").navigation(this)
+        })
+        list.add(ItemAction("Select Photo") {
             FRouter.instance.build("/common/selectPhoto").navigation(this, 1)
-        }
-        jump7.setOnClickListener {
+        })
+        list.add(ItemAction("View Photo") {
             FRouter.instance.build("/common/viewPhoto")
                     .withStringArrayList("list", arrayListOf("http://daidaigoucn.oss-cn-shanghai.aliyuncs.com/static/images/shop/sd1.png"))
                     .navigation(this)
-        }
-        jump8.setOnClickListener {
-            FRouter.instance.build("/app/testCoroutine").navigation(this)
-        }
+        })
+        list.add(ItemAction("Download") {
+            FRouter.instance.build("/app/testDownload").navigation(this)
+        })
+        list.add(ItemAction("login") {
+            FRouter.instance.build("/app/login").navigation(this)
+        })
+        return list
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -56,5 +81,10 @@ class MainActivity : BaseActivity() {
                     .navigation(this)
         }
     }
+
+    class ItemAction (
+            var name: String,
+            var block: () -> Unit
+    )
 }
 

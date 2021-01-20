@@ -1,11 +1,18 @@
 package cn.yue.base.middle.mvvm
 
+import cn.yue.base.middle.R
+
 /**
  * Description :
  * Created by yue on 2020/11/5
  */
 class NullItemViewModel(parentViewModel: BaseViewModel): ItemViewModel(parentViewModel) {
 
-    override val itemType: Int = 0
-    override val layoutId: Int = cn.yue.base.middle.R.layout.layout_space_binding
+    override fun getItemType(): Int {
+        return 0
+    }
+
+    override fun getLayoutId(): Int {
+        return R.layout.layout_space_binding
+    }
 }
