@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply from: '../_360jiagu/jiagu.gradle'
 
 android {
     compileSdkVersion rootProject.ext.android.targetSdkVersion
@@ -23,6 +24,19 @@ android {
         dexOptions {
             javaMaxHeapSize "1g"
         }
+        flavorDimensions "versionCode"
+    }
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+    signingConfigs {
+        release {
+            storeFile file("../kotlin_common.jks")
+            keyAlias 'yue'
+            keyPassword ''
+            storePassword ''
+        }
     }
     buildTypes {
         release {
@@ -32,6 +46,7 @@ android {
             shrinkResources false
             minifyEnabled false
             zipAlignEnabled true
+            signingConfig signingConfigs.release
             // 移除无用的resource文件
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 //            signingConfig signingConfigs.release
@@ -44,6 +59,7 @@ android {
             }
             shrinkResources false
             minifyEnabled false
+            signingConfig signingConfigs.release
 //            zipAlignEnabled true
             // 移除无用的resource文件
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -54,6 +70,10 @@ android {
     packagingOptions {
         pickFirst 'META-INF/*'
 
+    }
+    productFlavors {
+        // 线上产品版本
+        product {}
     }
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -79,5 +99,7 @@ dependencies {
     //aRouter
     implementation rootProject.ext.dependencies["arouter-api"]
     kapt rootProject.ext.dependencies["arouter-compiler"]
+
+    implementation 'androidx.autofill:autofill:1.1.0'
 }
 
