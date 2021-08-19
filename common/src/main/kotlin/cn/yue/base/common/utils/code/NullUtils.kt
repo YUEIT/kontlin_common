@@ -32,3 +32,32 @@ inline fun <T : CharSequence> T?.hasValue(action: (data: T) -> Unit): Boolean {
     return value
 }
 
+inline fun String?.realValue(): String {
+    if (this == null || this.isEmpty()) {
+        return ""
+    }
+    return this
+}
+
+inline fun Int?.realValue(): Int {
+    if (this == null) {
+        return 0
+    }
+    return this
+}
+
+inline fun Float?.realValue(): Float {
+    if (this == null) {
+        return 0f
+    }
+    return this
+}
+
+inline fun Double?.realValue(): Double {
+    if (this == null) {
+        return 0.0
+    }
+    return this
+}
+
+

@@ -27,6 +27,8 @@ class RetrofitManager private constructor() {
         builder.connectTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
         builder.readTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
         builder.writeTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
+//        val sslParams = SslHttpsUtils.getSslSocketFactory()
+//        builder.sslSocketFactory(sslParams.sSLSocketFactory!!, sslParams.trustManager!!)
         if (InitConstant.isDebug()) {
             val logging = HttpLoggingInterceptor()
             logging.level = HttpLoggingInterceptor.Level.BODY

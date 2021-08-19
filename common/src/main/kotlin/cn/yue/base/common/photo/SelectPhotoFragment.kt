@@ -133,13 +133,15 @@ class SelectPhotoFragment : BaseFragment() {
     private var allMedia: List<MediaVO>? = null
     private var handler = Handler(Handler.Callback { msg ->
         if (msg.what == 101) {
-            val addList = msg.obj as List<MediaVO>
-            if (addList.isEmpty()) {
-                isCanLoadMore = false
-            } else {
-                isCanLoadMore = true
-                photoList.addAll(addList)
-                adapter!!.setList(photoList)
+            val addList = msg.obj
+            if (addList is List<*>?) {
+                if (addList == null || addList.isEmpty()) {
+                    isCanLoadMore = false
+                } else {
+                    isCanLoadMore = true
+                    photoList.addAll(addList as List<MediaVO>)
+                    adapter!!.setList(photoList)
+                }
             }
         }
         false

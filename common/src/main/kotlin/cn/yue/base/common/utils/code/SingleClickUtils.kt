@@ -2,17 +2,16 @@ package cn.yue.base.common.utils.code
 
 import android.view.View
 
-/**
- * 2019-11-28 created
- *
- * @author KOM
- */
 abstract class OnSingleClickListener : View.OnClickListener {
     override fun onClick(view: View) {
-        if (System.currentTimeMillis() - lastClickTime > intervalClickTime) {
+        if (System.currentTimeMillis() - lastClickTime > getIntervalClickTime()) {
             lastClickTime = System.currentTimeMillis()
             onSingleClick(view)
         }
+    }
+
+    fun getIntervalClickTime(): Long {
+        return intervalClickTime
     }
 
     /**

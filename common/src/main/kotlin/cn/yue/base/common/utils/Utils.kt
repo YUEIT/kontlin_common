@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import cn.yue.base.common.utils.app.ActivityLifecycleImpl
 import cn.yue.base.common.utils.code.MMKVUtils
+import cn.yue.base.common.utils.device.NetworkUtils
 import cn.yue.base.common.utils.file.BitmapFileUtils
 
 
@@ -75,6 +76,7 @@ object Utils {
         BitmapFileUtils.init()
         MMKVUtils.init()
         ActivityLifecycleImpl.INSTANCE.init(mContext as Application)
+        NetworkUtils.register()
     }
 
     /**

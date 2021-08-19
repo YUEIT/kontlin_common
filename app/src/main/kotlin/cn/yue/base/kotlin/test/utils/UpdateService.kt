@@ -4,9 +4,11 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.text.TextUtils
+import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -22,7 +24,18 @@ import java.io.File
 class UpdateService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? {
-        return null
+        return downInfo
+    }
+
+    var downInfo: DownloadInfo = DownloadInfo()
+
+    class DownloadInfo : Binder() {
+
+        var updateBlock: ((progress: Int, isFail: Boolean) -> Unit)? = null
+
+        fun setUpdateListener(updateBlock: ((progress: Int, isFail: Boolean) -> Unit)?) {
+            this.updateBlock = updateBlock
+        }
     }
 
     private var workInfoLiveData: LiveData<WorkInfo>? = null
@@ -30,14 +43,18 @@ class UpdateService : Service() {
         Observer<WorkInfo> { workInfo ->
             when (workInfo.state) {
                 WorkInfo.State.RUNNING -> {
-                    notification("已下载" , workInfo.progress.getInt("progress", 0), null)
+                    val progress = workInfo.progress.getInt("progress", 0)
+                    notification("已下载" , progress, null)
+                    downInfo.updateBlock?.invoke(progress, false)
                 }
                 WorkInfo.State.SUCCEEDED -> {
+                    downInfo.updateBlock?.invoke(100, false)
                     val intent = installIntent(this, workInfo.outputData.getString("path"))
                     notification("下载完成", 100, intent)
                     startActivity(intent)
                 }
                 WorkInfo.State.FAILED -> {
+                    downInfo.updateBlock?.invoke(0, true)
                     notification("下载失败 " + workInfo.outputData.getString("error"), 100, null)
                 }
             }

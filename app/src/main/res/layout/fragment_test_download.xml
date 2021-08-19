@@ -13,4 +13,12 @@
        android:textSize="15sp"
        android:gravity="center"
        android:text="down"/>
+
+   <TextView
+       android:id="@+id/progressTV"
+       android:layout_width="match_parent"
+       android:layout_height="50dp"
+       android:textColor="#333333"
+       android:textSize="15sp"
+       android:gravity="center" />
 </LinearLayout>

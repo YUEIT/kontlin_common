@@ -2,14 +2,46 @@ package cn.yue.base.common.utils.device
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.LinkProperties
+import android.net.Network
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.util.Log
 import cn.yue.base.common.utils.Utils
+import java.util.concurrent.RecursiveTask
 
 
 object NetworkUtils {
 
+    private var networkAvailable = false
+
+    fun register() {
+        val manager = Utils.getContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+                ?: return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            manager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    super.onAvailable(network)
+                    networkAvailable = true
+                }
+
+                override fun onLost(network: Network) {
+                    super.onLost(network)
+                    networkAvailable = false
+                }
+
+                override fun onUnavailable() {
+                    super.onUnavailable()
+                    networkAvailable = false
+                }
+            })
+        }
+    }
+
     fun isAvailable(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return networkAvailable
+        }
         val manager = Utils.getContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
                 ?: return false
         val info = manager.activeNetworkInfo
