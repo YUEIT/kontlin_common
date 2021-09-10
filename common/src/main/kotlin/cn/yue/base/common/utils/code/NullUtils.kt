@@ -60,4 +60,11 @@ inline fun Double?.realValue(): Double {
     return this
 }
 
+inline fun <T> Collection<T>?.realSize(): Int {
+    if (this == null || this.isEmpty()) {
+        return 0
+    }
+    return this.size
+}
+
 

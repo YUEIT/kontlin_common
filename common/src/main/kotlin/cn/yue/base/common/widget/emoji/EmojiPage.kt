@@ -14,9 +14,9 @@ class EmojiPage : IEmotionPage {
 
     var row = 7
 
-    private var emotionList: MutableList<Emojicon> = ArrayList()
+    private var emotionList: MutableList<EmojiEmotion> = ArrayList()
 
-    fun setEmotionList(emotionList: MutableList<Emojicon>) {
+    fun setEmotionList(emotionList: MutableList<EmojiEmotion>) {
         this.emotionList = emotionList
     }
 
@@ -24,7 +24,7 @@ class EmojiPage : IEmotionPage {
         return index
     }
 
-    override fun getEmotionList(): MutableList<Emojicon> {
+    override fun getEmotionList(): MutableList<EmojiEmotion> {
         return emotionList
     }
 
@@ -37,9 +37,6 @@ class EmojiPage : IEmotionPage {
     }
 
     override fun getCount(): Int {
-        if (emotionList != null) {
-            emotionList!!.size
-        }
-        return 0
+        return emotionList.size
     }
 }

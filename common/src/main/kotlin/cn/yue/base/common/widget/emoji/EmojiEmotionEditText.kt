@@ -7,15 +7,14 @@ import androidx.appcompat.widget.AppCompatEditText
 import cn.yue.base.common.R
 
 
-class EmojiconEditText : AppCompatEditText {
-    private var mEmojiconSize: Int = 0
-    private var mEmojiconTextSize: Int = 0
+class EmojiEmotionEditText : AppCompatEditText {
+    private var mEmojiEmotionSize: Int = 0
+    private var mEmojiEmotionTextSize: Int = 0
     private var mUseSystemDefault = false
-    internal var onBackKeyClickListener: OnBackKeyClickListener? = null
 
     constructor(context: Context) : super(context) {
-        mEmojiconSize = textSize.toInt()
-        mEmojiconTextSize = textSize.toInt()
+        mEmojiEmotionSize = textSize.toInt()
+        mEmojiEmotionTextSize = textSize.toInt()
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
@@ -28,11 +27,16 @@ class EmojiconEditText : AppCompatEditText {
 
     private fun init(attrs: AttributeSet) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.Emojicon)
-        mEmojiconSize = a.getDimension(R.styleable.Emojicon_emojiconSize, textSize).toInt()
+        mEmojiEmotionSize = a.getDimension(R.styleable.Emojicon_emojiconSize, textSize).toInt()
         mUseSystemDefault = a.getBoolean(R.styleable.Emojicon_emojiconUseSystemDefault, false)
         a.recycle()
-        mEmojiconTextSize = textSize.toInt()
-        text = text
+        mEmojiEmotionTextSize = textSize.toInt()
+    }
+
+    fun addEmojiEmotion(emoji: EmojiEmotion) {
+        if (selectionStart == selectionEnd) {
+            text?.insert(selectionStart, EmojiEmotion.newString(emoji.codePoint))
+        }
     }
 
     override fun onTextChanged(text: CharSequence, start: Int, lengthBefore: Int, lengthAfter: Int) {
@@ -42,14 +46,16 @@ class EmojiconEditText : AppCompatEditText {
     /**
      * Set the size of emojicon in pixels.
      */
-    fun setEmojiconSize(pixels: Int) {
-        mEmojiconSize = pixels
-
+    fun setEmojiEmotionSize(pixels: Int) {
+        mEmojiEmotionSize = pixels
         updateText()
     }
 
     private fun updateText() {
-        EmojiconHandler.addEmojis(context, text, mEmojiconSize, mEmojiconTextSize, mUseSystemDefault)
+        text?.let {
+            EmojiEmotionHandler.ensure(context, it, mEmojiEmotionSize, mEmojiEmotionTextSize)
+//            EmojiEmotionHandler.addEmojis(context, it, mEmojiEmotionSize, mEmojiEmotionTextSize, mUseSystemDefault)
+        }
     }
 
     /**
@@ -59,18 +65,14 @@ class EmojiconEditText : AppCompatEditText {
         mUseSystemDefault = useSystemDefault
     }
 
-    interface OnBackKeyClickListener {
-        fun onBackKeyClick()
-    }
+    private var onBackKeyClickListener: (()->Unit)? = null
 
-    fun setOnBackKeyClickListener(i: OnBackKeyClickListener) {
+    fun setOnBackKeyClickListener(i: (()->Unit)) {
         onBackKeyClickListener = i
     }
 
     override fun dispatchKeyEventPreIme(event: KeyEvent): Boolean {
-        if (onBackKeyClickListener != null) {
-            onBackKeyClickListener!!.onBackKeyClick()
-        }
+        onBackKeyClickListener?.invoke()
         return super.dispatchKeyEventPreIme(event)
     }
 }

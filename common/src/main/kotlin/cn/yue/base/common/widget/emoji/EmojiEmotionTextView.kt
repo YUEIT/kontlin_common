@@ -12,9 +12,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
 import cn.yue.base.common.R
 
-open class EmojiconTextView : AppCompatTextView {
-    private var mEmojiconSize: Int = 0
-    private var mEmojiconTextSize: Int = 0
+open class EmojiEmotionTextView : AppCompatTextView {
+    private var mEmojiEmotionSize: Int = 0
+    private var mEmojiEmotionTextSize: Int = 0
     private var mTextStart = 0
     private var mTextLength = -1
     private var mUseSystemDefault = false
@@ -35,12 +35,12 @@ open class EmojiconTextView : AppCompatTextView {
     }
 
     private fun init(attrs: AttributeSet?) {
-        mEmojiconTextSize = textSize.toInt()
+        mEmojiEmotionTextSize = textSize.toInt()
         if (attrs == null) {
-            mEmojiconSize = textSize.toInt()
+            mEmojiEmotionSize = textSize.toInt()
         } else {
             val a = context.obtainStyledAttributes(attrs, R.styleable.Emojicon)
-            mEmojiconSize = a.getDimension(R.styleable.Emojicon_emojiconSize, textSize).toInt()
+            mEmojiEmotionSize = a.getDimension(R.styleable.Emojicon_emojiconSize, textSize).toInt()
             mTextStart = a.getInteger(R.styleable.Emojicon_emojiconTextStart, 0)
             mTextLength = a.getInteger(R.styleable.Emojicon_emojiconTextLength, -1)
             mUseSystemDefault = a.getBoolean(R.styleable.Emojicon_emojiconUseSystemDefault, false)
@@ -76,7 +76,8 @@ open class EmojiconTextView : AppCompatTextView {
         var text = text
         if (!TextUtils.isEmpty(text)) {
             val builder = SpannableStringBuilder(text)
-            EmojiconHandler.addEmojis(context, builder, mEmojiconSize, mEmojiconTextSize, mTextStart, mTextLength, mUseSystemDefault)
+//            EmojiEmotionHandler.addEmojis(context, builder, mEmojiEmotionSize, mEmojiEmotionTextSize, mTextStart, mTextLength, mUseSystemDefault)
+            EmojiEmotionHandler.ensure(context, builder, mEmojiEmotionSize, mEmojiEmotionTextSize)
             text = builder
         }
         super.setText(text, type)
@@ -85,8 +86,8 @@ open class EmojiconTextView : AppCompatTextView {
     /**
      * Set the size of emojicon in pixels.
      */
-    fun setEmojiconSize(pixels: Int) {
-        mEmojiconSize = pixels
+    fun setEmojiEmotionSize(pixels: Int) {
+        mEmojiEmotionSize = pixels
         super.setText(text)
     }
 

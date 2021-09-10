@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <cn.yue.base.common.widget.emoji.EmojiImageView
+    <ImageView
         android:id="@+id/emotionItemIV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

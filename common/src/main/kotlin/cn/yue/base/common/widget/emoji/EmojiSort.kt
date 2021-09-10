@@ -10,8 +10,8 @@ class EmojiSort : IEmotionSort {
 
     private var sortIndex: Int = 0
     private var firstPagePosition: Int = 0
-    private var sortName: String? = null
-    private var iconUrl: String? = null
+    private var sortName: String = ""
+    private var iconUrl: String = ""
     private var count: Int = 0
     var pageList: MutableList<EmojiPage>? = null
 
@@ -44,11 +44,11 @@ class EmojiSort : IEmotionSort {
     }
 
     override fun getSortName(): String {
-        return sortName?:""
+        return sortName
     }
 
     override fun getIconUrl(): String {
-        return iconUrl?:""
+        return iconUrl
     }
 
     override fun getCount(): Int {

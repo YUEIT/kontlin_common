@@ -69,6 +69,9 @@ class MainActivity : BaseActivity() {
         list.add(ItemAction("login") {
             FRouter.instance.build("/app/login").navigation(this)
         })
+        list.add(ItemAction("widget") {
+            FRouter.instance.build("/app/testWidget").navigation(this)
+        })
         return list
     }
 

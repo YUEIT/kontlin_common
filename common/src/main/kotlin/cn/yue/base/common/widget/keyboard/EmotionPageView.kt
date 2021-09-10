@@ -6,32 +6,32 @@ import android.widget.LinearLayout
 import androidx.viewpager.widget.ViewPager
 
 import cn.yue.base.common.R
+import cn.yue.base.common.widget.keyboard.mode.IEmotion
 import cn.yue.base.common.widget.keyboard.mode.IEmotionPage
 
 /**
  * Description :
  * Created by yue on 2018/11/14
  */
-class EmotionPageView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr) {
+class EmotionPageView(context: Context, attrs: AttributeSet?)
+    : LinearLayout(context, attrs) {
 
     private var emotionPageAdapter: EmotionPageAdapter<IEmotionPage>
-    private var viewPager: ViewPager? = null
+    private var viewPager: ViewPager
     private var lastPosition: Int = 0
 
     init {
         inflate(context, R.layout.layout_emotion_page, this)
         viewPager = findViewById(R.id.emotionVP)
         emotionPageAdapter = EmotionPageAdapter(null)
-        viewPager!!.setAdapter(emotionPageAdapter)
-        viewPager!!.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+        viewPager.adapter = emotionPageAdapter
+        viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
 
             }
 
             override fun onPageSelected(position: Int) {
-                if (mListener != null) {
-                    mListener!!(position, lastPosition)
-                }
+                onPageChangeListener?.invoke(position, lastPosition)
                 lastPosition = position
             }
 
@@ -47,18 +47,16 @@ class EmotionPageView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     fun setCurrentItem(position: Int) {
         lastPosition = position
-        if (viewPager != null) {
-            viewPager!!.currentItem = position
-        }
+        viewPager.currentItem = position
     }
 
-    interface OnPageChangeListener {
-        fun onPageSelected(position: Int, lastPosition: Int)
+    private var onPageChangeListener: ((position: Int, lastPosition: Int) -> Unit)? = null
+
+    fun setOnPageChangeListener(onPageChangeListener: ((position: Int, lastPosition: Int) -> Unit)) {
+        this.onPageChangeListener = onPageChangeListener
     }
 
-    private var mListener: ((position: Int, lastPosition: Int) -> Unit)? = null
-
-    fun setOnPageChangeListener(mListener: ((position: Int, lastPosition: Int) -> Unit)) {
-        this.mListener = mListener
+    fun setOnEmotionClickListener(onEmotionClickListener: ((itemData: IEmotion) -> Unit)?) {
+        emotionPageAdapter.setOnEmotionClickListener(onEmotionClickListener)
     }
 }

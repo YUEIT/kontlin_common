@@ -8,6 +8,8 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.R
+import cn.yue.base.common.image.ImageLoader
+import cn.yue.base.common.utils.code.hasValue
 import cn.yue.base.common.widget.keyboard.mode.IEmotionSort
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
@@ -17,7 +19,7 @@ import java.util.*
  * Description :
  * Created by yue on 2018/11/16
  */
-abstract class EmotionBottomSortLayout(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
+class EmotionBottomSortLayout(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
 
     private var sortRV: RecyclerView? = null
     private var commonAdapter: CommonAdapter<IEmotionSort>
@@ -39,8 +41,11 @@ abstract class EmotionBottomSortLayout(context: Context, attrs: AttributeSet?) :
                 } else {
                     holder.itemView.setBackgroundColor(Color.parseColor("#ffffff"))
                 }
-                //                ImageLoader.getLoader().loadImage((ImageView) holder.getView(R.id.emotionImageIV), iEmotionSort.getIconUrl());
-                val imageView = holder.getView<ImageView>(R.id.emotionImageIV)
+                if (iEmotionSort.getIconUrl().hasValue()) {
+                    ImageLoader.getLoader().loadImage(holder.getView(R.id.emotionImageIV),
+                        iEmotionSort.getIconUrl()
+                    )
+                }
                 holder.setOnItemClickListener {
                     if (mListener != null) {
                         mListener!!(iEmotionSort)
@@ -50,7 +55,7 @@ abstract class EmotionBottomSortLayout(context: Context, attrs: AttributeSet?) :
                 }
             }
         }
-        sortRV!!.setAdapter(commonAdapter)
+        sortRV!!.adapter = commonAdapter
     }
 
     fun setEmotionSortList(list: MutableList<IEmotionSort>) {
@@ -63,10 +68,6 @@ abstract class EmotionBottomSortLayout(context: Context, attrs: AttributeSet?) :
         sortRV!!.smoothScrollToPosition(position)
         commonAdapter.notifyDataSetChanged()
     }
-
-//    interface OnClickEmotionSortListener {
-//        fun onClick(sort: IEmotionSort)
-//    }
 
     var mListener: ((sort : IEmotionSort) -> Unit)? = null
 

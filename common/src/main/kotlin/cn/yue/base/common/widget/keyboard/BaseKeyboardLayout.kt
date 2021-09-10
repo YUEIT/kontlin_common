@@ -16,29 +16,24 @@ import cn.yue.base.common.utils.device.KeyboardUtils
  * Description :
  * Created by yue on 2018/11/14
  */
-abstract class BaseKeyboardLayout
-    @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0)
-    : RelativeLayout(context, attrs, defStyleAttr), IKeyboard {
+abstract class BaseKeyboardLayout(context: Context, attrs: AttributeSet?)
+    : RelativeLayout(context, attrs), IKeyboard {
 
-    private val mEmotionLayout: EmotionLayout
-    private val keyboardHelp: KeyboardHelp?
+    private var mEmotionLayout: EmotionLayout
+    private val keyboardHelp: KeyboardHelp = KeyboardHelp()
 
-    protected abstract val layoutId: Int
+    abstract fun getLayoutId(): Int
 
-    override fun getKeyboardHeight(): Int{
-            keyboardHelp?.keyboardHeight
-            return 0
-        }
+    override fun getKeyboardHeight(): Int {
+        return keyboardHelp.keyboardHeight
+    }
 
-    protected var mMaxParentHeight: Int = 0
+    var mMaxParentHeight: Int = 0
 
     init {
-        keyboardHelp = KeyboardHelp()
         keyboardHelp.addOnSoftKeyBoardVisibleListener(context, this)
-        View.inflate(context, layoutId, this)
+        View.inflate(context, getLayoutId(), this)
         mEmotionLayout = getEmotionLayout()
-        //初始时，还没测绘到尺寸，先隐藏
-        mEmotionLayout!!.visibility = View.GONE
         initView(context)
     }
 
@@ -47,23 +42,23 @@ abstract class BaseKeyboardLayout
     protected abstract fun getEmotionLayout(): EmotionLayout
 
     override fun onKeyboardOpen() {
-            mEmotionLayout.setKeyboardHeight(keyboardHelp!!.keyboardHeight)
+            mEmotionLayout.setKeyboardHeight(keyboardHelp.keyboardHeight)
             mEmotionLayout.onKeyboardOpen()
     }
 
     override fun onKeyboardClose() {
-            mEmotionLayout.setKeyboardHeight(keyboardHelp!!.keyboardHeight)
+            mEmotionLayout.setKeyboardHeight(keyboardHelp.keyboardHeight)
             mEmotionLayout.onKeyboardClose()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         if (mMaxParentHeight != 0) {
-            val heightMode = View.MeasureSpec.getMode(heightMeasureSpec)
-            val expandSpec = View.MeasureSpec.makeMeasureSpec(mMaxParentHeight, heightMode)
+            val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+            val expandSpec = MeasureSpec.makeMeasureSpec(mMaxParentHeight, heightMode)
             super.onMeasure(widthMeasureSpec, expandSpec)
-            return
+        } else {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         }
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     @SuppressLint("ResourceType")
@@ -75,14 +70,14 @@ abstract class BaseKeyboardLayout
         super.addView(child, index, params)
         if (childSum == 0) {
             if (child.id < 0) {
-                child.id = ID_CHILD
+                child.id = 101
             }
-            val paramsChild = child.layoutParams as RelativeLayout.LayoutParams
-            paramsChild.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+            val paramsChild = child.layoutParams as LayoutParams
+            paramsChild.addRule(ALIGN_PARENT_BOTTOM)
             child.layoutParams = paramsChild
         } else if (childSum == 1) {
-            val paramsChild = child.layoutParams as RelativeLayout.LayoutParams
-            paramsChild.addRule(RelativeLayout.ABOVE, ID_CHILD)
+            val paramsChild = child.layoutParams as LayoutParams
+            paramsChild.addRule(ABOVE, 101)
             child.layoutParams = paramsChild
         }
     }
@@ -97,22 +92,18 @@ abstract class BaseKeyboardLayout
         }
     }
 
-
     override fun requestFocus(direction: Int, previouslyFocusedRect: Rect): Boolean {
         return if (KeyboardUtils.isFullScreen(context as Activity)) {
             false
-        } else super.requestFocus(direction, previouslyFocusedRect)
+        } else {
+            super.requestFocus(direction, previouslyFocusedRect)
+        }
     }
 
     override fun requestChildFocus(child: View, focused: View) {
-        if (KeyboardUtils.isFullScreen(context as Activity)) {
-            return
+        if (!KeyboardUtils.isFullScreen(context as Activity)) {
+            super.requestChildFocus(child, focused)
         }
-        super.requestChildFocus(child, focused)
-    }
-
-    companion object {
-        private val ID_CHILD = 101
     }
 
 }

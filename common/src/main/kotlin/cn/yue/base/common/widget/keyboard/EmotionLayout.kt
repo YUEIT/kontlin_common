@@ -3,6 +3,7 @@ package cn.yue.base.common.widget.keyboard
 import android.app.Activity
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -12,14 +13,16 @@ import cn.yue.base.common.R
 import cn.yue.base.common.utils.debug.LogUtils
 import cn.yue.base.common.utils.device.KeyboardUtils
 import cn.yue.base.common.widget.keyboard.mode.EmotionUtils
+import cn.yue.base.common.widget.keyboard.mode.IEmotion
 
 /**
  * Description :
  * Created by yue on 2018/11/14
  */
-class EmotionLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr), IKeyboard {
+class EmotionLayout(context: Context, attrs: AttributeSet?)
+    : LinearLayout(context, attrs), IKeyboard {
 
-    private var pageView: EmotionPageView? = null
+    private val pageView: EmotionPageView
 
     private var visible: Boolean = false
 
@@ -45,11 +48,11 @@ class EmotionLayout @JvmOverloads constructor(context: Context, attrs: Attribute
         bottomSortLayout.setEmotionSortList(EmotionUtils.getAllEmotionSort())
         bottomSortLayout.setOnClickEmotionSortListener {
             sort ->
-            pageView!!.setCurrentItem(sort.getFirstPagePosition())
+            pageView.setCurrentItem(sort.getFirstPagePosition())
             indicatorView.playTo(0, sort.getCount())
         }
-        pageView!!.setData(EmotionUtils.allEmotionPage)
-        pageView!!.setOnPageChangeListener{ position, lastPosition ->
+        pageView.setData(EmotionUtils.getAllEmotionPage())
+        pageView.setOnPageChangeListener{ position, lastPosition ->
             val currentSort = EmotionUtils.getEmotionSortByPosition(position)
             val lastSort = EmotionUtils.getEmotionSortByPosition(lastPosition)
             if (currentSort == null || lastSort == null) {
@@ -71,8 +74,8 @@ class EmotionLayout @JvmOverloads constructor(context: Context, attrs: Attribute
 
     }
 
-    fun setOnEmotionClickListener(onEmotionClickListener: OnEmotionClickListener) {
-        EmotionUtils.onEmotionClickListener = onEmotionClickListener
+    fun setOnEmotionClickListener(onEmotionClickListener: ((itemData: IEmotion) -> Unit)?) {
+        pageView.setOnEmotionClickListener(onEmotionClickListener)
     }
 
     fun toggleEmotionShow(editText: EditText) {

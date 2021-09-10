@@ -8,13 +8,16 @@ import android.text.style.DynamicDrawableSpan
 
 import java.lang.ref.WeakReference
 
-class EmojiconSpan(private val mContext: Context, private val mResourceId: Int, size: Int, private val mTextSize: Int) : DynamicDrawableSpan(DynamicDrawableSpan.ALIGN_BASELINE) {
+class EmojiEmotionSpan(
+    private val mContext: Context,
+    private val mResourceId: Int,
+    private val mSize: Int,
+    private val mTextSize: Int
+) : DynamicDrawableSpan(ALIGN_BASELINE) {
 
-    private val mSize: Int
+    private var mHeight: Int = mSize
 
-    private var mHeight: Int = 0
-
-    private var mWidth: Int = 0
+    private var mWidth: Int = mSize
 
     private var mTop: Int = 0
 
@@ -23,16 +26,10 @@ class EmojiconSpan(private val mContext: Context, private val mResourceId: Int, 
     private var mDrawableRef: WeakReference<Drawable>? = null
 
     private fun getCachedDrawable(): Drawable {
-            if (mDrawableRef == null || mDrawableRef!!.get() == null) {
-                mDrawableRef = WeakReference<Drawable>(drawable)
-            }
-            return mDrawableRef!!.get()!!
+        if (mDrawableRef?.get() == null) {
+            mDrawableRef = WeakReference<Drawable>(drawable)
         }
-
-    init {
-        mSize = size
-        mHeight = mSize
-        mWidth = mHeight
+        return mDrawableRef!!.get()!!
     }
 
     override fun getDrawable(): Drawable? {
@@ -46,12 +43,21 @@ class EmojiconSpan(private val mContext: Context, private val mResourceId: Int, 
             } catch (e: Exception) {
                 // swallow
             }
-
         }
         return mDrawable
     }
 
-    override fun draw(canvas: Canvas, text: CharSequence, start: Int, end: Int, x: Float, top: Int, y: Int, bottom: Int, paint: Paint) {
+    override fun draw(
+        canvas: Canvas,
+        text: CharSequence,
+        start: Int,
+        end: Int,
+        x: Float,
+        top: Int,
+        y: Int,
+        bottom: Int,
+        paint: Paint
+    ) {
         //super.draw(canvas, text, start, end, x, top, y, bottom, paint);
         val b = getCachedDrawable()
         canvas.save()

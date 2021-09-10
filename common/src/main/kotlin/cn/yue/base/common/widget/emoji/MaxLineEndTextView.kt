@@ -6,13 +6,7 @@ import android.text.TextUtils
 import android.util.AttributeSet
 import android.widget.TextView
 
-/**
- * 介绍：部分手机end的时候。。。后面还有半个字
- * 作者：qianjujun
- * 邮箱：qianjujun@imcoming.com
- * 时间： 2016/11/23
- */
-class MaxLineEndTextView : EmojiconTextView {
+class MaxLineEndTextView : EmojiEmotionTextView {
     private var textChange: Boolean = false
 
     constructor(context: Context) : super(context) {}

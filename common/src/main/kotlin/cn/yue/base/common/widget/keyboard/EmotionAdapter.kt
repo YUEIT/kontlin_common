@@ -20,18 +20,21 @@ class EmotionAdapter<T : IEmotion>(context: Context, list: MutableList<T>) : Com
         return R.layout.item_emotion
     }
 
-    override fun bindData(holder: CommonViewHolder, position: Int, t: T) {
+    override fun bindData(holder: CommonViewHolder, position: Int, itemData: T) {
         val emotionItemIV = holder.getView<ImageView>(R.id.emotionItemIV)
-        if (t.getImageResId() > 0) {
-            emotionItemIV!!.setImageResource(t.getImageResId())
+        if (itemData.getImageResId() > 0) {
+            emotionItemIV!!.setImageResource(itemData.getImageResId())
         } else {
-            ImageLoader.getLoader().loadImage(emotionItemIV, t.getImageUrl())
+            ImageLoader.getLoader().loadImage(emotionItemIV, itemData.getImageUrl())
         }
-        emotionItemIV!!.setOnClickListener{}
         holder.setOnItemClickListener {
-            if (EmotionUtils.onEmotionClickListener != null) {
-                EmotionUtils.onEmotionClickListener!!.onClick(t)
-            }
+            onEmotionClickListener?.invoke(itemData)
         }
+    }
+
+    private var onEmotionClickListener: ((itemData: IEmotion) -> Unit)? = null
+
+    fun setOnEmotionClickListener(onEmotionClickListener: ((itemData: IEmotion) -> Unit)?) {
+        this.onEmotionClickListener = onEmotionClickListener
     }
 }
