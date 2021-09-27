@@ -9,10 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.R
 import cn.yue.base.common.activity.BaseFragment
 import cn.yue.base.common.image.ImageLoader
-import cn.yue.base.common.photo.PhotoUtils.getAllPhotosFolder
-import cn.yue.base.common.photo.PhotoUtils.getTheLastPhotos
 import cn.yue.base.common.photo.data.MediaFolderVO
-import cn.yue.base.common.photo.data.MediaVO
+import cn.yue.base.common.photo.data.MediaType
+import cn.yue.base.common.photo.data.MediaData
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
@@ -40,7 +39,7 @@ class SelectPhotoFolderFragment : BaseFragment() {
             }
 
             override fun bindData(holder: CommonViewHolder, position: Int, mediaFolderVO: MediaFolderVO) {
-                holder.setText(R.id.folderTV, mediaFolderVO.name + "（" + mediaFolderVO.count + "）")
+                holder.setText(R.id.folderTV, mediaFolderVO.name + "(" + mediaFolderVO.count + ")")
                 ImageLoader.getLoader().loadImage(holder.getView(R.id.folderIV) as ImageView?, mediaFolderVO.coverUri)
                 holder.setOnItemClickListener{
                     (mActivity as SelectPhotoActivity).changeToSelectPhotoFragment(mediaFolderVO.id, mediaFolderVO.name)
@@ -53,9 +52,9 @@ class SelectPhotoFolderFragment : BaseFragment() {
     private var allFolder: MutableList<MediaFolderVO> = ArrayList()
     private fun getAllPhotoFolder() {
             val threadPoolUtils = Executors.newSingleThreadExecutor()
-            threadPoolUtils.execute(Runnable {
-                val allFolder = getAllPhotosFolder(mActivity)
-                val lastPhotos: List<MediaVO> = getTheLastPhotos(mActivity, 100)
+            threadPoolUtils.execute {
+                val allFolder = PhotoUtils.getAllPhotosFolder(mActivity)
+                val lastPhotos: List<MediaData> = PhotoUtils.getTheLastMedias(mActivity, 100, getMediaType())
                 if (lastPhotos.isNotEmpty()) {
                     val lastMediaFolderVO = MediaFolderVO()
                     lastMediaFolderVO.id = ""
@@ -65,7 +64,7 @@ class SelectPhotoFolderFragment : BaseFragment() {
                     allFolder.add(0, lastMediaFolderVO)
                 }
                 handler.sendMessage(Message.obtain(handler, 101, allFolder))
-            })
+            }
         }
 
     private var handler = Handler(Handler.Callback { msg ->
@@ -78,4 +77,8 @@ class SelectPhotoFolderFragment : BaseFragment() {
         }
         false
     })
+
+    private fun getMediaType(): MediaType {
+        return (mActivity as SelectPhotoActivity).getMediaType()
+    }
 }

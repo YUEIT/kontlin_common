@@ -4,11 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.database.DataSetObserver
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
@@ -25,7 +27,9 @@ import java.util.*
  * 邮箱：luobiao@imcoming.cn
  * 时间：2016/10/26.
  */
-class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : HorizontalScrollView(context, attrs, defStyle) {
+class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0)
+    : HorizontalScrollView(context, attrs, defStyle) {
+
     interface LayoutTabProvider {
         /**
          * 创建一个 tab item
@@ -53,8 +57,11 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
     private var mPagerAdapterObserver: DataSetObserver? = null
     private var tabCount = 0
     private var currentPosition = 0
-    private var currentPositionOffset = 0f
-    private val rectPaint: Paint
+    private var movePosition = 0
+    private var movePositionOffset = 0f
+    private val indicatorPaint: Paint
+    private var indicatorWidth = 0
+    private var indicatorHeight = 0
     private var shouldExpand = false
     private var isTextAllCaps = true
     private var scrollOffset = 52
@@ -70,19 +77,19 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
         tabsContainer.orientation = LinearLayout.HORIZONTAL
         tabsContainer.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         addView(tabsContainer)
-        val dm = resources.displayMetrics
-        scrollOffset = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, scrollOffset.toFloat(), dm).toInt()
-        tabPadding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, tabPadding.toFloat(), dm).toInt()
         val a = context.obtainStyledAttributes(attrs, R.styleable.SampleTabStrip)
-        tabPadding = a.getDimensionPixelSize(R.styleable.SampleTabStrip_stsTabPaddingLeftRight, tabPadding)
+        tabPadding = a.getDimensionPixelSize(R.styleable.SampleTabStrip_stsTabPadding, tabPadding)
         tabBackground = a.getResourceId(R.styleable.SampleTabStrip_stsTabBackground, tabBackground)
         shouldExpand = a.getBoolean(R.styleable.SampleTabStrip_stsShouldExpand, shouldExpand)
         scrollOffset = a.getDimensionPixelSize(R.styleable.SampleTabStrip_stsScrollOffset, scrollOffset)
         isTextAllCaps = a.getBoolean(R.styleable.SampleTabStrip_stsTextAllCaps, isTextAllCaps)
+        indicatorWidth = a.getDimensionPixelSize(R.styleable.SampleTabStrip_stsIndicatorWidth, indicatorWidth)
+        indicatorHeight = a.getDimensionPixelOffset(R.styleable.SampleTabStrip_stsIndicatorHeight, indicatorHeight)
+        indicatorPaint = Paint()
+        indicatorPaint.isAntiAlias = true
+        indicatorPaint.style = Paint.Style.FILL
+        indicatorPaint.color = a.getColor(R.styleable.SampleTabStrip_stsIndicatorColor, Color.TRANSPARENT)
         a.recycle()
-        rectPaint = Paint()
-        rectPaint.isAntiAlias = true
-        rectPaint.style = Paint.Style.FILL
         defaultTabLayoutParams = LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
         expandedTabLayoutParams = LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1.0f)
         if (locale == null) {
@@ -203,6 +210,10 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
         tabsContainer.addView(tab, position, if (shouldExpand) expandedTabLayoutParams else defaultTabLayoutParams)
     }
 
+    fun getTab(position: Int): View {
+        return tabsContainer.getChildAt(position)
+    }
+
     private fun updateTabStyles() {
         for (i in 0 until tabCount) {
             val v = tabsContainer.getChildAt(i)
@@ -229,27 +240,38 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (isInEditMode || tabCount == 0) {
+        if (isInEditMode || tabCount == 0 || indicatorHeight == 0 || indicatorWidth == 0) {
             return
         }
-        val height = height
 
         // default: line below current tab
-        val currentTab = tabsContainer.getChildAt(currentPosition)
-        var lineLeft = currentTab.left.toFloat()
-        var lineRight = currentTab.right.toFloat()
+        val moveTab = tabsContainer.getChildAt(movePosition)
+        val moveLeft = moveTab.left.toFloat()
+        val moveRight = moveTab.right.toFloat()
+        val moveCenter = (moveLeft + moveRight) / 2
 
-        // if there is an offset, start interpolating left and right coordinates between current and next tab
-        if (currentPositionOffset > 0f && currentPosition < tabCount - 1) {
-            val nextTab = tabsContainer.getChildAt(currentPosition + 1)
-            val nextTabLeft = nextTab.left.toFloat()
-            val nextTabRight = nextTab.right.toFloat()
-            lineLeft = currentPositionOffset * nextTabLeft + (1f - currentPositionOffset) * lineLeft
-            lineRight = currentPositionOffset * nextTabRight + (1f - currentPositionOffset) * lineRight
+        val nextPosition = movePosition + 1
+        val defaultMarginBottom = 5
+        if (nextPosition < tabCount) {
+            val nextTab = tabsContainer.getChildAt(nextPosition)
+            val nextLeft = nextTab.left.toFloat()
+            val nextRight = nextTab.right.toFloat()
+            val nextCenter = (nextLeft + nextRight) / 2
+            val currentCenter = moveCenter + (nextCenter - moveCenter) * movePositionOffset
+            canvas.drawRect(currentCenter - indicatorWidth / 2,
+                measuredHeight - indicatorHeight.toFloat() - defaultMarginBottom,
+                currentCenter + indicatorWidth / 2,
+                measuredHeight.toFloat() - defaultMarginBottom,
+                indicatorPaint
+            )
+        } else {
+            canvas.drawRect(moveCenter - indicatorWidth / 2,
+                measuredHeight - indicatorHeight.toFloat()  - defaultMarginBottom,
+                moveCenter + indicatorWidth / 2,
+                measuredHeight.toFloat() - defaultMarginBottom,
+                indicatorPaint
+            )
         }
-        lineLeft += currentTab.measuredWidth.toFloat() / 2
-        lineRight -= currentTab.measuredWidth.toFloat() / 2
-        canvas.drawRect(lineLeft, height.toFloat(), lineRight, height.toFloat(), rectPaint)
     }
 
     private inner class PagerAdapterObserver internal constructor() : DataSetObserver() {
@@ -278,12 +300,11 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
 
     private inner class PageListener : ViewPager.OnPageChangeListener {
         override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-            currentPosition = position
-            currentPositionOffset = positionOffset
+            movePosition = position
+            movePositionOffset = positionOffset
+            invalidate()
             if (position < tabsContainer.childCount) {
                 scrollToChild(position, (positionOffset * tabsContainer.getChildAt(position).width).toInt())
-                updateTabStyles()
-                invalidate()
             }
             if (delegatePageListener != null) {
                 delegatePageListener!!.onPageScrolled(position, positionOffset, positionOffsetPixels)
@@ -300,6 +321,11 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
         }
 
         override fun onPageSelected(position: Int) {
+            currentPosition = position
+            if (position < tabsContainer.childCount) {
+                updateTabStyles()
+                invalidate()
+            }
             if (delegatePageListener != null) {
                 delegatePageListener!!.onPageSelected(position)
             }
@@ -365,6 +391,7 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
         }
 
         companion object {
+            @JvmField
             val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.Creator<SavedState> {
                 override fun createFromParcel(`in`: Parcel): SavedState? {
                     return SavedState(`in`)

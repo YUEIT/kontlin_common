@@ -5,28 +5,41 @@
     </declare-styleable>
 
     <declare-styleable name="PagerSlidingTabStrip">
-        <attr name="pstsIndicatorColor" format="color"/>
-        <attr name="pstsUnderlineColor" format="color"/>
         <attr name="pstsDividerColor" format="color"/>
-        <attr name="pstsIndicatorHeight" format="dimension"/>
-        <attr name="pstsUnderlineHeight" format="dimension"/>
         <attr name="pstsDividerPadding" format="dimension"/>
-        <attr name="pstsTabPaddingLeftRight" format="dimension"/>
+        <attr name="pstsDividerWidth" format="dimension" />
+        <attr name="pstsTabPadding" format="dimension"/>
         <attr name="pstsScrollOffset" format="dimension"/>
         <attr name="pstsTabBackground" format="reference"/>
         <attr name="pstsShouldExpand" format="boolean"/>
         <attr name="pstsTextAllCaps" format="boolean"/>
-        <attr name="pstsTextDefaultColor" format="color"/>
-        <attr name="pstsTextSelectColor" format="color"/>
+        <attr name="pstsTextColor" format="color"/>
+        <attr name="pstsSelectedTextColor" format="color"/>
+        <attr name="pstsTextStyle">
+            <flag name="normal" value="0" />
+            <flag name="bold" value="1" />
+            <flag name="italic" value="2" />
+        </attr>
+        <attr name="pstsSelectedTextStyle">
+            <flag name="normal" value="0" />
+            <flag name="bold" value="1" />
+            <flag name="italic" value="2" />
+        </attr>
+        <attr name="pstsTextSize" format="dimension"/>
         <attr name="pstsIndicatorWidth" format="dimension"/>
+        <attr name="pstsIndicatorHeight" format="dimension"/>
+        <attr name="pstsIndicatorColor" format="color"/>
     </declare-styleable>
 
     <declare-styleable name="SampleTabStrip">
-        <attr name="stsTabPaddingLeftRight" format="dimension"/>
+        <attr name="stsTabPadding" format="dimension"/>
         <attr name="stsScrollOffset" format="dimension"/>
         <attr name="stsTabBackground" format="reference"/>
         <attr name="stsShouldExpand" format="boolean"/>
         <attr name="stsTextAllCaps" format="boolean"/>
+        <attr name="stsIndicatorHeight" format="dimension"/>
+        <attr name="stsIndicatorWidth" format="dimension"/>
+        <attr name="stsIndicatorColor" format="color"/>
     </declare-styleable>
 
     <declare-styleable name="RoundImageView">

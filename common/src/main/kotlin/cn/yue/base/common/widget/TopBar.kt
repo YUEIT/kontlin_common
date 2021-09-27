@@ -44,6 +44,7 @@ class TopBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = 
         rightTV.visibility = View.GONE
         rightIV.visibility = View.GONE
         divider.visibility = View.GONE
+        centerIV.visibility = View.GONE
     }
 
     fun setBgColor(@ColorInt color: Int): TopBar {
@@ -87,7 +88,7 @@ class TopBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = 
     }
 
     fun setCenterClickListener(onClickListener: ((view: View) -> Unit)?): TopBar {
-        centerTV.setOnClickListener(onClickListener)
+        centerLL.setOnClickListener(onClickListener)
         return this
     }
 
@@ -125,6 +126,16 @@ class TopBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = 
 
     fun setCenterTextColor(@ColorInt color: Int): TopBar {
         centerTV.setTextColor(color)
+        return this
+    }
+
+    fun setCenterImage(resId: Int): TopBar {
+        if (resId == 0) {
+            centerIV.visibility = View.GONE
+        } else {
+            centerIV.visibility = View.VISIBLE
+            centerIV.setImageResource(resId)
+        }
         return this
     }
 

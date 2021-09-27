@@ -1,24 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <ImageView
         android:id="@+id/photoIV"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:padding="5dp"
+        android:layout_height="0dp"
+        android:padding="2dp"
         android:layout_gravity="center"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop"
+        app:layout_constraintDimensionRatio="h,1:1"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-    <CheckBox
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="2dp"
+        android:background="#30000000"
+        app:layout_constraintStart_toStartOf="@+id/photoIV"
+        app:layout_constraintEnd_toEndOf="@+id/photoIV"
+        app:layout_constraintTop_toTopOf="@+id/photoIV"
+        app:layout_constraintBottom_toBottomOf="@+id/photoIV"/>
+
+    <ImageView
         android:id="@+id/checkIV"
-        android:enabled="false"
-        android:clickable="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="right"
-        android:button="@drawable/check_box_small_selector" />
-</FrameLayout>
+        android:padding="10dp"
+        android:src="@drawable/check_box_small_selector"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/timeTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="5dp"
+        android:textSize="11sp"
+        android:textColor="#ffffff"
+        tools:text="10:30"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

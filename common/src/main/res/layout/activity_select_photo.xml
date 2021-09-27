@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/topBar"/>
+
+    <FrameLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/topBar"/>
+
+    <cn.yue.base.common.widget.viewpager.PagerSlidingTabStrip
+        android:id="@+id/tabs"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/viewPager"
+        app:pstsTextColor="#999999"
+        app:pstsSelectedTextColor="#333333"
+        app:pstsTextSize="13sp"
+        app:pstsTabPadding="5dp"
+        app:pstsIndicatorWidth="20dp"
+        app:pstsIndicatorHeight="2dp"
+        app:pstsIndicatorColor="#ffa700"/>
+</RelativeLayout>

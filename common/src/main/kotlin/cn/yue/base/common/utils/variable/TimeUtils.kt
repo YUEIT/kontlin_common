@@ -1,6 +1,9 @@
 package cn.yue.base.common.utils.variable
 
 import android.annotation.SuppressLint
+import androidx.annotation.RestrictTo
+import androidx.core.util.TimeUtils
+import java.lang.StringBuilder
 import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -8,6 +11,11 @@ import java.util.*
 import java.util.Calendar.*
 
 object TimeUtils {
+
+    private const val SECONDS_PER_MINUTE = 60
+    private const val SECONDS_PER_HOUR = 60 * 60
+    private const val SECONDS_PER_DAY = 24 * 60 * 60
+    private val DEFAULT_FORMAT = TimeFormat("  ", ":", ":", "", "")
 
     private val SDF_THREAD_LOCAL: ThreadLocal<MutableMap<String, SimpleDateFormat>> = object : ThreadLocal<MutableMap<String, SimpleDateFormat>>() {
         override fun initialValue(): MutableMap<String, SimpleDateFormat> {
@@ -136,4 +144,61 @@ object TimeUtils {
     fun getFullTimeDate(timeStr: String, format: String = "yyyy-MM-dd HH:mm:ss"): Date? {
         return getSafeDateFormat(format).parse(timeStr)
     }
+
+    fun formatDuration(duration: Long, format: TimeFormat = DEFAULT_FORMAT, showMillis: Boolean = false): String {
+        if (duration == 0L) {
+            return ""
+        }
+        val millis = (duration % 1000).toInt()
+        var seconds = Math.floor((duration / 1000).toDouble()).toInt()
+        var days = 0
+        var hours = 0
+        var minutes = 0
+        if (seconds > SECONDS_PER_DAY) {
+            days = seconds / SECONDS_PER_DAY
+            seconds -= days * SECONDS_PER_DAY
+        }
+        if (seconds > SECONDS_PER_HOUR) {
+            hours = seconds / SECONDS_PER_HOUR
+            seconds -= hours * SECONDS_PER_HOUR
+        }
+        if (seconds > SECONDS_PER_MINUTE) {
+            minutes = seconds / SECONDS_PER_MINUTE
+            seconds -= minutes * SECONDS_PER_MINUTE
+        }
+        val dayString = if (days != 0) {
+            "$days${format.day}"
+        } else {
+            ""
+        }
+        val hoursString = if (days != 0 && hours != 0) {
+            "${printField(hours, 2)}${format.hours}"
+        } else {
+            ""
+        }
+        val millisString = if (showMillis) {
+            "${printField(millis, 3)}${format.millis}"
+        } else {
+            ""
+        }
+        return StringBuilder()
+            .append(dayString)
+            .append(hoursString)
+            .append("${printField(minutes, 2)}${format.minute}")
+            .append("${printField(seconds, 2)}${format.second}")
+            .append(millisString)
+            .toString()
+    }
+
+    private fun printField(time: Int, length: Int): String {
+        var cur = length - time.toString().length
+        if (cur == 1) {
+            return "0$time"
+        } else if (cur == 2) {
+            return "00$time"
+        }
+        return "$time"
+    }
+
+    class TimeFormat(val day: String, val hours: String, val minute: String, val second: String, val millis: String)
 }

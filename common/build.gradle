@@ -49,6 +49,7 @@ dependencies {
     api rootProject.ext.androidx["viewpager2"]
     api rootProject.ext.androidx["design"]
     api rootProject.ext.androidx["legacy"]
+    api rootProject.ext.androidx["constraintlayout"]
 
     api rootProject.ext.kotlin["stdlib"]
     api rootProject.ext.kotlin["coroutine"]
@@ -56,6 +57,7 @@ dependencies {
     api rootProject.ext.kotlin["reflect"]
     implementation rootProject.ext.dependencies["systembartint"]
     implementation rootProject.ext.dependencies["glide"]
+    api "com.github.zjupure:webpdecoder:2.0.4.10.0"
     api rootProject.ext.dependencies["gson"]
     //aRouter
     api rootProject.ext.dependencies["arouter-api"]
@@ -67,4 +69,6 @@ dependencies {
 
     api rootProject.ext.dependencies["autosize"]
     api rootProject.ext.dependencies["mmkv"]
+
+    api 'com.google.android.exoplayer:exoplayer:2.13.3'
 }

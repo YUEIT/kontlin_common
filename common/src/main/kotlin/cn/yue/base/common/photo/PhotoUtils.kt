@@ -6,7 +6,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import cn.yue.base.common.photo.data.MediaFolderVO
 import cn.yue.base.common.photo.data.MediaType
-import cn.yue.base.common.photo.data.MediaVO
+import cn.yue.base.common.photo.data.MediaData
 import cn.yue.base.common.photo.data.MimeType.Companion.isImage
 import cn.yue.base.common.photo.data.MimeType.Companion.isVideo
 import cn.yue.base.common.photo.loader.MediaFolderLoader.COLUMN_BUCKET_DISPLAY_NAME
@@ -28,7 +28,7 @@ object PhotoUtils {
      * @param context
      * @return
      */
-    fun getAllMedia(context: Context): List<MediaVO> {
+    fun getAllMedia(context: Context): List<MediaData> {
         return getMediaByFolder(context, true, null, MediaType.ALL)
     }
 
@@ -37,7 +37,7 @@ object PhotoUtils {
      * @param context
      * @return
      */
-    fun getAllMediaPhotos(context: Context): List<MediaVO> {
+    fun getAllMediaPhotos(context: Context): List<MediaData> {
         return getMediaByFolder(context, true, null, MediaType.PHOTO)
     }
 
@@ -46,37 +46,25 @@ object PhotoUtils {
      * @param context
      * @return
      */
-    fun getAllMediaVideos(context: Context): List<MediaVO> {
+    fun getAllMediaVideos(context: Context): List<MediaData> {
         return getMediaByFolder(context, true, null, MediaType.VIDEO)
     }
 
     /**
-     * 获取最近num张照片
+     * 获取最近num个资源
      * @param num
      * @return
      */
     @JvmStatic
-    fun getTheLastPhotos(context: Context, num: Int): ArrayList<MediaVO> {
-        val list = ArrayList<MediaVO>()
-        val photos = getMediaByFolder(context, true, null, MediaType.PHOTO)
+    fun getTheLastMedias(context: Context, num: Int, mediaType: MediaType): ArrayList<MediaData> {
+        val list = ArrayList<MediaData>()
+        val photos = getMediaByFolder(context, true, null, mediaType)
         if (photos.size > num) {
             list.addAll(photos.subList (0, num))
         } else {
             list.addAll(photos)
         }
         return list
-    }
-
-    /**
-     * 获取对应路径下的所有图片
-     * @param context
-     * @param isAll
-     * @param folderId
-     * @return
-     */
-    @JvmStatic
-    fun getPhotosByFolder(context: Context, isAll: Boolean, folderId: String?): ArrayList<MediaVO> {
-        return getMediaByFolder(context, isAll, folderId, MediaType.PHOTO)
     }
 
     /**
@@ -87,11 +75,11 @@ object PhotoUtils {
      * @param mediaType
      * @return
      */
-    fun getMediaByFolder(context: Context, isAll: Boolean, folderId: String?, mediaType: MediaType): ArrayList<MediaVO> {
-        val list = ArrayList<MediaVO>()
+    fun getMediaByFolder(context: Context, isAll: Boolean, folderId: String?, mediaType: MediaType): ArrayList<MediaData> {
+        val list = ArrayList<MediaData>()
         val cursor = load(context, isAll, folderId, mediaType)
         while (cursor.moveToNext()) {
-            val mediaVO = MediaVO()
+            val mediaVO = MediaData()
             val id = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
             mediaVO.id = id
             val mimeType = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
@@ -122,7 +110,7 @@ object PhotoUtils {
      */
     @JvmStatic
     fun getAllPhotosFolder(context: Context): MutableList<MediaFolderVO> {
-        return getAllMediaFolder(context, MediaType.PHOTO)
+        return getAllMediaFolder(context, MediaType.ALL)
     }
 
     /**

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.database.DataSetObserver
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.os.Build
@@ -14,6 +15,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewTreeObserver
+import android.view.ViewTreeObserver.*
 import android.widget.*
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
@@ -21,9 +23,10 @@ import androidx.viewpager.widget.ViewPager
 import java.util.Locale
 
 import cn.yue.base.common.R
+import cn.yue.base.common.utils.app.DisplayUtils
 
-class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : HorizontalScrollView(context, attrs, defStyle) {
-    // @formatter:on
+class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0)
+    : HorizontalScrollView(context, attrs, defStyle) {
 
     private val defaultTabLayoutParams: LinearLayout.LayoutParams
     private val expandedTabLayoutParams: LinearLayout.LayoutParams
@@ -42,60 +45,30 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
     private var tabCount: Int = 0
 
     private var currentPosition = 0
-    private var currentPositionOffset = 0f
+    private var movePosition = 0
+    private var movePositionOffset = 0f
+    private val indicatorPaint: Paint
+    private var indicatorWidth = 0
+    private var indicatorHeight = 0
+    private var indicatorColor = Color.TRANSPARENT
 
-    private val rectPaint: Paint
+    private var dividerWidth = 0
     private val dividerPaint: Paint
-
-    private var indicatorColor = -0x99999a
-    private var underlineColor = 0x1A000000
-    private var dividerColor = 0x1A000000
+    private var dividerColor = Color.parseColor("#1f000000")
+    private var dividerPadding = 12
 
     private var shouldExpand = false
     private var isTextAllCaps = true
     private var scrollOffset = 52
-    private var indicatorHeight = 8
-    private var indicatorWidth = 0
-    private var underlineHeight = 2
-    private var dividerPadding = 12
     private var tabPadding = 10
-    private var dividerWidth = 1
 
-    private var tabTextSize = 12
-    private var tabTextColor = -0x99999a
-    private var tabTextSelectColor = -0x1000000
-    private var tabTypeface: Typeface? = null
-    private var tabTypefaceStyle = Typeface.NORMAL
+    private var tabTextSize = 36
+    private var tabTextColor = Color.parseColor("#999999")
+    private var tabSelectedTextColor = Color.parseColor("#333333")
+    private var tabTypeface= Typeface.NORMAL
+    private var tabSelectedTypeface = Typeface.BOLD
     private var lastScrollX = 0
     private var tabBackground = 0
-    private var locale: Locale? = null
-
-    fun setTextSize(textSizePx: Int) {
-        this.tabTextSize = textSizePx
-        updateTabStyles()
-    }
-
-    fun getTextSize(): Int {
-        return tabTextSize
-    }
-
-    fun setTextColor(textColor: Int) {
-        this.tabTextColor = textColor
-        updateTabStyles()
-    }
-
-    fun getTextColor(): Int {
-        return tabTextColor
-    }
-
-    fun getTabPaddingLeftRight(): Int {
-        return tabPadding
-    }
-
-    fun setTabPaddingLeftRight(paddingPx: Int) {
-        tabPadding = paddingPx
-        updateTabStyles()
-    }
 
     interface IconTabProvider {
         fun getPageIconResId(position: Int): Int
@@ -109,7 +82,6 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
 
     }
 
-
     init {
         isFillViewport = true
         setWillNotDraw(false)
@@ -117,101 +89,85 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
         tabsContainer.orientation = LinearLayout.HORIZONTAL
         tabsContainer.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
         addView(tabsContainer)
-        val dm = resources.displayMetrics
-        scrollOffset = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, scrollOffset.toFloat(), dm).toInt()
-        indicatorHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, indicatorHeight.toFloat(), dm).toInt()
-        underlineHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, underlineHeight.toFloat(), dm).toInt()
-        dividerPadding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dividerPadding.toFloat(), dm).toInt()
-        tabPadding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, tabPadding.toFloat(), dm).toInt()
-        dividerWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dividerWidth.toFloat(), dm).toInt()
-        tabTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, tabTextSize.toFloat(), dm).toInt()
-        // get system attrs (android:textSize and android:textColor)
-        var a = context.obtainStyledAttributes(attrs, ATTRS)
-        tabTextSize = a.getDimensionPixelSize(0, tabTextSize)
-        tabTextColor = a.getColor(1, tabTextColor)
-        a.recycle()
-        // get custom attrs
-        a = context.obtainStyledAttributes(attrs, R.styleable.PagerSlidingTabStrip)
-        indicatorColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsIndicatorColor, indicatorColor)
-        underlineColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsUnderlineColor, underlineColor)
+        val a = context.obtainStyledAttributes(attrs, R.styleable.PagerSlidingTabStrip)
+        tabTextSize = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_pstsTextSize, tabTextSize)
+        tabTextColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsTextColor, tabTextColor)
+        dividerWidth = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_pstsDividerWidth, dividerWidth)
         dividerColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsDividerColor, dividerColor)
-        indicatorHeight = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_pstsIndicatorHeight, indicatorHeight)
-        underlineHeight = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_pstsUnderlineHeight, underlineHeight)
         dividerPadding = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_pstsDividerPadding, dividerPadding)
-        tabPadding = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_pstsTabPaddingLeftRight, tabPadding)
+        tabPadding = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_pstsTabPadding, tabPadding)
         tabBackground = a.getResourceId(R.styleable.PagerSlidingTabStrip_pstsTabBackground, tabBackground)
         shouldExpand = a.getBoolean(R.styleable.PagerSlidingTabStrip_pstsShouldExpand, shouldExpand)
         scrollOffset = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_pstsScrollOffset, scrollOffset)
         isTextAllCaps = a.getBoolean(R.styleable.PagerSlidingTabStrip_pstsTextAllCaps, isTextAllCaps)
-        tabTextColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsTextDefaultColor, tabTextColor)
-        tabTextSelectColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsTextSelectColor, tabTextSelectColor)
+        tabTextColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsTextColor, tabTextColor)
+        tabSelectedTextColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsSelectedTextColor, tabSelectedTextColor)
+        tabTypeface = a.getInt(R.styleable.PagerSlidingTabStrip_pstsTextStyle, tabTypeface)
+        tabSelectedTypeface = a.getInt(R.styleable.PagerSlidingTabStrip_pstsSelectedTextStyle, tabSelectedTypeface)
         indicatorWidth = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_pstsIndicatorWidth, indicatorWidth)
+        indicatorHeight = a.getDimensionPixelSize(R.styleable.PagerSlidingTabStrip_pstsIndicatorHeight, indicatorHeight)
+        indicatorColor = a.getColor(R.styleable.PagerSlidingTabStrip_pstsIndicatorColor, indicatorColor)
         a.recycle()
-        rectPaint = Paint()
-        rectPaint.isAntiAlias = true
-        rectPaint.style = Paint.Style.FILL
+        indicatorPaint = Paint()
+        indicatorPaint.isAntiAlias = true
+        indicatorPaint.style = Paint.Style.FILL
+        indicatorPaint.color = indicatorColor
         dividerPaint = Paint()
         dividerPaint.isAntiAlias = true
+        dividerPaint.color = dividerColor
         dividerPaint.strokeWidth = dividerWidth.toFloat()
         defaultTabLayoutParams = LinearLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT)
         expandedTabLayoutParams = LinearLayout.LayoutParams(0, FrameLayout.LayoutParams.MATCH_PARENT, 1.0f)
-        if (locale == null) {
-            locale = resources.configuration.locale
-        }
     }
 
-    fun setViewPager(pager: ViewPager?) {
+    fun setViewPager(pager: ViewPager) {
         this.pager = pager
-        if (pager!!.adapter == null) {
+        if (pager.adapter == null) {
             throw IllegalStateException("ViewPager does not have adapter instance.")
         }
-        pager.setOnPageChangeListener(pageListener)
+        pager.addOnPageChangeListener(pageListener)
         notifyDataSetChanged()
     }
 
-    fun setPageListenerNull() {
-        pager!!.setOnPageChangeListener(null)
+    fun removeOnPageChangeListener() {
+        pager?.removeOnPageChangeListener(pageListener)
     }
 
-    fun setViewPagerAutoRefresh(viewPager: ViewPager?, autoRefresh: Boolean) {
+    fun setViewPagerAutoRefresh(viewPager: ViewPager, autoRefresh: Boolean = true) {
         if (autoRefresh) {
-            if (pager != null) {
-                if (pageListener != null) {
-                    pager!!.removeOnPageChangeListener(pageListener)
-                }
-                if (mAdapterChangeListener != null) {
-                    pager!!.removeOnAdapterChangeListener(mAdapterChangeListener!!)
+            pager?.let {
+                it.removeOnPageChangeListener(pageListener)
+                mAdapterChangeListener?.apply {
+                    it.removeOnAdapterChangeListener(this)
                 }
             }
-            if (viewPager != null) {
-                pager = viewPager
-                pager!!.addOnPageChangeListener(pageListener)
-                val adapter = viewPager.adapter
-                if (adapter != null) {
-                    // Now we'll populate ourselves from the pager adapter, adding an observer if
-                    // autoRefresh is enabled
-                    setPagerAdapter(adapter, autoRefresh)
-                }
+            pager = viewPager
+            pager!!.addOnPageChangeListener(pageListener)
+            val adapter = viewPager.adapter
+            if (adapter != null) {
+                // Now we'll populate ourselves from the pager adapter, adding an observer if
+                // autoRefresh is enabled
+                setPagerAdapter(adapter, autoRefresh)
+            }
 
-                // Add a listener so that we're notified of any adapter changes
-                if (mAdapterChangeListener == null) {
-                    mAdapterChangeListener = AdapterChangeListener()
-                }
-                mAdapterChangeListener!!.setAutoRefresh(autoRefresh)
-                viewPager.addOnAdapterChangeListener(mAdapterChangeListener!!)
+            // Add a listener so that we're notified of any adapter changes
+            if (mAdapterChangeListener == null) {
+                mAdapterChangeListener = AdapterChangeListener()
             }
+            mAdapterChangeListener!!.setAutoRefresh(autoRefresh)
+            viewPager.addOnAdapterChangeListener(mAdapterChangeListener!!)
         } else {
             setViewPager(viewPager)
         }
     }
 
-    internal fun setPagerAdapter(adapter: PagerAdapter?, addObserver: Boolean) {
+    fun setPagerAdapter(adapter: PagerAdapter, addObserver: Boolean) {
         if (mPagerAdapter != null && mPagerAdapterObserver != null) {
             // If we already have a PagerAdapter, unregister our observer
             mPagerAdapter!!.unregisterDataSetObserver(mPagerAdapterObserver!!)
         }
         mPagerAdapter = adapter
-        if (addObserver && adapter != null) {
+        if (addObserver) {
             // Register our observer on the new adapter
             if (mPagerAdapterObserver == null) {
                 mPagerAdapterObserver = PagerAdapterObserver()
@@ -224,33 +180,30 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
 
     internal fun populateFromPagerAdapter() {
         tabsContainer.removeAllViews()
-        if (mPagerAdapter != null) {
-            val adapterCount = mPagerAdapter!!.count
-            tabCount = adapterCount
-            for (i in 0 until adapterCount) {
-                if (pager!!.adapter is LayoutTabProvider) {
-                    addTab(i, (pager!!.adapter as LayoutTabProvider).createTabView(i))
-                } else if (pager!!.adapter is IconTabProvider) {
-                    addIconTab(i, (pager!!.adapter as IconTabProvider).getPageIconResId(i))
+        pager?.apply {
+            tabCount = adapter?.count ?: 0
+            for (i in 0 until tabCount) {
+                if (adapter is LayoutTabProvider) {
+                    addTab(i, (adapter as LayoutTabProvider).createTabView(i))
+                } else if (adapter is IconTabProvider) {
+                    addIconTab(i, (adapter as IconTabProvider).getPageIconResId(i))
                 } else {
-                    addTextTab(i, pager!!.adapter!!.getPageTitle(i)!!.toString())
+                    addTextTab(i, adapter?.getPageTitle(i).toString())
                 }
             }
-            updateTabStyles()
-            viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        }
+        updateTabStyles()
+        viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
 
-                @SuppressLint("NewApi")
-                override fun onGlobalLayout() {
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                        viewTreeObserver.removeGlobalOnLayoutListener(this)
-                    } else {
-                        viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    }
-                    currentPosition = pager!!.currentItem
+            @SuppressLint("NewApi")
+            override fun onGlobalLayout() {
+                viewTreeObserver.removeOnGlobalLayoutListener(this)
+                pager?.apply {
+                    currentPosition = currentItem
                     scrollToChild(currentPosition, 0)
                 }
-            })
-        }
+            }
+        })
     }
 
 
@@ -260,28 +213,28 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
 
     fun notifyDataSetChanged() {
         tabsContainer.removeAllViews()
-        tabCount = pager!!.adapter!!.count
-        for (i in 0 until tabCount) {
-            if (pager!!.adapter is LayoutTabProvider) {
-                addTab(i, (pager!!.adapter as LayoutTabProvider).createTabView(i))
-            } else if (pager!!.adapter is IconTabProvider) {
-                addIconTab(i, (pager!!.adapter as IconTabProvider).getPageIconResId(i))
-            } else {
-                addTextTab(i, pager!!.adapter!!.getPageTitle(i)!!.toString())
+        pager?.apply {
+            tabCount = adapter?.count ?: 0
+            for (i in 0 until tabCount) {
+                if (adapter is LayoutTabProvider) {
+                    addTab(i, (adapter as LayoutTabProvider).createTabView(i))
+                } else if (adapter is IconTabProvider) {
+                    addIconTab(i, (adapter as IconTabProvider).getPageIconResId(i))
+                } else {
+                    addTextTab(i, adapter?.getPageTitle(i).toString())
+                }
             }
         }
         updateTabStyles()
-        viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
 
             @SuppressLint("NewApi")
             override fun onGlobalLayout() {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                    viewTreeObserver.removeGlobalOnLayoutListener(this)
-                } else {
-                    viewTreeObserver.removeOnGlobalLayoutListener(this)
+                viewTreeObserver.removeOnGlobalLayoutListener(this)
+                pager?.apply {
+                    currentPosition = currentItem
+                    scrollToChild(currentPosition, 0)
                 }
-                currentPosition = pager!!.currentItem
-                scrollToChild(currentPosition, 0)
             }
         })
     }
@@ -291,6 +244,11 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
         tab.text = title
         tab.gravity = Gravity.CENTER
         tab.setSingleLine()
+        tab.setTextSize(TypedValue.COMPLEX_UNIT_PX, tabTextSize.toFloat())
+        tab.setTypeface(null, tabTypeface)
+        if (isTextAllCaps) {
+            tab.isAllCaps = true
+        }
         addTab(position, tab)
     }
 
@@ -307,33 +265,26 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
         tabsContainer.addView(tab, position, if (shouldExpand) expandedTabLayoutParams else defaultTabLayoutParams)
     }
 
+    fun getTab(position: Int): View {
+        return tabsContainer.getChildAt(position)
+    }
+
     private fun updateTabStyles() {
         for (i in 0 until tabCount) {
-            val v = tabsContainer.getChildAt(i)
-            v.setBackgroundResource(tabBackground)
-            if (v is TextView) {
-                val tab = v
-                tab.setTextSize(TypedValue.COMPLEX_UNIT_PX, tabTextSize.toFloat())
-                tab.setTypeface(tabTypeface, tabTypefaceStyle)
+            val tab = tabsContainer.getChildAt(i)
+            tab.setBackgroundResource(tabBackground)
+            if (tab is TextView) {
                 if (i == currentPosition) {
-                    tab.setTextColor(tabTextSelectColor)
+                    tab.setTextColor(tabSelectedTextColor)
+                    tab.setTypeface(null, tabSelectedTypeface)
                 } else {
                     tab.setTextColor(tabTextColor)
-                }
-                // setAllCaps() is only available from API 14, so the upper case is made manually if we are on a
-                // pre-ICS-build
-                if (isTextAllCaps) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                        tab.setAllCaps(true)
-                    } else {
-                        tab.text = tab.text.toString().toUpperCase(locale!!)
-                    }
+                    tab.setTypeface(null, tabTypeface)
                 }
             } else if (pager!!.adapter is LayoutTabProvider) {
-                (pager!!.adapter as LayoutTabProvider).changeTabStyle(v, i == currentPosition)
+                (pager!!.adapter as LayoutTabProvider).changeTabStyle(tab, i == currentPosition)
             }
         }
-
     }
 
     private fun scrollToChild(position: Int, offset: Int) {
@@ -352,53 +303,58 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
         if (isInEditMode || tabCount == 0) {
             return
         }
 
-        val height = height
-
         // draw indicator line
+        if (indicatorHeight > 0 && indicatorWidth > 0) {
+            val moveTab = tabsContainer.getChildAt(movePosition)
+            val moveLeft = moveTab.left.toFloat()
+            val moveRight = moveTab.right.toFloat()
+            val moveCenter = (moveLeft + moveRight) / 2
 
-        rectPaint.color = indicatorColor
-
-        // default: line below current tab
-        val currentTab = tabsContainer.getChildAt(currentPosition)
-        var lineLeft = currentTab.left.toFloat()
-        var lineRight = currentTab.right.toFloat()
-
-        // if there is an offset, start interpolating left and right coordinates between current and next tab
-        if (currentPositionOffset > 0f && currentPosition < tabCount - 1) {
-
-            val nextTab = tabsContainer.getChildAt(currentPosition + 1)
-            val nextTabLeft = nextTab.left.toFloat()
-            val nextTabRight = nextTab.right.toFloat()
-
-            lineLeft = currentPositionOffset * nextTabLeft + (1f - currentPositionOffset) * lineLeft
-            lineRight = currentPositionOffset * nextTabRight + (1f - currentPositionOffset) * lineRight
+            val nextPosition = movePosition + 1
+            val defaultMarginBottom = 5
+            if (nextPosition < tabCount) {
+                val nextTab = tabsContainer.getChildAt(nextPosition)
+                val nextLeft = nextTab.left.toFloat()
+                val nextRight = nextTab.right.toFloat()
+                val nextCenter = (nextLeft + nextRight) / 2
+                val currentCenter = moveCenter + (nextCenter - moveCenter) * movePositionOffset
+                canvas.drawRect(
+                    currentCenter - indicatorWidth / 2,
+                    measuredHeight - indicatorHeight.toFloat() - defaultMarginBottom,
+                    currentCenter + indicatorWidth / 2,
+                    measuredHeight.toFloat() - defaultMarginBottom,
+                    indicatorPaint
+                )
+            } else {
+                canvas.drawRect(
+                    moveCenter - indicatorWidth / 2,
+                    measuredHeight - indicatorHeight.toFloat() - defaultMarginBottom,
+                    moveCenter + indicatorWidth / 2,
+                    measuredHeight.toFloat() - defaultMarginBottom,
+                    indicatorPaint
+                )
+            }
         }
-        if (indicatorWidth != 0) {
-            lineLeft += ((currentTab.measuredWidth - indicatorWidth) / 2).toFloat()
-            lineRight -= ((currentTab.measuredWidth - indicatorWidth) / 2).toFloat()
-        }
-        canvas.drawRect(lineLeft, (height - indicatorHeight).toFloat(), lineRight, height.toFloat(), rectPaint)
-
-        // draw underline
-
-        rectPaint.color = underlineColor
-        canvas.drawRect(0f, (height - underlineHeight).toFloat(), tabsContainer.width.toFloat(), height.toFloat(), rectPaint)
-
         // draw divider
-
-        dividerPaint.color = dividerColor
-        for (i in 0 until tabCount - 1) {
-            val tab = tabsContainer.getChildAt(i)
-            canvas.drawLine(tab.right.toFloat(), dividerPadding.toFloat(), tab.right.toFloat(), (height - dividerPadding).toFloat(), dividerPaint)
+        if (dividerWidth > 0) {
+            for (i in 0 until tabCount - 1) {
+                val tab = tabsContainer.getChildAt(i)
+                canvas.drawLine(
+                    tab.right.toFloat(),
+                    dividerPadding.toFloat(),
+                    tab.right.toFloat(),
+                    (height - dividerPadding).toFloat(),
+                    dividerPaint
+                )
+            }
         }
     }
 
-    private inner class PagerAdapterObserver internal constructor() : DataSetObserver() {
+    private inner class PagerAdapterObserver : DataSetObserver() {
 
         override fun onChanged() {
             populateFromPagerAdapter()
@@ -409,17 +365,19 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
         }
     }
 
-    private inner class AdapterChangeListener internal constructor() : ViewPager.OnAdapterChangeListener {
+    private inner class AdapterChangeListener : ViewPager.OnAdapterChangeListener {
         private var mAutoRefresh: Boolean = false
 
         override fun onAdapterChanged(viewPager: ViewPager,
                                       oldAdapter: PagerAdapter?, newAdapter: PagerAdapter?) {
             if (pager === viewPager) {
-                setPagerAdapter(newAdapter, mAutoRefresh)
+                newAdapter?.let {
+                    setPagerAdapter(it, mAutoRefresh)
+                }
             }
         }
 
-        internal fun setAutoRefresh(autoRefresh: Boolean) {
+        fun setAutoRefresh(autoRefresh: Boolean) {
             mAutoRefresh = autoRefresh
         }
     }
@@ -427,13 +385,11 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
     private inner class PageListener : ViewPager.OnPageChangeListener {
 
         override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-
-            currentPosition = position
-            currentPositionOffset = positionOffset
+            movePosition = position
+            movePositionOffset = positionOffset
+            invalidate()
             if (position < tabsContainer.childCount) {
                 scrollToChild(position, (positionOffset * tabsContainer.getChildAt(position).width).toInt())
-                updateTabStyles()
-                invalidate()
             }
 
             if (delegatePageListener != null) {
@@ -452,86 +408,16 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
         }
 
         override fun onPageSelected(position: Int) {
+            currentPosition = position
+            if (position < tabsContainer.childCount) {
+                updateTabStyles()
+                invalidate()
+            }
             if (delegatePageListener != null) {
                 delegatePageListener!!.onPageSelected(position)
             }
-
         }
 
-    }
-
-    fun setIndicatorColor(indicatorColor: Int) {
-        this.indicatorColor = indicatorColor
-        invalidate()
-    }
-
-    fun setIndicatorColorResource(resId: Int) {
-        this.indicatorColor = resources.getColor(resId)
-        invalidate()
-    }
-
-    fun getIndicatorColor(): Int {
-        return this.indicatorColor
-    }
-
-    fun setIndicatorHeight(indicatorLineHeightPx: Int) {
-        this.indicatorHeight = indicatorLineHeightPx
-        invalidate()
-    }
-
-    fun getIndicatorHeight(): Int {
-        return indicatorHeight
-    }
-
-    fun setIndicatorWidth(indicatorWidth: Int) {
-        this.indicatorWidth = indicatorWidth
-        invalidate()
-    }
-
-    fun setUnderlineColor(underlineColor: Int) {
-        this.underlineColor = underlineColor
-        invalidate()
-    }
-
-    fun setUnderlineColorResource(resId: Int) {
-        this.underlineColor = resources.getColor(resId)
-        invalidate()
-    }
-
-    fun getUnderlineColor(): Int {
-        return underlineColor
-    }
-
-    fun setDividerColor(dividerColor: Int) {
-        this.dividerColor = dividerColor
-        invalidate()
-    }
-
-    fun setDividerColorResource(resId: Int) {
-        this.dividerColor = resources.getColor(resId)
-        invalidate()
-    }
-
-    fun getDividerColor(): Int {
-        return dividerColor
-    }
-
-    fun setUnderlineHeight(underlineHeightPx: Int) {
-        this.underlineHeight = underlineHeightPx
-        invalidate()
-    }
-
-    fun getUnderlineHeight(): Int {
-        return underlineHeight
-    }
-
-    fun setDividerPadding(dividerPaddingPx: Int) {
-        this.dividerPadding = dividerPaddingPx
-        invalidate()
-    }
-
-    fun getDividerPadding(): Int {
-        return dividerPadding
     }
 
     fun setScrollOffset(scrollOffsetPx: Int) {
@@ -554,17 +440,6 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
 
     fun setAllCaps(textAllCaps: Boolean) {
         this.isTextAllCaps = textAllCaps
-    }
-
-    fun setTextColorResource(resId: Int) {
-        this.tabTextColor = resources.getColor(resId)
-        updateTabStyles()
-    }
-
-    fun setTypeface(typeface: Typeface, style: Int) {
-        this.tabTypeface = typeface
-        this.tabTypefaceStyle = style
-        updateTabStyles()
     }
 
     public override fun onRestoreInstanceState(state: Parcelable) {
@@ -597,7 +472,7 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
 
         companion object {
 
-            @JvmStatic
+            @JvmField
             val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.Creator<SavedState> {
                 override fun createFromParcel(`in`: Parcel): SavedState {
                     return SavedState(`in`)
@@ -608,12 +483,6 @@ class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: At
                 }
             }
         }
-    }
-
-    companion object {
-
-        // @formatter:off
-        private val ATTRS = intArrayOf(android.R.attr.textSize, android.R.attr.textColor)
     }
 }
 

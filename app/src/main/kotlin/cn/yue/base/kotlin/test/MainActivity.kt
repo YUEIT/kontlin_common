@@ -2,10 +2,10 @@ package cn.yue.base.kotlin.test
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.yue.base.common.activity.BaseActivity
+import cn.yue.base.common.photo.data.MediaData
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
 import cn.yue.base.middle.router.FRouter
@@ -56,11 +56,13 @@ class MainActivity : BaseActivity() {
             FRouter.instance.build("/app/testPageVM").navigation(this)
         })
         list.add(ItemAction("Select Photo") {
-            FRouter.instance.build("/common/selectPhoto").navigation(this, 1)
+            FRouter.instance.build("/common/selectPhoto")
+                .withBoolean("isPreview", true)
+                .navigation(this, 1)
         })
         list.add(ItemAction("View Photo") {
             FRouter.instance.build("/common/viewPhoto")
-                    .withStringArrayList("list", arrayListOf("http://daidaigoucn.oss-cn-shanghai.aliyuncs.com/static/images/shop/sd1.png"))
+                    .withStringArrayList("urls", arrayListOf("http://daidaigoucn.oss-cn-shanghai.aliyuncs.com/static/images/shop/sd1.png"))
                     .navigation(this)
         })
         list.add(ItemAction("Download") {
@@ -78,9 +80,9 @@ class MainActivity : BaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            val photos = data?.getParcelableArrayListExtra<Uri>("photos")
-            FRouter.instance.build("/common/viewPhoto")
-                    .withParcelableArrayList("uris", photos)
+            val photos = data?.getParcelableArrayListExtra<MediaData>("medias")
+            FRouter.instance.build("/app/testVideo")
+                    .withParcelable("uri", photos?.get(0)?.uri)
                     .navigation(this)
         }
     }

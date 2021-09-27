@@ -1,25 +1,27 @@
 package cn.yue.base.common.photo
 
 import android.Manifest
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.text.TextUtils
 import android.view.View
-import android.widget.CheckBox
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.R
 import cn.yue.base.common.activity.BaseFragment
-import cn.yue.base.common.image.ImageLoader.Companion.getLoader
-import cn.yue.base.common.photo.PhotoUtils.getPhotosByFolder
-import cn.yue.base.common.photo.PhotoUtils.getTheLastPhotos
-import cn.yue.base.common.photo.data.MediaVO
-import cn.yue.base.common.photo.data.MediaVO.CREATOR.equals
+import cn.yue.base.common.image.ImageLoader
+import cn.yue.base.common.photo.data.MediaType
+import cn.yue.base.common.photo.data.MediaData
+import cn.yue.base.common.photo.data.MimeType
+import cn.yue.base.common.photo.preview.ViewMediaActivity
 import cn.yue.base.common.utils.app.RunTimePermissionUtil
 import cn.yue.base.common.utils.debug.LogUtils
+import cn.yue.base.common.utils.variable.TimeUtils
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
@@ -32,8 +34,8 @@ import java.util.concurrent.Executors
  */
 class SelectPhotoFragment : BaseFragment() {
     private val pageCount = 50
-    private var adapter: CommonAdapter<MediaVO>? = null
-    private val photoList: MutableList<MediaVO> = ArrayList()
+    private var adapter: CommonAdapter<MediaData>? = null
+    private val photoList: MutableList<MediaData> = ArrayList()
     private var page = 0
     private var isCanLoadMore = true
     override fun initTopBar(topBar: TopBar) {}
@@ -44,26 +46,50 @@ class SelectPhotoFragment : BaseFragment() {
 
     override fun initView(savedInstanceState: Bundle?) {
         val photoRV = findViewById<RecyclerView>(R.id.photoRV)
-        photoRV.layoutManager = GridLayoutManager(mActivity, 4)
-        photoRV.adapter = object : CommonAdapter<MediaVO>(mActivity, photoList) {
+        photoRV.layoutManager = GridLayoutManager(mActivity, 3)
+        photoRV.adapter = object : CommonAdapter<MediaData>(mActivity, photoList) {
             override fun getLayoutIdByType(viewType: Int): Int {
                 return R.layout.item_select_photo
             }
 
-            override fun bindData(holder: CommonViewHolder, position: Int, mediaVO: MediaVO) {
+            override fun bindData(holder: CommonViewHolder, position: Int, mediaData: MediaData) {
                 val photoIV = holder.getView<ImageView>(R.id.photoIV)
-                val checkIV = holder.getView<CheckBox>(R.id.checkIV)
-                photoIV!!.setBackgroundColor(Color.parseColor("#ffffff"))
-                getLoader().loadImage(photoIV, mediaVO.uri)
-                photoIV.setOnClickListener(View.OnClickListener {
-                    if (getSelectList().size >= getMaxNum() && !checkIV!!.isChecked) {
-                        return@OnClickListener
+                val checkIV = holder.getView<ImageView>(R.id.checkIV)
+                val timeTV = holder.getView<TextView>(R.id.timeTV)
+                photoIV?.setBackgroundColor(Color.parseColor("#ffffff"))
+                ImageLoader.getLoader().loadImage(photoIV, mediaData.uri)
+                if (MimeType.isVideo(mediaData.mimeType)) {
+                    timeTV?.visibility = View.VISIBLE
+                    timeTV?.text = TimeUtils.formatDuration(mediaData.duration)
+                } else {
+                    timeTV?.visibility = View.GONE
+                }
+                photoIV?.setOnClickListener {
+                    if (getIsPreview()) {
+                        val intent = Intent(mActivity, ViewMediaActivity::class.java)
+                        intent.putExtra("mediaType", mediaData.getMediaType().value)
+                        intent.putParcelableArrayListExtra("uris", arrayListOf(mediaData.uri))
+                        startActivity(intent)
+                    } else {
+                        checkIV?.let {
+                            if (getSelectList().size < getMaxNum() || it.isSelected) {
+                                it.isSelected = !it.isSelected
+                                addSelectList(mediaData, it.isSelected)
+                                topBar.setRightTextStr(if (getSelectList().isEmpty()) "取消" else "确定(" + getSelectList().size + "/" + getMaxNum() + ")")
+                            }
+                        }
                     }
-                    checkIV!!.isChecked = !checkIV.isChecked
-                    addSelectList(mediaVO, checkIV.isChecked)
-                    topBar.setRightTextStr(if (getSelectList().isEmpty()) "取消" else "确定（" + getSelectList().size + "/" + getMaxNum() + "）")
-                })
-                checkIV!!.isChecked = contains(mediaVO)
+                }
+                checkIV?.setOnClickListener {
+                    checkIV.let {
+                        if (getSelectList().size < getMaxNum() || it.isSelected) {
+                            it.isSelected = !it.isSelected
+                            addSelectList(mediaData, it.isSelected)
+                            topBar.setRightTextStr(if (getSelectList().isEmpty()) "取消" else "确定(" + getSelectList().size + "/" + getMaxNum() + ")")
+                        }
+                    }
+                }
+                checkIV?.isSelected = contains(mediaData)
             }
         }.also { adapter = it }
         photoRV.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -101,13 +127,13 @@ class SelectPhotoFragment : BaseFragment() {
                     if (allMedia == null) {
                         allMedia = when {
                             TextUtils.isEmpty(folderId) -> {
-                                getTheLastPhotos(mActivity, 100)
+                                PhotoUtils.getTheLastMedias(mActivity, 100, getMediaType())
                             }
                             folderId!!.toInt() == -1 -> {
-                                getPhotosByFolder(mActivity, true, folderId)
+                                PhotoUtils.getMediaByFolder(mActivity, true, folderId, getMediaType())
                             }
                             else -> {
-                                getPhotosByFolder(mActivity, false, folderId)
+                                PhotoUtils.getMediaByFolder(mActivity, false, folderId, getMediaType())
                             }
                         }
                     }
@@ -130,7 +156,7 @@ class SelectPhotoFragment : BaseFragment() {
         }, {}, Manifest.permission.READ_EXTERNAL_STORAGE)
     }
 
-    private var allMedia: List<MediaVO>? = null
+    private var allMedia: List<MediaData>? = null
     private var handler = Handler(Handler.Callback { msg ->
         if (msg.what == 101) {
             val addList = msg.obj
@@ -139,7 +165,7 @@ class SelectPhotoFragment : BaseFragment() {
                     isCanLoadMore = false
                 } else {
                     isCanLoadMore = true
-                    photoList.addAll(addList as List<MediaVO>)
+                    photoList.addAll(addList as List<MediaData>)
                     adapter!!.setList(photoList)
                 }
             }
@@ -147,28 +173,36 @@ class SelectPhotoFragment : BaseFragment() {
         false
     })
 
-    private fun getSelectList(): MutableList<MediaVO> {
+    private fun getSelectList(): MutableList<MediaData> {
         return (mActivity as SelectPhotoActivity).getPhotoList()
     }
 
     private fun getMaxNum(): Int {
-        val num = (mActivity as SelectPhotoActivity).maxNum
+        val num = (mActivity as SelectPhotoActivity).getMaxNum()
         return if ( num <= 0) 1 else num
     }
 
-    private fun addSelectList(mediaVO: MediaVO, checked: Boolean) {
+    private fun getMediaType(): MediaType {
+        return (mActivity as SelectPhotoActivity).getMediaType()
+    }
+
+    private fun getIsPreview(): Boolean {
+        return (mActivity as SelectPhotoActivity).getIsPreview()
+    }
+
+    private fun addSelectList(mediaData: MediaData, checked: Boolean) {
         if (checked) {
             for (mediaVO1 in getSelectList()) {
-                if (equals(mediaVO, mediaVO1)) {
+                if (MediaData.equals(mediaData, mediaVO1)) {
                     return
                 }
             }
-            getSelectList().add(mediaVO)
+            getSelectList().add(mediaData)
         } else {
             val iterator: MutableIterator<*> = getSelectList().iterator()
             while (iterator.hasNext()) {
-                val mediaVO1 = iterator.next() as MediaVO
-                if (equals(mediaVO, mediaVO1)) {
+                val mediaVO1 = iterator.next() as MediaData
+                if (MediaData.equals(mediaData, mediaVO1)) {
                     iterator.remove()
                     return
                 }
@@ -176,9 +210,9 @@ class SelectPhotoFragment : BaseFragment() {
         }
     }
 
-    private operator fun contains(mediaVO: MediaVO): Boolean {
+    private operator fun contains(mediaData: MediaData): Boolean {
         for (mediaVO1 in getSelectList()) {
-            if (equals(mediaVO, mediaVO1)) {
+            if (MediaData.equals(mediaData, mediaVO1)) {
                 return true
             }
         }
