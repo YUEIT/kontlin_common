@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply from: '../_360jiagu/jiagu.gradle'
 
@@ -27,8 +26,11 @@ android {
         flavorDimensions "versionCode"
     }
     compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
     signingConfigs {
         release {
@@ -77,14 +79,11 @@ android {
     }
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        main.assets.srcDirs += ['assets']
     }
     dataBinding {
         enabled true
     }
-}
-
-androidExtensions {
-    experimental = true
 }
 
 dependencies {
@@ -99,8 +98,16 @@ dependencies {
     kapt rootProject.ext.dependencies["arouter-compiler"]
 
     implementation 'androidx.autofill:autofill:1.1.0'
+    implementation "androidx.browser:browser:1.4.0"
 
     implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
     implementation 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'
+    implementation "androidx.exifinterface:exifinterface:1.3.3"
+
+    implementation "androidx.resourceinspection:resourceinspection-annotation:1.0.0"
+    implementation rootProject.ext.androidx["camera-core"]
+    implementation rootProject.ext.androidx["camera-camera2"]
+    implementation rootProject.ext.androidx["camera-lifecycle"]
+    implementation "androidx.camera:camera-view:1.0.0-alpha32"
 }
 

@@ -138,7 +138,7 @@ object BitmapFileUtils {
     }
 
     @Throws(Exception::class)
-    private fun readStream(inStream: InputStream): ByteArray? {
+     fun readStream(inStream: InputStream): ByteArray? {
         val outStream = ByteArrayOutputStream()
         val buffer = ByteArray(1024)
         var len = 0

@@ -5,14 +5,11 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
-import android.telecom.ConnectionService
 import android.widget.TextView
 import cn.yue.base.kotlin.test.R
 import cn.yue.base.kotlin.test.utils.UpdateService
 import cn.yue.base.middle.components.BaseHintFragment
-import cn.yue.base.middle.init.NotificationConfig
 import com.alibaba.android.arouter.facade.annotation.Route
-import kotlinx.android.synthetic.main.fragment_test_download.*
 
 /**
  * Description :
@@ -27,6 +24,7 @@ class TestDownloadFragment : BaseHintFragment() {
 
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
+        val downTV = findViewById<TextView>(R.id.downTV)
         downTV.setOnClickListener {
             val intent = Intent(mActivity, UpdateService::class.java)
             val connectionService = object : ServiceConnection {

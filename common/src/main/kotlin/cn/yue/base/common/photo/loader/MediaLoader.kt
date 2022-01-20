@@ -19,7 +19,12 @@ object MediaLoader {
             MediaStore.MediaColumns.DISPLAY_NAME,
             MediaStore.MediaColumns.MIME_TYPE,
             MediaStore.MediaColumns.SIZE,
-            MediaStore.MediaColumns.DURATION,
+//            MediaStore.MediaColumns.DURATION,
+            "duration",
+            MediaStore.MediaColumns.WIDTH,
+            MediaStore.MediaColumns.HEIGHT,
+        //  MediaStore.MediaColumns.ORIENTATION,
+            "orientation",
             COLUMN_DATA
     )
 

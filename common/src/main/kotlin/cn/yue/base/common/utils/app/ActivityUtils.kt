@@ -2,22 +2,20 @@ package cn.yue.base.common.utils.app
 
 import android.app.Activity
 import android.content.Context
-import android.os.Build
 import cn.yue.base.common.utils.Utils
 
 object ActivityUtils {
 
     fun isActivityAlive(activity: Activity?): Boolean {
-        return (activity != null && !activity.isFinishing
-                && (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1 || !activity.isDestroyed))
+        return activity != null && !activity.isFinishing && !activity.isDestroyed
     }
 
     fun getTopActivity(): Activity? {
-        return ActivityLifecycleImpl.INSTANCE.topActivity
+        return ActivityLifecycleImpl.INSTANCE.getTopActivity()
     }
 
     fun requireContext(): Context {
-        val topActivity = ActivityLifecycleImpl.INSTANCE.topActivity
+        val topActivity = ActivityLifecycleImpl.INSTANCE.getTopActivity()
         if (topActivity != null) {
             return topActivity
         }

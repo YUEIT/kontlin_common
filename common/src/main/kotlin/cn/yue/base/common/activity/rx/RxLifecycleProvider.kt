@@ -1,10 +1,9 @@
 package cn.yue.base.common.activity.rx
 
 import androidx.annotation.NonNull
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 
@@ -12,7 +11,7 @@ import io.reactivex.subjects.BehaviorSubject
  * Description :
  * Created by yue on 2020/8/12
  */
-class RxLifecycleProvider : ILifecycleProvider<Lifecycle.Event>, LifecycleObserver {
+class RxLifecycleProvider : ILifecycleProvider<Lifecycle.Event>, DefaultLifecycleObserver {
 
     private val lifecycleSubject: BehaviorSubject<Lifecycle.Event> = BehaviorSubject.create()
 
@@ -32,38 +31,27 @@ class RxLifecycleProvider : ILifecycleProvider<Lifecycle.Event>, LifecycleObserv
         return RxLifecycle.bindUntilEvent(lifecycleSubject, event)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
-    fun onAny(owner: LifecycleOwner?, event: Lifecycle.Event?) {
-        lifecycleSubject.onNext(Lifecycle.Event.ON_ANY)
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    fun onCreate() {
+    override fun onCreate(owner: LifecycleOwner) {
         lifecycleSubject.onNext(Lifecycle.Event.ON_CREATE)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun onDestroy() {
+    override fun onDestroy(owner: LifecycleOwner) {
         lifecycleSubject.onNext(Lifecycle.Event.ON_DESTROY)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    fun onStart() {
+    override fun onStart(owner: LifecycleOwner) {
         lifecycleSubject.onNext(Lifecycle.Event.ON_START)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun onStop() {
+    override fun onStop(owner: LifecycleOwner) {
         lifecycleSubject.onNext(Lifecycle.Event.ON_STOP)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun onResume() {
+    override fun onResume(owner: LifecycleOwner) {
         lifecycleSubject.onNext(Lifecycle.Event.ON_RESUME)
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun onPause() {
+    override fun onPause(owner: LifecycleOwner) {
         lifecycleSubject.onNext(Lifecycle.Event.ON_PAUSE)
     }
 

@@ -13,6 +13,8 @@ data class MediaData(var id: String? = "",
                      var uri: Uri? = null,
                      var size: Long = 0,
                      var duration: Long = 0,
+                     var width: Int = 0,
+                     var height: Int = 0,
                      var url: String? = "") : Parcelable {
 
 
@@ -22,6 +24,8 @@ data class MediaData(var id: String? = "",
             parcel.readParcelable(Uri::class.java.classLoader),
             parcel.readLong(),
             parcel.readLong(),
+            parcel.readInt(),
+            parcel.readInt(),
             parcel.readString()) {
     }
 
@@ -35,6 +39,8 @@ data class MediaData(var id: String? = "",
         dest.writeParcelable(uri, flags)
         dest.writeLong(size)
         dest.writeLong(duration)
+        dest.writeInt(width)
+        dest.writeInt(height)
         dest.writeString(url)
     }
 

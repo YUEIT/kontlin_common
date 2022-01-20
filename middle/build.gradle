@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
@@ -37,10 +36,6 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     }
 }
 
-androidExtensions {
-    experimental = true
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation rootProject.ext.androidx["junit"]
@@ -48,13 +43,7 @@ dependencies {
     androidTestImplementation rootProject.ext.androidx["espresso-test"]
 
     api project(":common")
-    api rootProject.ext.androidx["multidex"]
-    api rootProject.ext.androidx["lifecycle-viewmodel"]
-    api rootProject.ext.androidx["lifecycle-runtime-ktx"]
-    api rootProject.ext.androidx["lifecycle-viewmodel-ktx"]
-    api rootProject.ext.androidx["lifecycle-livedata"]
-    api rootProject.ext.androidx["lifecycle-viewmodel-savestate"]
-    kapt rootProject.ext.androidx["lifecycle-compiler"]
+
     api rootProject.ext.androidx["work"]
     api rootProject.ext.androidx["work-rxjava2"]
     //Rx

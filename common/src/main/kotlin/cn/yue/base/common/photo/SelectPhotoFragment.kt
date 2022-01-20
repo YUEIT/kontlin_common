@@ -25,6 +25,7 @@ import cn.yue.base.common.utils.variable.TimeUtils
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
+import com.bumptech.glide.Glide
 import java.util.*
 import java.util.concurrent.Executors
 

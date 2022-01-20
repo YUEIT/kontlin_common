@@ -130,7 +130,7 @@ class PhotoHelper(val context: BaseFragmentActivity, val iPhotoView: IPhotoView)
         when (requestCode) {
             REQUEST_SELECT_PHOTO ->
                 if (data != null) {
-                    val selectList: MutableList<String> = data.getStringArrayListExtra("photos")
+                    val selectList: MutableList<String> = data.getStringArrayListExtra("photos") as MutableList<String>
                     selectCache.clear()
                     selectCache.addAll(selectList)
                     if (selectList.size == 1) {

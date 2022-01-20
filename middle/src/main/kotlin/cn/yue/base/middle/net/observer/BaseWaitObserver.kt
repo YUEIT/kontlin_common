@@ -8,13 +8,11 @@ import cn.yue.base.middle.net.ResultException
  * Description :
  * Created by yue on 2019/6/18
  */
-abstract class BaseWaitObserver<T> : BaseNetObserver<T> {
+abstract class BaseWaitObserver<T>(
+        private val iWaitView: IWaitView
+    ) : BaseNetObserver<T>() {
 
-    private var iWaitView: IWaitView
     private var title: String = ""
-    constructor(iWaitView: IWaitView): super() {
-        this.iWaitView = iWaitView
-    }
 
     constructor(iWaitView: IWaitView, title: String): this(iWaitView) {
         this.title = title

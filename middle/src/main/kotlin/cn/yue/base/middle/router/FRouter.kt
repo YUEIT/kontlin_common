@@ -1,5 +1,6 @@
 package cn.yue.base.middle.router
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Context
@@ -93,6 +94,7 @@ class FRouter() : INavigation, Parcelable {
         }
     }
 
+    @SuppressLint("WrongConstant")
     private fun jumpToFragment(context: Context, toActivity: String? = null, requestCode: Int) {
         val intent = Intent()
         intent.putExtra(RouterCard.TAG, mRouterCard)

@@ -1,6 +1,7 @@
 package cn.yue.base.common.utils.app
 
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.os.Build
@@ -18,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap
 class ActivityLifecycleImpl : Application.ActivityLifecycleCallbacks {
     private val mActivityList = LinkedList<Activity>()
     private val mStatusListeners: MutableList<OnAppStatusChangedListener> = ArrayList()
-    private val mActivityLifecycleCallbacksMap: MutableMap<Activity, MutableList<ActivityLifecycleCallbacks>> = ConcurrentHashMap()
+    private val mActivityLifecycleCallbacksMap: MutableMap<Activity, MutableList<Application.ActivityLifecycleCallbacks>> = ConcurrentHashMap()
     private var mForegroundCount = 0
     private var mConfigCount = 0
     private var mIsBackground = false
@@ -31,27 +32,25 @@ class ActivityLifecycleImpl : Application.ActivityLifecycleCallbacks {
         app.unregisterActivityLifecycleCallbacks(this)
     }
 
-    val topActivity: Activity?
-        get() {
-            val activityList = activityList
-            for (activity in activityList) {
-                if (!isActivityAlive(activity)) {
-                    continue
-                }
-                return activity
+    fun getTopActivity(): Activity? {
+        val activityList = getActivityList()
+        for (activity in activityList) {
+            if (!isActivityAlive(activity)) {
+                continue
             }
-            return null
+            return activity
         }
+        return null
+    }
 
-    val activityList: List<Activity>
-        get() {
-            if (!mActivityList.isEmpty()) {
-                return mActivityList
-            }
-            val reflectActivities = activitiesByReflect
-            mActivityList.addAll(reflectActivities)
+    fun getActivityList(): List<Activity> {
+        if (!mActivityList.isEmpty()) {
             return mActivityList
         }
+        val reflectActivities = getActivitiesByReflect()
+        mActivityList.addAll(reflectActivities)
+        return mActivityList
+    }
 
     fun addOnAppStatusChangedListener(listener: OnAppStatusChangedListener) {
         mStatusListeners.add(listener)
@@ -61,36 +60,44 @@ class ActivityLifecycleImpl : Application.ActivityLifecycleCallbacks {
         mStatusListeners.remove(listener)
     }
 
-    fun addActivityLifecycleCallbacks(activity: Activity?,
-                                      listener: ActivityLifecycleCallbacks?) {
+    fun addActivityLifecycleCallbacks(
+        activity: Activity?,
+        listener: Application.ActivityLifecycleCallbacks?
+    ) {
         if (activity == null || listener == null) {
             return
         }
-        ThreadUtils.runOnUiThread(Runnable { addActivityLifecycleCallbacksInner(activity, listener) })
+        ThreadUtils.runOnUiThread(Runnable {
+            addActivityLifecycleCallbacksInner(
+                activity,
+                listener
+            )
+        })
     }
 
-    val applicationByReflect: Application?
-        get() {
-            try {
-                val activityThreadClass = Class.forName("android.app.ActivityThread")
-                val thread = activityThread
-                val app = activityThreadClass.getMethod("getApplication").invoke(thread)
-                        ?: return null
-                return app as Application
-            } catch (e: InvocationTargetException) {
-                e.printStackTrace()
-            } catch (e: NoSuchMethodException) {
-                e.printStackTrace()
-            } catch (e: IllegalAccessException) {
-                e.printStackTrace()
-            } catch (e: ClassNotFoundException) {
-                e.printStackTrace()
-            }
-            return null
+    fun getApplicationByReflect(): Application? {
+        try {
+            val activityThreadClass = Class.forName("android.app.ActivityThread")
+            val thread = getActivityThread()
+            val app = activityThreadClass.getMethod("getApplication").invoke(thread)
+                ?: return null
+            return app as Application
+        } catch (e: InvocationTargetException) {
+            e.printStackTrace()
+        } catch (e: NoSuchMethodException) {
+            e.printStackTrace()
+        } catch (e: IllegalAccessException) {
+            e.printStackTrace()
+        } catch (e: ClassNotFoundException) {
+            e.printStackTrace()
         }
+        return null
+    }
 
-    private fun addActivityLifecycleCallbacksInner(activity: Activity,
-                                                   lifecycleCallbacks: ActivityLifecycleCallbacks) {
+    private fun addActivityLifecycleCallbacksInner(
+        activity: Activity,
+        lifecycleCallbacks: Application.ActivityLifecycleCallbacks
+    ) {
         var callbacks = mActivityLifecycleCallbacksMap[activity]
         if (callbacks == null) {
             callbacks = ArrayList()
@@ -110,14 +117,23 @@ class ActivityLifecycleImpl : Application.ActivityLifecycleCallbacks {
         ThreadUtils.runOnUiThread(Runnable { mActivityLifecycleCallbacksMap.remove(activity) })
     }
 
-    fun removeActivityLifecycleCallbacks(activity: Activity?,
-                                         callbacks: ActivityLifecycleCallbacks?) {
+    fun removeActivityLifecycleCallbacks(
+        activity: Activity?,
+        callbacks: Application.ActivityLifecycleCallbacks?
+    ) {
         if (activity == null || callbacks == null) return
-        ThreadUtils.runOnUiThread(Runnable { removeActivityLifecycleCallbacksInner(activity, callbacks) })
+        ThreadUtils.runOnUiThread(Runnable {
+            removeActivityLifecycleCallbacksInner(
+                activity,
+                callbacks
+            )
+        })
     }
 
-    private fun removeActivityLifecycleCallbacksInner(activity: Activity,
-                                                      lifecycleCallbacks: ActivityLifecycleCallbacks) {
+    private fun removeActivityLifecycleCallbacksInner(
+        activity: Activity,
+        lifecycleCallbacks: Application.ActivityLifecycleCallbacks
+    ) {
         val callbacks = mActivityLifecycleCallbacksMap[activity]
         if (callbacks != null && !callbacks.isEmpty()) {
             callbacks.remove(lifecycleCallbacks)
@@ -125,12 +141,12 @@ class ActivityLifecycleImpl : Application.ActivityLifecycleCallbacks {
     }
 
     private fun consumeActivityLifecycleCallbacks(activity: Activity, event: Lifecycle.Event) {
-        val listeners: List<ActivityLifecycleCallbacks>? = mActivityLifecycleCallbacksMap[activity]
+        val listeners: List<Application.ActivityLifecycleCallbacks>? =
+            mActivityLifecycleCallbacksMap[activity]
         if (listeners != null) {
             for (listener in listeners) {
-                listener.onLifecycleChanged(activity, event)
                 if (event == Lifecycle.Event.ON_CREATE) {
-                    listener.onActivityCreated(activity)
+                    listener.onActivityCreated(activity, null)
                 } else if (event == Lifecycle.Event.ON_START) {
                     listener.onActivityStarted(activity)
                 } else if (event == Lifecycle.Event.ON_RESUME) {
@@ -199,7 +215,7 @@ class ActivityLifecycleImpl : Application.ActivityLifecycleCallbacks {
     }
 
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
-        /**/
+
     }
 
     override fun onActivityDestroyed(activity: Activity) {
@@ -256,84 +272,92 @@ class ActivityLifecycleImpl : Application.ActivityLifecycleCallbacks {
     /**
      * @return the activities which topActivity is first position
      */
-    private val activitiesByReflect: List<Activity>
-        private get() {
-            val list = LinkedList<Activity>()
-            var topActivity: Activity? = null
-            try {
-                val activityThread = activityThread!!
-                val mActivitiesField = activityThread.javaClass.getDeclaredField("mActivities")
-                mActivitiesField.isAccessible = true
-                val mActivities = mActivitiesField[activityThread] as? Map<*, *> ?: return list
-                val binder_activityClientRecord_map = mActivities as Map<Any, Any>
-                for (activityRecord in binder_activityClientRecord_map.values) {
-                    val activityClientRecordClass: Class<*> = activityRecord.javaClass
-                    val activityField = activityClientRecordClass.getDeclaredField("activity")
-                    activityField.isAccessible = true
-                    val activity = activityField[activityRecord] as Activity
-                    if (topActivity == null) {
-                        val pausedField = activityClientRecordClass.getDeclaredField("paused")
-                        pausedField.isAccessible = true
-                        if (!pausedField.getBoolean(activityRecord)) {
-                            topActivity = activity
-                        } else {
-                            list.add(activity)
-                        }
+    private fun getActivitiesByReflect(): List<Activity> {
+        val list = LinkedList<Activity>()
+        var topActivity: Activity? = null
+        try {
+            val activityThread = getActivityThread()!!
+            val mActivitiesField = activityThread.javaClass.getDeclaredField("mActivities")
+            mActivitiesField.isAccessible = true
+            val mActivities = mActivitiesField[activityThread] as? Map<*, *> ?: return list
+            val binder_activityClientRecord_map = mActivities as Map<Any, Any>
+            for (activityRecord in binder_activityClientRecord_map.values) {
+                val activityClientRecordClass: Class<*> = activityRecord.javaClass
+                val activityField = activityClientRecordClass.getDeclaredField("activity")
+                activityField.isAccessible = true
+                val activity = activityField[activityRecord] as Activity
+                if (topActivity == null) {
+                    val pausedField = activityClientRecordClass.getDeclaredField("paused")
+                    pausedField.isAccessible = true
+                    if (!pausedField.getBoolean(activityRecord)) {
+                        topActivity = activity
                     } else {
                         list.add(activity)
                     }
+                } else {
+                    list.add(activity)
                 }
-            } catch (e: Exception) {
-                Log.e("UtilsActivityLifecycle", "getActivitiesByReflect: " + e.message)
             }
-            if (topActivity != null) {
-                list.addFirst(topActivity)
-            }
-            return list
+        } catch (e: Exception) {
+            Log.e("UtilsActivityLifecycle", "getActivitiesByReflect: " + e.message)
         }
-
-    private val activityThread: Any?
-        private get() {
-            var activityThread = activityThreadInActivityThreadStaticField
-            if (activityThread != null) {
-                return activityThread
-            }
-            activityThread = activityThreadInActivityThreadStaticMethod
-            return activityThread ?: activityThreadInLoadedApkField
+        if (topActivity != null) {
+            list.addFirst(topActivity)
         }
+        return list
+    }
 
-    private val activityThreadInActivityThreadStaticField: Any?
-        private get() = try {
+    private fun getActivityThread(): Any? {
+        var activityThread = getActivityThreadInActivityThreadStaticField()
+        if (activityThread != null) {
+            return activityThread
+        }
+        activityThread = getActivityThreadInActivityThreadStaticMethod()
+        return activityThread ?: getActivityThreadInLoadedApkField()
+    }
+
+    private fun getActivityThreadInActivityThreadStaticField(): Any? {
+        try {
             val activityThreadClass = Class.forName("android.app.ActivityThread")
-            val sCurrentActivityThreadField = activityThreadClass.getDeclaredField("sCurrentActivityThread")
+            val sCurrentActivityThreadField =
+                activityThreadClass.getDeclaredField("sCurrentActivityThread")
             sCurrentActivityThreadField.isAccessible = true
-            sCurrentActivityThreadField[null]
+            return sCurrentActivityThreadField
         } catch (e: Exception) {
-            Log.e("UtilsActivityLifecycle", "getActivityThreadInActivityThreadStaticField: " + e.message)
-            null
+            Log.e(
+                "UtilsActivityLifecycle",
+                "getActivityThreadInActivityThreadStaticField: " + e.message
+            )
+            return null
         }
+    }
 
-    private val activityThreadInActivityThreadStaticMethod: Any?
-        private get() = try {
+    private fun getActivityThreadInActivityThreadStaticMethod(): Any? {
+        try {
             val activityThreadClass = Class.forName("android.app.ActivityThread")
-            activityThreadClass.getMethod("currentActivityThread").invoke(null)
+            return activityThreadClass.getMethod("currentActivityThread").invoke(null)
         } catch (e: Exception) {
-            Log.e("UtilsActivityLifecycle", "getActivityThreadInActivityThreadStaticMethod: " + e.message)
-            null
+            Log.e(
+                "UtilsActivityLifecycle",
+                "getActivityThreadInActivityThreadStaticMethod: " + e.message
+            )
+            return null
         }
+    }
 
-    private val activityThreadInLoadedApkField: Any?
-        private get() = try {
+    private fun getActivityThreadInLoadedApkField(): Any? {
+        try {
             val mLoadedApkField = Application::class.java.getDeclaredField("mLoadedApk")
             mLoadedApkField.isAccessible = true
             val mLoadedApk = mLoadedApkField[Utils.getContext()]
             val mActivityThreadField = mLoadedApk.javaClass.getDeclaredField("mActivityThread")
             mActivityThreadField.isAccessible = true
-            mActivityThreadField[mLoadedApk]
+            return mActivityThreadField[mLoadedApk]
         } catch (e: Exception) {
             Log.e("UtilsActivityLifecycle", "getActivityThreadInLoadedApkField: " + e.message)
-            null
+            return null
         }
+    }
 
     interface OnAppStatusChangedListener {
         fun onForeground(activity: Activity?)
@@ -341,26 +365,19 @@ class ActivityLifecycleImpl : Application.ActivityLifecycleCallbacks {
     }
 
     class ActivityLifecycleCallbacks {
-        fun onActivityCreated(activity: Activity) { /**/
-        }
+        fun onActivityCreated(activity: Activity) {}
 
-        fun onActivityStarted(activity: Activity) { /**/
-        }
+        fun onActivityStarted(activity: Activity) {}
 
-        fun onActivityResumed(activity: Activity) { /**/
-        }
+        fun onActivityResumed(activity: Activity) {}
 
-        fun onActivityPaused(activity: Activity) { /**/
-        }
+        fun onActivityPaused(activity: Activity) {}
 
-        fun onActivityStopped(activity: Activity) { /**/
-        }
+        fun onActivityStopped(activity: Activity) {}
 
-        fun onActivityDestroyed(activity: Activity) { /**/
-        }
+        fun onActivityDestroyed(activity: Activity) {}
 
-        fun onLifecycleChanged(activity: Activity, event: Lifecycle.Event?) { /**/
-        }
+        fun onLifecycleChanged(activity: Activity, event: Lifecycle.Event?) {}
     }
 
     companion object {
@@ -369,17 +386,22 @@ class ActivityLifecycleImpl : Application.ActivityLifecycleCallbacks {
         /**
          * Set animators enabled.
          */
+        @SuppressLint("SoonBlockedPrivateApi")
         private fun setAnimatorsEnabled() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && ValueAnimator.areAnimatorsEnabled()) {
                 return
             }
             try {
-                val sDurationScaleField = ValueAnimator::class.java.getDeclaredField("sDurationScale")
+                val sDurationScaleField =
+                    ValueAnimator::class.java.getDeclaredField("sDurationScale")
                 sDurationScaleField.isAccessible = true
                 val sDurationScale = sDurationScaleField[null] as Float
                 if (sDurationScale == 0f) {
                     sDurationScaleField[null] = 1f
-                    Log.i("UtilsActivityLifecycle", "setAnimatorsEnabled: Animators are enabled now!")
+                    Log.i(
+                        "UtilsActivityLifecycle",
+                        "setAnimatorsEnabled: Animators are enabled now!"
+                    )
                 }
             } catch (e: NoSuchFieldException) {
                 e.printStackTrace()

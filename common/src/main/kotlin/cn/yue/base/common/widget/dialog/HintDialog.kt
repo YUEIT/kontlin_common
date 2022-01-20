@@ -11,8 +11,9 @@ import android.view.View
 import android.view.Window
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.databinding.DataBindingUtil
 import cn.yue.base.common.R
-import kotlinx.android.synthetic.main.layout_hint_dialog.*
+import cn.yue.base.common.databinding.LayoutHintDialogBinding
 
 /**
  * Description :
@@ -20,18 +21,15 @@ import kotlinx.android.synthetic.main.layout_hint_dialog.*
  */
 class HintDialog: Dialog {
 
-    private var mContext: Context
-    constructor(context: Context): super(context) {
-        this.mContext = context
-        initView()
-    }
+    private var binding: LayoutHintDialogBinding
 
-    private fun initView() {
+    constructor(context: Context): super(context) {
         window?.requestFeature(Window.FEATURE_NO_TITLE)
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         window?.setGravity(Gravity.CENTER)
         window?.setWindowAnimations(R.style.FadeAnimation)
-        val content: View = View.inflate(mContext, R.layout.layout_hint_dialog, null)
+        val content: View = View.inflate(context, R.layout.layout_hint_dialog, null)
+        binding = DataBindingUtil.bind<LayoutHintDialogBinding>(content)!!
         setContentView(content)
         setCanceledOnTouchOutside(true)
     }
@@ -131,13 +129,13 @@ class HintDialog: Dialog {
                 hintDialog = HintDialog(context!!)
             }
             if (isShowTitle) {
-                hintDialog!!.titleTV.text = titleStr
-                hintDialog!!.titleTV.visibility = View.VISIBLE
+                hintDialog!!.binding.titleTV.text = titleStr
+                hintDialog!!.binding.titleTV.visibility = View.VISIBLE
             } else {
-                hintDialog!!.titleTV.visibility = View.GONE
+                hintDialog!!.binding.titleTV.visibility = View.GONE
             }
             if (titleColor != 0) {
-                hintDialog!!.titleTV.setTextColor(titleColor)
+                hintDialog!!.binding.titleTV.setTextColor(titleColor)
             }
             if (contentView == null) {
                 if (!TextUtils.isEmpty(contentStr)) {
@@ -149,27 +147,27 @@ class HintDialog: Dialog {
                     if (contentColor != 0) {
                         contentTV.setTextColor(contentColor)
                     }
-                    hintDialog!!.contentLL.addView(contentTV)
+                    hintDialog!!.binding.contentLL.addView(contentTV)
                 }
             } else {
-                hintDialog!!.contentLL.addView(contentView)
+                hintDialog!!.binding.contentLL.addView(contentView)
             }
-            hintDialog!!.leftClickTV.text = leftClickStr
+            hintDialog!!.binding.leftClickTV.text = leftClickStr
             if (leftColor != 0) {
-                hintDialog!!.leftClickTV.setTextColor(leftColor)
+                hintDialog!!.binding.leftClickTV.setTextColor(leftColor)
             }
-            hintDialog!!.rightClickTV.text = rightClickStr
+            hintDialog!!.binding.rightClickTV.text = rightClickStr
             if (rightColor != 0) {
-                hintDialog!!.rightClickTV.setTextColor(rightColor)
+                hintDialog!!.binding.rightClickTV.setTextColor(rightColor)
             }
-            hintDialog!!.leftClickTV.setOnClickListener{
+            hintDialog!!.binding.leftClickTV.setOnClickListener{
                 view ->
                 if (onLeftClickListener != null) {
                     onLeftClickListener!!(view)
                 }
                 hintDialog!!.dismiss()
             }
-            hintDialog!!.rightClickTV.setOnClickListener{
+            hintDialog!!.binding.rightClickTV.setOnClickListener{
                 view ->
                 if (onRightClickListener != null) {
                     onRightClickListener!!(view)
@@ -178,16 +176,16 @@ class HintDialog: Dialog {
             }
             if (isSingleClick) {
                 if (!TextUtils.isEmpty(leftClickStr)) {
-                    hintDialog!!.leftClickTV.visibility = View.VISIBLE
-                    hintDialog!!.rightClickTV.visibility = View.GONE
+                    hintDialog!!.binding.leftClickTV.visibility = View.VISIBLE
+                    hintDialog!!.binding.rightClickTV.visibility = View.GONE
                 } else if (!TextUtils.isEmpty(rightClickStr)) {
-                    hintDialog!!.leftClickTV.visibility = View.GONE
-                    hintDialog!!.rightClickTV.visibility = View.VISIBLE
+                    hintDialog!!.binding.leftClickTV.visibility = View.GONE
+                    hintDialog!!.binding.rightClickTV.visibility = View.VISIBLE
                 } else {
-                    hintDialog!!.rightClickTV.visibility = View.VISIBLE
-                    hintDialog!!.leftClickTV.visibility = View.GONE
+                    hintDialog!!.binding.rightClickTV.visibility = View.VISIBLE
+                    hintDialog!!.binding.leftClickTV.visibility = View.GONE
                 }
-                hintDialog!!.divider.visibility = View.GONE
+                hintDialog!!.binding.divider.visibility = View.GONE
             }
             return hintDialog!!
         }

@@ -103,8 +103,8 @@ class SignInterceptor : Interceptor {
             //获取传入的全部参数
             if (original.url.queryParameterNames.isNotEmpty()) {
                 for (key in original.url.queryParameterNames) {
-                    //URL后面的参数，暂时没想到如何识别list；比较挫的方式参数前加上"LIST_"用来区分；
-                    if (key.startsWith("LIST_")) {
+                    //URL后面的参数，以[]的方式用来区分数组；
+                    if (key.endsWith("[]")) {
                         //含有list的情况;
                         val list = ArrayList<Any?>()
                         for (value in original.url.queryParameterValues(key)) {
@@ -117,10 +117,10 @@ class SignInterceptor : Interceptor {
                             }
 
                         }
-                        map[key.replace("LIST_", "")] = list
+                        map[key.replace("[]", "")] = list
                     } else {
                         if (original.url.queryParameterValues(key).size > 1) {
-                            throw ResultException(ResponseCode.ERROR_OPERATION, "请求的数据类型为list，且参数名未以LIST_开始~")
+                            throw ResultException(ResponseCode.ERROR_OPERATION, "请求的数据类型为list，且参数名未以[]结尾~")
                         }
                         val value = original.url.queryParameterValues(key)[0]
                         try {

@@ -4,13 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.activity.BaseActivity
 import cn.yue.base.common.photo.data.MediaData
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
 import cn.yue.base.middle.router.FRouter
 import com.alibaba.android.arouter.facade.annotation.Route
-import kotlinx.android.synthetic.main.activity_main.*
+
 
 /**
  * Description :
@@ -24,6 +25,7 @@ class MainActivity : BaseActivity() {
     }
 
     override fun initView() {
+        val rv = findViewById<RecyclerView>(R.id.rv)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = object : CommonAdapter<ItemAction>(this, initItem()) {
             override fun getLayoutIdByType(viewType: Int): Int {
@@ -42,7 +44,14 @@ class MainActivity : BaseActivity() {
     }
 
     private fun initItem(): MutableList<ItemAction> {
+        //LE2110  OnePlus  RKQ1.201105.002  OnePlus9_CH
         val list = ArrayList<ItemAction>()
+        list.add(ItemAction("Hint") {
+            FRouter.instance.build("/app/testHint").navigation(this)
+        })
+        list.add(ItemAction("test camera") {
+            FRouter.instance.build("/app/testCamera").navigation(this)
+        })
         list.add(ItemAction("Pull") {
             FRouter.instance.build("/app/testPull").withString("test", "hehe").navigation(this)
         })
@@ -75,6 +84,10 @@ class MainActivity : BaseActivity() {
             FRouter.instance.build("/app/testWidget").navigation(this)
         })
         return list
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

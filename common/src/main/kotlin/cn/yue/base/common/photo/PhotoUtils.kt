@@ -86,8 +86,15 @@ object PhotoUtils {
             mediaVO.mimeType = mimeType
             mediaVO.size = cursor.getColumnIndex(MediaStore.MediaColumns.SIZE).toLong()
             mediaVO.duration = cursor.getLong(cursor.getColumnIndex("duration"))
-            var contentUri: Uri?
-            contentUri = if (isImage(mimeType)) {
+            val orientation = cursor.getInt(cursor.getColumnIndex("orientation"))
+            if (orientation == 90 || orientation == 270) {
+                mediaVO.height = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH))
+                mediaVO.width = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT))
+            } else {
+                mediaVO.width = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH))
+                mediaVO.height = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT))
+            }
+            val contentUri = if (isImage(mimeType)) {
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI
             } else if (isVideo(mimeType)) {
                 MediaStore.Video.Media.EXTERNAL_CONTENT_URI

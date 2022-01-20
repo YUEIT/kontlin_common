@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
@@ -32,15 +31,21 @@ android {
     }
 }
 
-androidExtensions {
-    experimental = true
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation rootProject.ext.androidx["junit"]
     androidTestImplementation rootProject.ext.androidx["junit-test"]
     androidTestImplementation rootProject.ext.androidx["espresso-test"]
+
+    api rootProject.ext.androidx["core"]
+    api rootProject.ext.androidx["core-ktx"]
+    api rootProject.ext.androidx["multidex"]
+    api rootProject.ext.androidx["lifecycle-viewmodel"]
+    api rootProject.ext.androidx["lifecycle-runtime-ktx"]
+    api rootProject.ext.androidx["lifecycle-viewmodel-ktx"]
+    api rootProject.ext.androidx["lifecycle-livedata"]
+    api rootProject.ext.androidx["lifecycle-viewmodel-savestate"]
+    kapt rootProject.ext.androidx["lifecycle-compiler"]
 
     api rootProject.ext.androidx["appcompat"]
     api rootProject.ext.androidx["gridlayout"]
@@ -48,8 +53,11 @@ dependencies {
     api rootProject.ext.androidx["cardview"]
     api rootProject.ext.androidx["viewpager2"]
     api rootProject.ext.androidx["design"]
-    api rootProject.ext.androidx["legacy"]
     api rootProject.ext.androidx["constraintlayout"]
+    api rootProject.ext.androidx["coordinatorlayout"]
+    api rootProject.ext.androidx["lifecycle-common"]
+    api rootProject.ext.androidx["collection"]
+    api rootProject.ext.androidx["collection-ktx"]
 
     api rootProject.ext.kotlin["stdlib"]
     api rootProject.ext.kotlin["coroutine"]
@@ -57,7 +65,7 @@ dependencies {
     api rootProject.ext.kotlin["reflect"]
     implementation rootProject.ext.dependencies["systembartint"]
     implementation rootProject.ext.dependencies["glide"]
-    api "com.github.zjupure:webpdecoder:2.0.4.10.0"
+
     api rootProject.ext.dependencies["gson"]
     //aRouter
     api rootProject.ext.dependencies["arouter-api"]
@@ -70,5 +78,6 @@ dependencies {
     api rootProject.ext.dependencies["autosize"]
     api rootProject.ext.dependencies["mmkv"]
 
-    api 'com.google.android.exoplayer:exoplayer:2.13.3'
+    api rootProject.ext.dependencies["exoplayer"]
+
 }

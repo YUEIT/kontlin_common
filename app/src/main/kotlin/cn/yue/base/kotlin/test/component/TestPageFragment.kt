@@ -9,7 +9,6 @@ import cn.yue.base.kotlin.test.mode.ItemBean
 import cn.yue.base.middle.components.BasePageFragment
 import cn.yue.base.middle.net.wrapper.BaseListBean
 import com.alibaba.android.arouter.facade.annotation.Route
-import kotlinx.android.synthetic.main.item_test.view.*
 import java.util.*
 
 /**
@@ -37,7 +36,7 @@ class TestPageFragment : BasePageFragment<ItemBean>() {
     }
 
     override fun bindItemData(holder: CommonViewHolder, position: Int, itemData: ItemBean) {
-        holder.itemView.testTV.text = itemData.name
+        holder.setText(R.id.testTV, itemData.name)
     }
 
     override suspend fun getRequestScope(nt: String?): BaseListBean<ItemBean>? {

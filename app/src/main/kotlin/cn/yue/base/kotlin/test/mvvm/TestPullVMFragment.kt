@@ -3,17 +3,16 @@ package cn.yue.base.kotlin.test.mvvm
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
 import cn.yue.base.kotlin.test.R
 import cn.yue.base.kotlin.test.databinding.FragmentTestPullVmBinding
 import cn.yue.base.kotlin.test.mode.UserBean
-
 import cn.yue.base.middle.mvvm.components.binding.BasePullVMBindFragment
 import cn.yue.base.middle.mvvm.data.BR
 import com.alibaba.android.arouter.facade.annotation.Route
-import kotlinx.android.synthetic.main.fragment_test_pull_vm.*
 
 @Route(path = "/app/testPullVM")
 class TestPullVMFragment : BasePullVMBindFragment<TestPullViewModel, FragmentTestPullVmBinding>() {
@@ -31,6 +30,7 @@ class TestPullVMFragment : BasePullVMBindFragment<TestPullViewModel, FragmentTes
 
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
+        val rv = findViewById<RecyclerView>(R.id.rv)
         rv.layoutManager = LinearLayoutManager(mActivity)
         adapter = object : CommonAdapter<UserBean>(mActivity) {
             override fun getLayoutIdByType(viewType: Int): Int {

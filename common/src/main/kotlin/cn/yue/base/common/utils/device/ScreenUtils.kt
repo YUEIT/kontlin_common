@@ -4,7 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.graphics.Rect
+import android.os.Build
 import android.util.DisplayMetrics
+import android.view.WindowInsets
 import android.view.WindowManager
 import cn.yue.base.common.utils.Utils
 
@@ -19,9 +22,22 @@ object ScreenUtils {
     val screenWidth: Int
         get() {
             val windowManager = Utils.getContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            val dm = DisplayMetrics()
-            windowManager.defaultDisplay.getMetrics(dm)
-            return dm.widthPixels
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val metrics = windowManager.currentWindowMetrics
+                // Gets all excluding insets
+                val windowInsets = metrics.windowInsets
+                val insets = windowInsets.getInsetsIgnoringVisibility(
+                    WindowInsets.Type.navigationBars()
+                            or WindowInsets.Type.displayCutout()
+                )
+                val insetsWidth: Int = insets.right + insets.left
+                val bounds: Rect = metrics.bounds
+                return  bounds.width() - insetsWidth
+            } else {
+                val dm = DisplayMetrics()
+                windowManager.defaultDisplay.getMetrics(dm)
+                return dm.widthPixels
+            }
         }
 
     /**
@@ -33,9 +49,22 @@ object ScreenUtils {
     val screenHeight: Int
         get() {
             val windowManager = Utils.getContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            val dm = DisplayMetrics()
-            windowManager.defaultDisplay.getMetrics(dm)
-            return dm.heightPixels
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val metrics = windowManager.currentWindowMetrics
+                // Gets all excluding insets
+                val windowInsets = metrics.windowInsets
+                val insets = windowInsets.getInsetsIgnoringVisibility(
+                    WindowInsets.Type.navigationBars()
+                            or WindowInsets.Type.displayCutout()
+                )
+                val insetsHeight: Int = insets.top + insets.bottom
+                val bounds: Rect = metrics.bounds
+                return  bounds.height() - insetsHeight
+            } else {
+                val dm = DisplayMetrics()
+                windowManager.defaultDisplay.getMetrics(dm)
+                return dm.heightPixels
+            }
         }
 
     @JvmStatic

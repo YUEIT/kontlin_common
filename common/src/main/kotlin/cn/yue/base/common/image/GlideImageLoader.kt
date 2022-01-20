@@ -127,6 +127,7 @@ class GlideImageLoader : ImageLoader.Loader {
         return RequestOptions()
                 .placeholder(placeholderResId)
                 .error(placeholderResId)
+//                .optionalTransform(FrameDrawable::class.java,  FrameDrawableTransformation())
     }
 
     override fun loadGif(imageView: ImageView?, url: String?) {

@@ -23,14 +23,11 @@ import java.util.*
  * Created by yue on 2020/8/8
  */
 open class BaseViewModel(application: Application) : AndroidViewModel(application),
-        ILifecycleProvider<Lifecycle.Event>, IWaitView, IRouterNavigation {
-    @JvmField
+        ILifecycleProvider<Lifecycle.Event>, DefaultLifecycleObserver, IWaitView, IRouterNavigation {
+
     var loader = LoaderLiveData()
-    @JvmField
     var waitEvent = MutableLiveData<String?>()
-    @JvmField
     var routerEvent = MutableLiveData<RouterModel>()
-    @JvmField
     var finishEvent = MutableLiveData<FinishModel>()
     var childViewModels: MutableList<BaseViewModel> = ArrayList()
 
@@ -58,73 +55,57 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
         return RxLifecycleTransformer<T>(bindUntilEvent(e))
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
-    protected fun onAny(owner: LifecycleOwner?, event: Lifecycle.Event?) {
-        lifecycleSubject.onNext(Lifecycle.Event.ON_ANY)
-        if (childViewModels.isNotEmpty()) {
-            for (childViewModel in childViewModels) {
-                childViewModel.onAny(owner, event)
-            }
-        }
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    protected fun onCreate() {
+    override fun onCreate(owner: LifecycleOwner) {
         lifecycleSubject.onNext(Lifecycle.Event.ON_CREATE)
         if (childViewModels.isNotEmpty()) {
             for (childViewModel in childViewModels) {
-                childViewModel.onCreate()
+                childViewModel.onCreate(owner)
             }
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    protected fun onDestroy() {
+    override fun onDestroy(owner: LifecycleOwner) {
         lifecycleSubject.onNext(Lifecycle.Event.ON_DESTROY)
         if (childViewModels.isNotEmpty()) {
             for (childViewModel in childViewModels) {
-                childViewModel.onDestroy()
+                childViewModel.onDestroy(owner)
             }
         }
         childViewModels.clear()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    protected fun onStart() {
+    override fun onStart(owner: LifecycleOwner) {
         lifecycleSubject.onNext(Lifecycle.Event.ON_START)
         if (childViewModels.isNotEmpty()) {
             for (childViewModel in childViewModels) {
-                childViewModel.onStart()
+                childViewModel.onStart(owner)
             }
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    protected fun onStop() {
+    override fun onStop(owner: LifecycleOwner) {
         lifecycleSubject.onNext(Lifecycle.Event.ON_STOP)
         if (childViewModels.isNotEmpty()) {
             for (childViewModel in childViewModels) {
-                childViewModel.onStop()
+                childViewModel.onStop(owner)
             }
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    protected fun onResume() {
+    override fun onResume(owner: LifecycleOwner) {
         lifecycleSubject.onNext(Lifecycle.Event.ON_RESUME)
         if (childViewModels.isNotEmpty()) {
             for (childViewModel in childViewModels) {
-                childViewModel.onResume()
+                childViewModel.onResume(owner)
             }
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    protected fun onPause() {
+    override fun onPause(owner: LifecycleOwner) {
         lifecycleSubject.onNext(Lifecycle.Event.ON_PAUSE)
         if (childViewModels.isNotEmpty()) {
             for (childViewModel in childViewModels) {
-                childViewModel.onPause()
+                childViewModel.onPause(owner)
             }
         }
     }

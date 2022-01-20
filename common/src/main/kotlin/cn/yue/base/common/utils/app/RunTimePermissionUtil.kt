@@ -112,7 +112,8 @@ object RunTimePermissionUtil {
     fun getNeedRequestPermissions(context: Activity, vararg permissions: String): Array<String> {
         val permissionList = ArrayList<String>()
         for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED || ActivityCompat.shouldShowRequestPermissionRationale(context, permission)) {
+            if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.shouldShowRequestPermissionRationale(context, permission)) {
                 permissionList.add(permission)
             }
         }

@@ -4,7 +4,6 @@ import android.os.Bundle
 import cn.yue.base.common.activity.BaseFragment
 import cn.yue.base.kotlin.test.R
 import com.alibaba.android.arouter.facade.annotation.Route
-import kotlinx.android.synthetic.main.fragment_test_widget.*
 
 @Route(path = "/app/testWidget")
 class TestWidgetFragment: BaseFragment() {

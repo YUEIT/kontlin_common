@@ -7,41 +7,52 @@ ext {
     ]
 
     android = [
-            'buildToolsVersion' : '29.0.2',
-            'targetSdkVersion' : 29,
+            'buildToolsVersion' : '31.0.0',
+            'targetSdkVersion' : 31,
             'minSdkVersion' : 19,
     ]
 
     kotlin = [
-            "version"                              : "1.3.60",
-            "stdlib"                               : "org.jetbrains.kotlin:kotlin-stdlib:1.3.60",
+            "version"                              : "1.5.20",
+            "stdlib"                               : "org.jetbrains.kotlin:kotlin-stdlib:1.5.20",
             // 协程
-            "coroutine"                            : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3",
-            "coroutine-android"                    : "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3",
-            "reflect"                              : 'org.jetbrains.kotlin:kotlin-reflect:1.3.41'
+            "coroutine"                            : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9",
+            "coroutine-android"                    : "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9",
+            "reflect"                              : 'org.jetbrains.kotlin:kotlin-reflect:1.5.20'
     ]
 
     androidx = [
-            'multidex'                             : 'androidx.multidex:multidex:2.0.0',
+            'core'                                 : 'androidx.core:core:1.7.0',
+            'core-ktx'                             : 'androidx.core:core-ktx:1.7.0',
+            'multidex'                             : 'androidx.multidex:multidex:2.0.1',
             'legacy'                               : 'androidx.legacy:legacy-support-v4:1.0.0',
             'appcompat'                            : 'androidx.appcompat:appcompat:1.2.0',
-            'recyclerview'                         : 'androidx.recyclerview:recyclerview:1.0.0',
+            'recyclerview'                         : 'androidx.recyclerview:recyclerview:1.2.1',
             'cardview'                             : 'androidx.cardview:cardview:1.0.0',
-            "constraintlayout"                     : 'androidx.constraintlayout:constraintlayout:2.0.0-beta3',
+            "constraintlayout"                     : 'androidx.constraintlayout:constraintlayout:2.1.2',
+            'coordinatorlayout'                    : 'androidx.coordinatorlayout:coordinatorlayout:1.1.0',
             'gridlayout'                           : 'androidx.gridlayout:gridlayout:1.0.0',
             'viewpager2'                           : 'androidx.viewpager2:viewpager2:1.0.0',
             'design'                               : 'com.google.android.material:material:1.0.0',
             'junit'                                : 'junit:junit:4.12',
             'junit-test'                           : "androidx.test.ext:junit:1.1.1",
             'espresso-test'                        : 'androidx.test.espresso:espresso-core:3.1.0',
-            'lifecycle-viewmodel'                  : 'androidx.lifecycle:lifecycle-viewmodel:2.2.0',
-            'lifecycle-livedata'                   : 'androidx.lifecycle:lifecycle-livedata:2.2.0',
-            'lifecycle-viewmodel-savestate'        : 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0',
-            'lifecycle-compiler'                   : 'androidx.lifecycle:lifecycle-compiler:2.2.0',
-            'lifecycle-runtime-ktx'                : 'androidx.lifecycle:lifecycle-runtime-ktx:2.2.0',
-            'lifecycle-viewmodel-ktx'              : 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0',
+            'lifecycle-common'                     : 'androidx.lifecycle:lifecycle-common-java8:2.4.0',
+            'lifecycle-viewmodel'                  : 'androidx.lifecycle:lifecycle-viewmodel:2.4.0',
+            'lifecycle-livedata'                   : 'androidx.lifecycle:lifecycle-livedata:2.4.0',
+            'lifecycle-viewmodel-savestate'        : 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.4.0',
+            'lifecycle-compiler'                   : 'androidx.lifecycle:lifecycle-compiler:2.4.0',
+            'lifecycle-runtime-ktx'                : 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0',
+            'lifecycle-viewmodel-ktx'              : 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0',
             'work'                                 : 'androidx.work:work-runtime-ktx:2.4.0',
-            'work-rxjava2'                         : 'androidx.work:work-rxjava2:2.4.0'
+            'work-rxjava2'                         : 'androidx.work:work-rxjava2:2.4.0',
+            'collection'                           : 'androidx.collection:collection:1.2.0',
+            'collection-ktx'                       : 'androidx.collection:collection-ktx:1.2.0',
+            'room'                                 : 'androidx.room:room-runtime:2.4.0',
+            'room-compiler'                        : 'androidx.room:room-compiler:2.4.0',
+            'camera-core'                          : 'androidx.camera:camera-core:1.0.2',
+            'camera-camera2'                       : 'androidx.camera:camera-camera2:1.0.2',
+            'camera-lifecycle'                     : 'androidx.camera:camera-lifecycle:1.0.2'
     ]
 
     dependencies = [
@@ -60,12 +71,12 @@ ext {
             "walle"                                : 'com.meituan.android.walle:library:1.1.6',
             'walle-payload_reader'                 : 'com.meituan.android.walle:payload_reader:1.1.6',
             'walle-payload_writer'                 : 'com.meituan.android.walle:payload_writer:1.1.6',
-            'viewpager2'                           : "androidx.viewpager2:viewpager2:1.0.0",
             'systembartint'                        : 'com.readystatesoftware.systembartint:systembartint:1.0.3',
             'tkrefreshlayout'                      : 'com.lcodecorex:tkrefreshlayout:1.0.7',
             'autosize'                             : 'me.jessyan:autosize:1.2.1',
             'mmkv'                                 : 'com.tencent:mmkv-static:1.2.4',
-            'wechat'                               : 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.6.5'
+            'wechat'                               : 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.6.5',
+            'exoplayer'                            : 'com.google.android.exoplayer:exoplayer:2.13.3'
     ]
 
     refresh = [

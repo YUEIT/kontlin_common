@@ -4,10 +4,10 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
 
-        <item name="windowNoTitle">true</item>        
+        <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="colorPrimary">#ffa95a</item>
-        <item name="colorPrimaryDark">#ffffff</item>        
+        <item name="colorPrimaryDark">#ffffff</item>
         <item name="colorAccent">#ffa95a</item>
         <item name="android:windowBackground">#ffffff</item>
         <item name="android:windowLightStatusBar">true</item>

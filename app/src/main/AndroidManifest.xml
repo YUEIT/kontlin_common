@@ -3,7 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="cn.yue.base.kotlin.test">
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <uses-sdk tools:overrideLibrary="androidx.camera.camera2" />
 
     <application
         android:name=".AppApplication"
@@ -18,7 +22,8 @@
         <activity android:name=".MainActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateHidden">
+            android:windowSoftInputMode="adjustResize|stateHidden"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
