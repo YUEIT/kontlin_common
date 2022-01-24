@@ -1,5 +1,6 @@
 package cn.yue.base.common.photo
 
+import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
@@ -75,6 +76,7 @@ object PhotoUtils {
      * @param mediaType
      * @return
      */
+    @SuppressLint("Range")
     fun getMediaByFolder(context: Context, isAll: Boolean, folderId: String?, mediaType: MediaType): ArrayList<MediaData> {
         val list = ArrayList<MediaData>()
         val cursor = load(context, isAll, folderId, mediaType)
@@ -125,6 +127,7 @@ object PhotoUtils {
      * @param context
      * @return
      */
+    @SuppressLint("Range")
     fun getAllMediaFolder(context: Context, mediaType: MediaType): MutableList<MediaFolderVO> {
         val list: MutableList<MediaFolderVO> = ArrayList()
         val cursor = load(context, mediaType)

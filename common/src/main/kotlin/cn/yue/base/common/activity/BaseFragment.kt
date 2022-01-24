@@ -33,7 +33,7 @@ abstract class BaseFragment : Fragment(), View.OnTouchListener {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context !is BaseFragmentActivity) {
-            throw RuntimeException("BaseFragment必须与BaseActivity配合使用")
+            throw RuntimeException("BaseFragment必须与BaseFragmentActivity配合使用")
         }
         mActivity = context
     }
@@ -84,7 +84,7 @@ abstract class BaseFragment : Fragment(), View.OnTouchListener {
     }
 
     /**
-     * true 避免当前Fragment被repalce后回退回来重走oncreateview，导致重复初始化View和数据
+     * true 避免当前Fragment被replace后回退回来重走onCreateView，导致重复初始化View和数据
      */
     open fun needCache(): Boolean {
         return true

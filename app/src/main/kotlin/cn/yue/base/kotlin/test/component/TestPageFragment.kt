@@ -1,5 +1,6 @@
 package cn.yue.base.kotlin.test.component
 
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
@@ -7,6 +8,7 @@ import cn.yue.base.common.widget.recyclerview.SwipeLayoutManager
 import cn.yue.base.kotlin.test.R
 import cn.yue.base.kotlin.test.mode.ItemBean
 import cn.yue.base.middle.components.BasePageFragment
+import cn.yue.base.middle.net.coroutine.request
 import cn.yue.base.middle.net.wrapper.BaseListBean
 import com.alibaba.android.arouter.facade.annotation.Route
 import java.util.*
@@ -39,7 +41,7 @@ class TestPageFragment : BasePageFragment<ItemBean>() {
         holder.setText(R.id.testTV, itemData.name)
     }
 
-    override suspend fun getRequestScope(nt: String?): BaseListBean<ItemBean>? {
+    suspend fun getRequestScope(nt: String?): BaseListBean<ItemBean> {
         val listBean: BaseListBean<ItemBean> = BaseListBean<ItemBean>()
         listBean.mPageSize = 20
         listBean.mTotal = 22
@@ -56,5 +58,11 @@ class TestPageFragment : BasePageFragment<ItemBean>() {
     fun getItemString(item: Int): String {
         val list = arrayListOf<String>("hehe", "bbbbbbbbbbbbbbbbbbbbbbbbb", "ccccccc", "iii", "oooooooooooooooooooooooo")
         return list[item % list.size]
+    }
+
+    override fun doLoadData(nt: String) {
+        lifecycleScope.request({
+            getRequestScope(nt)
+        }, PageDelegateObserver())
     }
 }

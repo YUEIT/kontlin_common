@@ -5,31 +5,30 @@ package cn.yue.base.middle.net.wrapper
  * Created by yue on 2018/7/11.
  */
 
-open class BaseListBean<T> : BaseUnityListBean<T>() {
+open class BaseListBean<T> : BaseUnityListBean<T>(), IListModel<T> {
 
-
-    fun getList(): MutableList<T>? {
-        return super.getRealList()
+    override fun getList(): MutableList<T>? {
+        return getRealList()
     }
 
-    fun getTotal(): Int {
-        return super.getRealTotal()
+    override fun getTotal(): Int {
+        return getRealTotal()
     }
 
-    fun getPageNo(): Int {
+    override fun getPageNo(): Int {
         return getRealPageNo()
     }
 
-    fun getPageSize(): Int {
-        return if (getList() == null) 0 else getList()!!.size
+    override fun getPageSize(): Int {
+        return getRealPageSize()
     }
 
-    fun getPageNt() : String? {
+    override fun getPageNt() : String? {
         return getRealPageNt()
     }
 
-    fun getCurrentPageTotal() : Int {
-        return if (getList()==null) 0 else getList()!!.size
+    override fun getCurrentPageTotal() : Int {
+        return getList()?.size ?: 0
     }
 
 }

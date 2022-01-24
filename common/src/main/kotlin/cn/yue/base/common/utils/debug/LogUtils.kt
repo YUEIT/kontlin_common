@@ -6,7 +6,7 @@ object LogUtils {
 
     private var logSwitch = true
     private var logFilter = 'v'
-    private var tag = "YPC_OA"
+    private var tag = "LOG"
     private var stackIndex = 0
 
     public fun setDebug(debug: Boolean) {

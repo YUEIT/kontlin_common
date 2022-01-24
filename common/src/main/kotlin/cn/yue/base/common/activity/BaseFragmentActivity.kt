@@ -50,7 +50,7 @@ abstract class BaseFragmentActivity : FragmentActivity() {
         lifecycleProvider = initLifecycleProvider()
         lifecycle.addObserver(lifecycleProvider)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
-        setSystemBar()
+        setStatusBar()
         setContentView(getContentViewLayoutId())
         initView()
         replace(getFragment(), null, false)
@@ -83,21 +83,17 @@ abstract class BaseFragmentActivity : FragmentActivity() {
         })
     }
 
-    fun setSystemBar(isFillUpTop: Boolean = false, isDarkIcon: Boolean = true, bgColor: Int = Color.WHITE) {
-        try {
-            BarUtils.setStyle(this, true, isDarkIcon, bgColor)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        setFillUpTopLayout(isFillUpTop)
+    fun setStatusBar(isFullUpTop: Boolean = false, isDarkIcon: Boolean = true, bgColor: Int = Color.WHITE) {
+        BarUtils.setStyle(this, true, isDarkIcon, bgColor)
+        setFullUpTopLayout(isFullUpTop)
     }
 
-    private fun setFillUpTopLayout(isFillUpTop: Boolean) {
+    private fun setFullUpTopLayout(isFullUpTop: Boolean) {
         if (topBar == null) {
             return
         }
         var subject: Int = R.id.topBar
-        if (isFillUpTop) {
+        if (isFullUpTop) {
             subject = 0
             topBar?.setBgColor(Color.TRANSPARENT)
         }
@@ -294,8 +290,13 @@ abstract class BaseFragmentActivity : FragmentActivity() {
     }
 
     private fun startSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = Uri.parse("package:$packageName")
-        startActivity(intent)
+        try {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            intent.data = Uri.parse("package:$packageName")
+            startActivity(intent)
+        } catch (e : Exception) {
+            val intent = Intent(Settings.ACTION_SETTINGS)
+            startActivity(intent)
+        }
     }
 }

@@ -138,7 +138,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
     fun notifyItemInsertedReally(position: Int) {
         if (position > -1 && position < innerAdapter.itemCount) {
             innerAdapter.notifyItemInserted(position)
-            innerAdapter.notifyItemRangeChanged(position, list!!.size - position)
+            innerAdapter.notifyItemRangeChanged(position, getListSize() - position)
         }
     }
 
@@ -148,7 +148,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
     fun notifyItemRemovedReally(position: Int) {
         if (position > -1 && position < innerAdapter.itemCount) {
             innerAdapter.notifyItemRemoved(position)
-            innerAdapter.notifyItemRangeChanged(position, list.size - position)
+            innerAdapter.notifyItemRangeChanged(position, getListSize() - position)
         }
     }
 
@@ -163,8 +163,11 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
+    open fun getListSize(): Int {
+        return list.size
+    }
 
-    fun getList(): List<T> {
+    fun getList(): MutableList<T> {
         return list
     }
 
@@ -374,7 +377,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
     /**
      * 获取当前Item数据
      */
-    fun getItem(position: Int): T? {
+    open fun getItem(position: Int): T? {
         return if (position < list.size && position >= 0) {
             list[position]
         } else null
@@ -425,7 +428,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
 
         override fun getItemCount(): Int {
-            return list.size
+            return getListSize()
         }
 
         override fun getItemViewType(position: Int): Int {

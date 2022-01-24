@@ -5,13 +5,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.widget.TopBar
-import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
+import cn.yue.base.common.widget.recyclerview.SortedRefreshAdapter
 import cn.yue.base.kotlin.test.R
 import cn.yue.base.kotlin.test.mode.UserBean
 import cn.yue.base.middle.components.BasePullFragment
 import cn.yue.base.middle.net.observer.BasePullObserver
-import cn.yue.base.middle.router.FRouter
 import com.alibaba.android.arouter.facade.annotation.Route
 import io.reactivex.Single
 
@@ -27,38 +26,54 @@ class TestPullFragment : BasePullFragment() {
         topBar.setCenterTextStr("pull test")
     }
 
-    private lateinit var adapter: CommonAdapter<UserBean>
+    private lateinit var adapter: SortedRefreshAdapter<UserBean>
 
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
         val recyclerView = findViewById<RecyclerView>(R.id.rv)
         recyclerView.layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false)
-        adapter = object : CommonAdapter<UserBean>(mActivity) {
+        adapter = object : SortedRefreshAdapter<UserBean>() {
+
+            override fun bindData(holder: CommonViewHolder, position: Int, t: UserBean) {
+                holder.setText(R.id.testTV, t.name)
+                holder.getView<TextView>(R.id.testTV)?.setOnClickListener {
+                    addAll(arrayListOf(UserBean(getListSize().toLong(), "b", "", ""),
+                        UserBean(getListSize().toLong() + 1, "c", "", "")))
+                }
+            }
+
             override fun getLayoutIdByType(viewType: Int): Int {
                 return R.layout.item_test
             }
 
-            override fun bindData(holder: CommonViewHolder, position: Int, itemData: UserBean) {
-                holder.setText(R.id.testTV, itemData.name)
-                holder.getView<TextView>(R.id.testTV)?.setOnClickListener {
-                    mHandler.postDelayed(Runnable { val router = FRouter.instance
-                        router.build("/app/testDialog")
-                        router.navigationDialogFragment(mActivity) }, 3000)
-                }
+            override fun compare(item1: UserBean, item2: UserBean): Int {
+                return (item1.id - item2.id).toInt()
+            }
+
+            override fun areContentsTheSame(oldItem: UserBean, newItem: UserBean): Boolean {
+                return oldItem.name == newItem.name
+                        && oldItem.address == newItem.address
+                        && oldItem.phone == newItem.phone
+            }
+
+            override fun areItemsTheSame(item1: UserBean, item2: UserBean): Boolean {
+
+                return item1.id == item2.id
             }
         }
+
         recyclerView.adapter = adapter
     }
 
 
     override fun loadData() {
         Single.just(arrayListOf(UserBean(1, "a", "", ""),
-            UserBean(1, "a", "", "")))
+            UserBean(4, "a", "", "")))
                 .compose(getLifecycleProvider().toBindLifecycle())
                 .subscribe(object : BasePullObserver<List<UserBean>>(this) {
                     override fun onNext(t: List<UserBean>) {
                         super.onNext(t)
-                        adapter.setList(t)
+                        adapter.addAll(t)
                     }
                 })
     }

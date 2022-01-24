@@ -38,6 +38,14 @@ open class BaseUnityListBean<T>(
         return null
     }
 
+    fun getRealPageSize(): Int {
+        return if (mPageSize == 0) {
+            getRealList()?.size ?: 0
+        } else {
+            mPageSize
+        }
+    }
+
     fun getRealTotal(): Int {
         return if (mCount == 0) mTotal else mCount
     }

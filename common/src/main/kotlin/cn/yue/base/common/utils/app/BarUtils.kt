@@ -60,7 +60,7 @@ object BarUtils {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return
         }
-        val decorView = window.decorView
+//        val decorView = window.decorView
 //        if (isFullScreen) {
 //            if (isDarkIcon) {
 //                decorView.systemUiVisibility =
@@ -79,16 +79,22 @@ object BarUtils {
 //        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
 //        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 //        window.statusBarColor = bgColor
-        if (isFullScreen) {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-            window.statusBarColor = Color.TRANSPARENT
-        } else {
-            WindowCompat.setDecorFitsSystemWindows(window, true)
-            window.statusBarColor = bgColor
+
+        try {
+            val decorView = window.decorView
+            if (isFullScreen) {
+                WindowCompat.setDecorFitsSystemWindows(window, false)
+                window.statusBarColor = Color.TRANSPARENT
+            } else {
+                WindowCompat.setDecorFitsSystemWindows(window, true)
+                window.statusBarColor = bgColor
+            }
+            val windowInsetsCompat = WindowCompat.getInsetsController(window, decorView)
+            windowInsetsCompat?.isAppearanceLightStatusBars = isDarkIcon
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        val windowInsetsCompat = WindowCompat.getInsetsController(window, decorView)
-        windowInsetsCompat?.isAppearanceLightStatusBars = isDarkIcon
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
     }
 
 }

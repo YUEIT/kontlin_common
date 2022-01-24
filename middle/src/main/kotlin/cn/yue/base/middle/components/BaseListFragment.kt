@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,30 +19,28 @@ import cn.yue.base.middle.components.load.LoadStatus
 import cn.yue.base.middle.components.load.Loader
 import cn.yue.base.middle.components.load.PageStatus
 import cn.yue.base.middle.mvp.IBaseView
-import cn.yue.base.middle.mvp.IStatusView
-import cn.yue.base.middle.mvp.IWaitView
 import cn.yue.base.middle.mvp.photo.IPhotoView
 import cn.yue.base.middle.mvp.photo.PhotoHelper
 import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
-import cn.yue.base.middle.net.coroutine.request
 import cn.yue.base.middle.net.observer.BaseNetObserver
-import cn.yue.base.middle.net.wrapper.BaseListBean
+import cn.yue.base.middle.net.wrapper.IListModel
 import cn.yue.base.middle.view.PageHintView
 import cn.yue.base.middle.view.refresh.IRefreshLayout
 import io.reactivex.Single
-import java.util.*
+import io.reactivex.SingleSource
+import io.reactivex.SingleTransformer
 
 /**
  * Description :
  * Created by yue on 2019/3/7
  */
-abstract class BaseListFragment<P : BaseListBean<S>, S> : BaseFragment(), IStatusView, IWaitView, IBaseView, IPhotoView {
+abstract class BaseListFragment<P : IListModel<S>, S> : BaseFragment(), IBaseView, IPhotoView {
 
     var dataList: MutableList<S> = ArrayList()
     var total = 0 //当接口返回总数时，为返回数量；接口未返回数量，为统计数量； = 0
-    private var pageNt: String? = "1"
-    private var lastNt: String? = "1"
+    private var pageNt: String = "1"
+    private var lastNt: String = "1"
     private var adapter: CommonAdapter<S>? = null
     private lateinit var footer: BaseFooter
     private lateinit var refreshL: IRefreshLayout
@@ -209,161 +206,195 @@ abstract class BaseListFragment<P : BaseListBean<S>, S> : BaseFragment(), IStatu
         return "1"
     }
 
-    open fun getRequestSingle(nt: String?): Single<P>? = null
-
-    open suspend fun getRequestScope(nt: String?): P? = null
+    open fun initPageSize(): Int {
+        return 20
+    }
 
     private fun loadData() {
-        val observer = object : BaseNetObserver<P>() {
-            private var isLoadingRefresh = false
-            override fun onStart() {
-                super.onStart()
-                isLoadingRefresh = (loader.pageStatus == PageStatus.LOADING
-                        || loader.loadStatus == LoadStatus.REFRESH)
-            }
+        doLoadData(pageNt)
+    }
 
-            override fun onSuccess(p: P) {
-                refreshL.finishRefreshing()
-                if (isLoadingRefresh) {
-                    dataList.clear()
+    abstract fun doLoadData(nt: String)
+
+    inner class PageTransformer : SingleTransformer<P, P> {
+        override fun apply(upstream: Single<P>): SingleSource<P> {
+            val pageObserver = getPageObserver()
+            return upstream
+                .compose(getLifecycleProvider().toBindLifecycle())
+                .doOnSubscribe { pageObserver.onStart() }
+                .doOnSuccess { pageObserver.onSuccess(it) }
+                .doOnError { pageObserver.onError(it) }
+        }
+    }
+
+    inner class PageDelegateObserver(val observer: BaseNetObserver<P>? = null)
+        : BaseNetObserver<P>() {
+
+        private val pageObserver = getPageObserver()
+
+        override fun onStart() {
+            super.onStart()
+            pageObserver.onStart()
+            observer?.onStart()
+        }
+
+        override fun onCancel(e: ResultException) {
+            super.onCancel(e)
+        }
+
+        override fun onError(e: Throwable) {
+            super.onError(e)
+            pageObserver.onError(e)
+            observer?.onError(e)
+        }
+
+        override fun onException(e: ResultException) {}
+
+        override fun onSuccess(t: P) {
+            pageObserver.onSuccess(t)
+            observer?.onSuccess(t)
+        }
+    }
+
+    open inner class PageObserver: BaseNetObserver<P>() {
+        private var isLoadingRefresh = false
+        override fun onStart() {
+            super.onStart()
+            isLoadingRefresh = (loader.pageStatus == PageStatus.LOADING
+                    || loader.loadStatus == LoadStatus.REFRESH)
+        }
+
+        override fun onSuccess(p: P) {
+            refreshL.finishRefreshing()
+            if (isLoadingRefresh) {
+                dataList.clear()
+            }
+            if (isLoadingRefresh && p.getCurrentPageTotal() == 0) {
+                loadEmpty()
+            } else {
+                loadSuccess(p)
+                if (p.getCurrentPageTotal() < p.getPageSize()
+                    || (p.getTotal() > 0 && p.getTotal() <= dataList.size)
+                    || (p.getCurrentPageTotal() == 0)
+                    || (TextUtils.isEmpty(p.getPageNt()) && !initPageNt().matches(Regex("\\d+")))
+                    || (p.getCurrentPageTotal() < initPageSize())) {
+                    loadNoMore()
                 }
-                if (isLoadingRefresh && p.getCurrentPageTotal() == 0) {
-                    loadEmpty()
-                } else {
-                    loadSuccess(p)
-                    if (p.getCurrentPageTotal() < p.getPageSize()) {
-                        loadNoMore()
-                    } else if (p.getTotal() > 0 && p.getTotal() <= dataList.size) {
-                        loadNoMore()
-                    } else if (p.getCurrentPageTotal() == 0) {
-                        loadNoMore()
-                    } else if (TextUtils.isEmpty(p.getPageNt()) && !initPageNt().matches(Regex("\\d+"))) {
-                        loadNoMore()
+            }
+            if (isLoadingRefresh) {
+                onRefreshComplete(p, null)
+            }
+        }
+
+        override fun onException(e: ResultException) {
+            refreshL.finishRefreshing()
+            loadFailed(e)
+            if (isLoadingRefresh) {
+                onRefreshComplete(null, e)
+            }
+        }
+
+        override fun onCancel(e: ResultException) {
+            super.onCancel(e)
+            loadFailed(e)
+        }
+
+        open fun loadSuccess(p: P) {
+            showStatusView(loader.setPageStatus(PageStatus.NORMAL))
+            footer.showStatusView(loader.setLoadStatus(LoadStatus.NORMAL))
+            if (TextUtils.isEmpty(p.getPageNt())) {
+                try {
+                    pageNt = if (p.getPageNo() == 0) {
+                        (Integer.valueOf(pageNt!!) + 1).toString()
+                    } else {
+                        (p.getPageNo() + 1).toString()
+                    }
+                } catch (e: NumberFormatException) {
+                    e.printStackTrace()
+                }
+            } else {
+                pageNt = p.getPageNt()!!
+            }
+            if (p.getTotal() > 0) {
+                total = p.getTotal()
+            } else {
+                total += p.getCurrentPageTotal()
+            }
+            lastNt = pageNt
+            dataList.addAll(p.getList() ?: ArrayList())
+            notifyDataSetChanged()
+        }
+
+        open fun loadFailed(e: ResultException) {
+            pageNt = lastNt
+            if (loader.isFirstLoad) {
+                when(e.code) {
+                    ResponseCode.ERROR_NO_NET -> {
+                        showStatusView(loader.setPageStatus(PageStatus.NO_NET))
+                    }
+                    ResponseCode.ERROR_NO_DATA -> {
+                        showStatusView(loader.setPageStatus(PageStatus.NO_DATA))
+                    }
+                    ResponseCode.ERROR_CANCEL -> {
+                        showStatusView(loader.setPageStatus(PageStatus.ERROR))
+                    }
+                    ResponseCode.ERROR_OPERATION -> {
+                        showStatusView(loader.setPageStatus(PageStatus.ERROR))
+                        showShortToast(e.message)
+                    }
+                    else -> {
+                        showStatusView(loader.setPageStatus(PageStatus.ERROR))
+                        showShortToast(e.message)
                     }
                 }
-                if (isLoadingRefresh) {
-                    onRefreshComplete(p, null)
-                }
-            }
-
-            override fun onException(e: ResultException) {
-                refreshL.finishRefreshing()
-                loadFailed(e)
-                if (isLoadingRefresh) {
-                    onRefreshComplete(null, e)
-                }
-            }
-
-            override fun onCancel(e: ResultException) {
-                super.onCancel(e)
-                loadFailed(e)
-            }
-        }
-        val requestSingle = getRequestSingle(pageNt)
-        if (requestSingle != null) {
-            requestSingle
-//                    .delay(1000, TimeUnit.MILLISECONDS)
-                    .compose(getLifecycleProvider().toBindLifecycle())
-                    .subscribe(observer)
-        } else {
-            lifecycleScope.request({
-                getRequestScope(pageNt)!!
-            }, observer)
-        }
-    }
-
-    open fun loadSuccess(p: P) {
-        showStatusView(loader.setPageStatus(PageStatus.NORMAL))
-        footer.showStatusView(loader.setLoadStatus(LoadStatus.NORMAL))
-        if (TextUtils.isEmpty(p.getPageNt())) {
-            try {
-                pageNt = if (p.getPageNo() == 0) {
-                    (Integer.valueOf(pageNt!!) + 1).toString()
-                } else {
-                    (p.getPageNo() + 1).toString()
-                }
-            } catch (e: NumberFormatException) {
-                e.printStackTrace()
-            }
-        } else {
-            pageNt = p.getPageNt()
-        }
-        if (p.getTotal() > 0) {
-            total = p.getTotal()
-        } else {
-            total += p.getCurrentPageTotal()
-        }
-        lastNt = pageNt
-        dataList.addAll((if (p.getList() == null) ArrayList() else p.getList())!!)
-        notifyDataSetChanged()
-    }
-
-    open fun loadFailed(e: ResultException) {
-        pageNt = lastNt
-        if (loader.isFirstLoad) {
-            when(e.code) {
-                ResponseCode.ERROR_NO_NET -> {
-                    showStatusView(loader.setPageStatus(PageStatus.NO_NET))
-                }
-                ResponseCode.ERROR_NO_DATA -> {
-                    showStatusView(loader.setPageStatus(PageStatus.NO_DATA))
-                }
-                ResponseCode.ERROR_CANCEL -> {
-                    showStatusView(loader.setPageStatus(PageStatus.ERROR))
-                }
-                ResponseCode.ERROR_OPERATION -> {
-                    showStatusView(loader.setPageStatus(PageStatus.ERROR))
-                    showShortToast(e.message)
-                }
-                else -> {
-                    showStatusView(loader.setPageStatus(PageStatus.ERROR))
-                    showShortToast(e.message)
-                }
-            }
-        } else {
-            when(e.code) {
-                ResponseCode.ERROR_NO_NET -> {
-                    footer.showStatusView(loader.setLoadStatus(LoadStatus.NO_NET))
-                }
-                ResponseCode.ERROR_NO_DATA -> {
-                    footer.showStatusView(loader.setLoadStatus(LoadStatus.NORMAL))
-                }
-                ResponseCode.ERROR_CANCEL -> {
-                    footer.showStatusView(loader.setLoadStatus(LoadStatus.NORMAL))
-                }
-                ResponseCode.ERROR_OPERATION -> {
-                    footer.showStatusView(loader.setLoadStatus(LoadStatus.NORMAL))
-                    showShortToast(e.message)
-                }
-                else -> {
-                    footer.showStatusView(loader.setLoadStatus(LoadStatus.NORMAL))
-                    showShortToast(e.message)
+            } else {
+                when(e.code) {
+                    ResponseCode.ERROR_NO_NET -> {
+                        footer.showStatusView(loader.setLoadStatus(LoadStatus.NO_NET))
+                    }
+                    ResponseCode.ERROR_NO_DATA -> {
+                        footer.showStatusView(loader.setLoadStatus(LoadStatus.NORMAL))
+                    }
+                    ResponseCode.ERROR_CANCEL -> {
+                        footer.showStatusView(loader.setLoadStatus(LoadStatus.NORMAL))
+                    }
+                    ResponseCode.ERROR_OPERATION -> {
+                        footer.showStatusView(loader.setLoadStatus(LoadStatus.NORMAL))
+                        showShortToast(e.message)
+                    }
+                    else -> {
+                        footer.showStatusView(loader.setLoadStatus(LoadStatus.NORMAL))
+                        showShortToast(e.message)
+                    }
                 }
             }
         }
-    }
 
-    open fun loadNoMore() {
-        footer.showStatusView(loader.setLoadStatus(LoadStatus.END))
-    }
-
-    open fun loadEmpty() {
-        total = 0
-        dataList.clear()
-        notifyDataSetChanged()
-        if (showSuccessWithNoData()) {
-            showStatusView(loader.setPageStatus(PageStatus.NORMAL))
-            footer.showStatusView(loader.setLoadStatus(LoadStatus.NO_DATA))
-        } else {
-            showStatusView(loader.setPageStatus(PageStatus.NO_DATA))
+        open fun loadNoMore() {
+            footer.showStatusView(loader.setLoadStatus(LoadStatus.END))
         }
+
+        open fun loadEmpty() {
+            total = 0
+            dataList.clear()
+            notifyDataSetChanged()
+            if (showSuccessWithNoData()) {
+                showStatusView(loader.setPageStatus(PageStatus.NORMAL))
+                footer.showStatusView(loader.setLoadStatus(LoadStatus.NO_DATA))
+            } else {
+                showStatusView(loader.setPageStatus(PageStatus.NO_DATA))
+            }
+        }
+
+        open fun onRefreshComplete(p: P?, e: ResultException?) {}
     }
 
     open fun showSuccessWithNoData(): Boolean {
         return false
     }
 
-    open fun onRefreshComplete(p: P?, e: ResultException?) {
+    open fun getPageObserver(): BaseNetObserver<P> {
+        return PageObserver()
     }
 
     open fun notifyDataSetChanged() {

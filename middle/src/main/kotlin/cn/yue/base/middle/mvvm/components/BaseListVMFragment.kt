@@ -21,8 +21,8 @@ import cn.yue.base.middle.view.refresh.IRefreshLayout
  * Description :
  * Created by yue on 2020/8/8
  */
-abstract class BaseListVMFragment<VM : ListViewModel<*, *>> : BaseVMFragment<VM>(), IStatusView {
-    private var adapter: CommonAdapter<*>? = null
+abstract class BaseListVMFragment<VM : ListViewModel<*, S>, S> : BaseVMFragment<VM>(), IStatusView {
+    private var adapter: CommonAdapter<S>? = null
     private lateinit var footer: BaseFooter
     private lateinit var refreshL: IRefreshLayout
     private lateinit var baseRV: RecyclerView
@@ -108,15 +108,15 @@ abstract class BaseListVMFragment<VM : ListViewModel<*, *>> : BaseVMFragment<VM>
         }
     }
 
-    abstract fun initAdapter(): CommonAdapter<*>?
+    abstract fun initAdapter(): CommonAdapter<S>?
 
-    open fun getAdapter(): CommonAdapter<*>? {
+    open fun getAdapter(): CommonAdapter<S>? {
         return adapter
     }
 
     open fun getLayoutManager(): RecyclerView.LayoutManager = LinearLayoutManager(mActivity)
 
-    abstract fun setData(list: MutableList<*>)
+    abstract fun setData(list: MutableList<S>)
 
     open fun initFooter(): BaseFooter {
         return BaseFooter(mActivity)

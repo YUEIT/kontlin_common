@@ -24,11 +24,11 @@ abstract class BaseActivity : ComponentActivity() {
         lifecycleProvider = initLifecycleProvider()
         lifecycle.addObserver(lifecycleProvider)
         if (hasContentView()) {
-            setSystemBar()
+            setStatusBar()
             setContentView(getLayoutId())
         }
-        if (intent != null && intent.extras != null) {
-            initBundle(intent.extras!!)
+        intent.extras?.apply {
+            initBundle(this)
         }
         initView()
     }
@@ -45,12 +45,8 @@ abstract class BaseActivity : ComponentActivity() {
 
     open fun initBundle(bundle: Bundle) {}
 
-    fun setSystemBar(isFillScreen: Boolean = false, isDarkIcon: Boolean = true, bgColor: Int = Color.WHITE) {
-        try {
-            BarUtils.setStyle(this, isFillScreen, isDarkIcon, bgColor)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+    fun setStatusBar(isFullScreen: Boolean = false, isDarkIcon: Boolean = true, bgColor: Int = Color.WHITE) {
+        BarUtils.setStyle(this, isFullScreen, isDarkIcon, bgColor)
     }
 
     /**
@@ -119,9 +115,14 @@ abstract class BaseActivity : ComponentActivity() {
     }
 
     private fun startSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.data = Uri.parse("package:$packageName")
-        startActivity(intent)
+        try {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            intent.data = Uri.parse("package:$packageName")
+            startActivity(intent)
+        } catch (e : Exception) {
+            val intent = Intent(Settings.ACTION_SETTINGS)
+            startActivity(intent)
+        }
     }
 
     override fun onDestroy() {

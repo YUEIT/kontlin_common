@@ -128,65 +128,68 @@ class HintDialog: Dialog {
             if (hintDialog == null) {
                 hintDialog = HintDialog(context!!)
             }
-            if (isShowTitle) {
-                hintDialog!!.binding.titleTV.text = titleStr
-                hintDialog!!.binding.titleTV.visibility = View.VISIBLE
-            } else {
-                hintDialog!!.binding.titleTV.visibility = View.GONE
-            }
-            if (titleColor != 0) {
-                hintDialog!!.binding.titleTV.setTextColor(titleColor)
-            }
-            if (contentView == null) {
-                if (!TextUtils.isEmpty(contentStr)) {
-                    val contentTV = TextView(context)
-                    contentTV.setTextColor(Color.parseColor("#9b9b9b"))
-                    contentTV.gravity = Gravity.CENTER
-                    contentTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
-                    contentTV.text = contentStr
-                    if (contentColor != 0) {
-                        contentTV.setTextColor(contentColor)
-                    }
-                    hintDialog!!.binding.contentLL.addView(contentTV)
-                }
-            } else {
-                hintDialog!!.binding.contentLL.addView(contentView)
-            }
-            hintDialog!!.binding.leftClickTV.text = leftClickStr
-            if (leftColor != 0) {
-                hintDialog!!.binding.leftClickTV.setTextColor(leftColor)
-            }
-            hintDialog!!.binding.rightClickTV.text = rightClickStr
-            if (rightColor != 0) {
-                hintDialog!!.binding.rightClickTV.setTextColor(rightColor)
-            }
-            hintDialog!!.binding.leftClickTV.setOnClickListener{
-                view ->
-                if (onLeftClickListener != null) {
-                    onLeftClickListener!!(view)
-                }
-                hintDialog!!.dismiss()
-            }
-            hintDialog!!.binding.rightClickTV.setOnClickListener{
-                view ->
-                if (onRightClickListener != null) {
-                    onRightClickListener!!(view)
-                }
-                hintDialog!!.dismiss()
-            }
-            if (isSingleClick) {
-                if (!TextUtils.isEmpty(leftClickStr)) {
-                    hintDialog!!.binding.leftClickTV.visibility = View.VISIBLE
-                    hintDialog!!.binding.rightClickTV.visibility = View.GONE
-                } else if (!TextUtils.isEmpty(rightClickStr)) {
-                    hintDialog!!.binding.leftClickTV.visibility = View.GONE
-                    hintDialog!!.binding.rightClickTV.visibility = View.VISIBLE
+            hintDialog?.apply {
+                if (isShowTitle) {
+                    binding.titleTV.text = titleStr
+                    binding.titleTV.visibility = View.VISIBLE
                 } else {
-                    hintDialog!!.binding.rightClickTV.visibility = View.VISIBLE
-                    hintDialog!!.binding.leftClickTV.visibility = View.GONE
+                    binding.titleTV.visibility = View.GONE
                 }
-                hintDialog!!.binding.divider.visibility = View.GONE
+                if (titleColor != 0) {
+                    binding.titleTV.setTextColor(titleColor)
+                }
+                if (contentView == null) {
+                    if (!TextUtils.isEmpty(contentStr)) {
+                        val contentTV = TextView(context)
+                        contentTV.setTextColor(Color.parseColor("#9b9b9b"))
+                        contentTV.gravity = Gravity.CENTER
+                        contentTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+                        contentTV.text = contentStr
+                        if (contentColor != 0) {
+                            contentTV.setTextColor(contentColor)
+                        }
+                        binding.contentLL.addView(contentTV)
+                    }
+                } else {
+                    binding.contentLL.addView(contentView)
+                }
+                binding.leftClickTV.text = leftClickStr
+                if (leftColor != 0) {
+                    binding.leftClickTV.setTextColor(leftColor)
+                }
+                binding.rightClickTV.text = rightClickStr
+                if (rightColor != 0) {
+                    binding.rightClickTV.setTextColor(rightColor)
+                }
+                binding.leftClickTV.setOnClickListener{
+                        view ->
+                    if (onLeftClickListener != null) {
+                        onLeftClickListener!!(view)
+                    }
+                    dismiss()
+                }
+                binding.rightClickTV.setOnClickListener{
+                        view ->
+                    if (onRightClickListener != null) {
+                        onRightClickListener!!(view)
+                    }
+                    dismiss()
+                }
+                if (isSingleClick) {
+                    if (!TextUtils.isEmpty(leftClickStr)) {
+                        binding.leftClickTV.visibility = View.VISIBLE
+                        binding.rightClickTV.visibility = View.GONE
+                    } else if (!TextUtils.isEmpty(rightClickStr)) {
+                        binding.leftClickTV.visibility = View.GONE
+                        binding.rightClickTV.visibility = View.VISIBLE
+                    } else {
+                        binding.rightClickTV.visibility = View.VISIBLE
+                        binding.leftClickTV.visibility = View.GONE
+                    }
+                    binding.divider.visibility = View.GONE
+                }
             }
+
             return hintDialog!!
         }
     }

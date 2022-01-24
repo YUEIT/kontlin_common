@@ -12,8 +12,6 @@ import cn.yue.base.middle.R
 import cn.yue.base.middle.components.load.Loader
 import cn.yue.base.middle.components.load.PageStatus
 import cn.yue.base.middle.mvp.IBaseView
-import cn.yue.base.middle.mvp.IStatusView
-import cn.yue.base.middle.mvp.IWaitView
 import cn.yue.base.middle.mvp.photo.IPhotoView
 import cn.yue.base.middle.mvp.photo.PhotoHelper
 import cn.yue.base.middle.view.PageHintView
@@ -22,7 +20,7 @@ import cn.yue.base.middle.view.PageHintView
  * Description :
  * Created by yue on 2019/3/8
  */
-abstract class BaseHintFragment : BaseFragment(), IStatusView, IWaitView, IBaseView, IPhotoView {
+abstract class BaseHintFragment : BaseFragment(), IBaseView, IPhotoView {
     var loader = Loader()
     private lateinit var hintView: PageHintView
     private lateinit var baseVS: ViewStub

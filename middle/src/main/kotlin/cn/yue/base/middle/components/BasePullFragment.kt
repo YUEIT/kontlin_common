@@ -14,8 +14,6 @@ import cn.yue.base.middle.components.load.Loader
 import cn.yue.base.middle.components.load.PageStatus
 import cn.yue.base.middle.mvp.IBaseView
 import cn.yue.base.middle.mvp.IPullView
-import cn.yue.base.middle.mvp.IStatusView
-import cn.yue.base.middle.mvp.IWaitView
 import cn.yue.base.middle.mvp.photo.IPhotoView
 import cn.yue.base.middle.mvp.photo.PhotoHelper
 import cn.yue.base.middle.view.PageHintView
@@ -25,7 +23,7 @@ import cn.yue.base.middle.view.refresh.IRefreshLayout
  * Description :
  * Created by yue on 2019/3/7
  */
-abstract class BasePullFragment : BaseFragment(), IStatusView, IWaitView, IBaseView, IPhotoView, IPullView {
+abstract class BasePullFragment : BaseFragment(), IBaseView, IPhotoView, IPullView {
     private val loader = Loader()
     private lateinit var refreshL: IRefreshLayout
     private lateinit var hintView: PageHintView

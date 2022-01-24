@@ -23,4 +23,5 @@ class AppApplication : MiddleApplication() {
     override fun registerModule() {
         ModuleManager.register(ModuleType.MODULE_APP, IAppModule::class, AppModuleService())
     }
+
 }

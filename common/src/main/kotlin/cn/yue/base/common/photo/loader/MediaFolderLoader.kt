@@ -1,5 +1,6 @@
 package cn.yue.base.common.photo.loader
 
+import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
@@ -99,6 +100,7 @@ object MediaFolderLoader {
     private const val BUCKET_ORDER_BY = "datetaken DESC"
     private const val ALBUM_ID_ALL: String = "-1"
     private const val ALBUM_NAME_ALL = "All"
+    @SuppressLint("Range")
     @JvmStatic
     fun load(context: Context, mediaType: MediaType): Cursor {
         val albums = ContentResolverCompat.query(context.contentResolver,
@@ -200,12 +202,11 @@ object MediaFolderLoader {
         }
     }
 
+    @SuppressLint("Range")
     private fun getUri(cursor: Cursor): Uri {
         val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns._ID))
-        val mimeType = cursor.getString(
-                cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
-        val contentUri: Uri
-        contentUri = if (isImage(mimeType)) {
+        val mimeType = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
+        val contentUri: Uri = if (isImage(mimeType)) {
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         } else if (isVideo(mimeType)) {
             MediaStore.Video.Media.EXTERNAL_CONTENT_URI

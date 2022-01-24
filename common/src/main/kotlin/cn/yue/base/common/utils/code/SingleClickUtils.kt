@@ -1,17 +1,19 @@
 package cn.yue.base.common.utils.code
 
 import android.view.View
+import kotlin.math.abs
 
 abstract class OnSingleClickListener : View.OnClickListener {
+
     override fun onClick(view: View) {
-        if (System.currentTimeMillis() - lastClickTime > getIntervalClickTime()) {
+        if (abs(System.currentTimeMillis() - lastClickTime) > getIntervalClickTime()) {
             lastClickTime = System.currentTimeMillis()
             onSingleClick(view)
         }
     }
 
-    fun getIntervalClickTime(): Long {
-        return intervalClickTime
+    open fun getIntervalClickTime(): Long {
+        return mIntervalClickTime
     }
 
     /**
@@ -19,13 +21,12 @@ abstract class OnSingleClickListener : View.OnClickListener {
      */
     abstract fun onSingleClick(v: View?)
 
-    companion object {
-        //单击判断生效时间，以此时间判断生效
-        protected const val intervalClickTime: Long = 500
+    //单击判断生效时间，以此时间判断生效
+     private val mIntervalClickTime: Long = 500
 
-        //上次点击的时间
-        private var lastClickTime: Long = 0
-    }
+    //上次点击的时间
+    private var lastClickTime: Long = 0
+
 }
 
 fun View.setOnSingleClickListener(block: (() -> Unit)?) {
