@@ -15,17 +15,17 @@ import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.R
 import cn.yue.base.common.activity.BaseFragment
 import cn.yue.base.common.image.ImageLoader
-import cn.yue.base.common.photo.data.MediaType
 import cn.yue.base.common.photo.data.MediaData
+import cn.yue.base.common.photo.data.MediaType
 import cn.yue.base.common.photo.data.MimeType
 import cn.yue.base.common.photo.preview.ViewMediaActivity
 import cn.yue.base.common.utils.app.RunTimePermissionUtil
+import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.LogUtils
 import cn.yue.base.common.utils.variable.TimeUtils
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
-import com.bumptech.glide.Glide
 import java.util.*
 import java.util.concurrent.Executors
 
@@ -76,7 +76,13 @@ class SelectPhotoFragment : BaseFragment() {
                             if (getSelectList().size < getMaxNum() || it.isSelected) {
                                 it.isSelected = !it.isSelected
                                 addSelectList(mediaData, it.isSelected)
-                                topBar.setRightTextStr(if (getSelectList().isEmpty()) "取消" else "确定(" + getSelectList().size + "/" + getMaxNum() + ")")
+                                topBar.setRightTextStr(
+                                    if (getSelectList().isEmpty()) {
+                                        R.string.app_cancel.getString()
+                                    } else {
+                                        "${R.string.app_confirm.getString()}(" + getSelectList().size + "/" + getMaxNum() + ")"
+                                    }
+                                )
                             }
                         }
                     }
@@ -86,7 +92,12 @@ class SelectPhotoFragment : BaseFragment() {
                         if (getSelectList().size < getMaxNum() || it.isSelected) {
                             it.isSelected = !it.isSelected
                             addSelectList(mediaData, it.isSelected)
-                            topBar.setRightTextStr(if (getSelectList().isEmpty()) "取消" else "确定(" + getSelectList().size + "/" + getMaxNum() + ")")
+                            topBar.setRightTextStr(
+                                if (getSelectList().isEmpty()) {
+                                    R.string.app_cancel.getString()
+                                } else {
+                                    "${R.string.app_confirm.getString()}(" + getSelectList().size + "/" + getMaxNum() + ")"
+                                })
                         }
                     }
                 }

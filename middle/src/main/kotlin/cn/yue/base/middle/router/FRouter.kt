@@ -10,7 +10,9 @@ import android.os.Parcelable
 import android.text.TextUtils
 import androidx.fragment.app.DialogFragment
 import cn.yue.base.common.activity.BaseFragmentActivity
+import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
+import cn.yue.base.middle.R
 import cn.yue.base.middle.activity.CommonActivity
 import com.alibaba.android.arouter.core.LogisticsCenter
 import com.alibaba.android.arouter.exception.NoRouteFoundException
@@ -75,7 +77,7 @@ class FRouter() : INavigation, Parcelable {
                 jumpToFragment(context, toActivity, requestCode)
             }
             else -> {
-                showShortToast("找不到页面~")
+                showShortToast(R.string.app_find_not_page.getString())
             }
         }
     }

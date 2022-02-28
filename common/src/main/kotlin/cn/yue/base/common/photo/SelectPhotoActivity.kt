@@ -2,13 +2,8 @@ package cn.yue.base.common.photo
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
@@ -17,10 +12,10 @@ import androidx.viewpager.widget.ViewPager
 import cn.yue.base.common.R
 import cn.yue.base.common.activity.BaseFragment
 import cn.yue.base.common.activity.BaseFragmentActivity
-import cn.yue.base.common.photo.data.MediaType
 import cn.yue.base.common.photo.data.MediaData
+import cn.yue.base.common.photo.data.MediaType
+import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.widget.viewpager.PagerSlidingTabStrip
-import cn.yue.base.common.widget.viewpager.SampleTabStrip
 import com.alibaba.android.arouter.facade.annotation.Route
 import java.util.*
 
@@ -68,7 +63,7 @@ class SelectPhotoActivity : BaseFragmentActivity() {
     private fun initTopBar() {
         getTopBar().setLeftImage(R.drawable.app_icon_back)
             .setLeftClickListener{ finish() }
-            .setRightTextStr(if (photoList.isEmpty()) "取消" else "确定(" + photoList.size + "/" + maxNum + ")")
+            .setRightTextStr(if (photoList.isEmpty()) R.string.app_cancel.getString() else "${R.string.app_confirm.getString()}(" + photoList.size + "/" + maxNum + ")")
             .setRightClickListener{
                 if (photoList.isEmpty()) {
                     finish()
@@ -95,9 +90,9 @@ class SelectPhotoActivity : BaseFragmentActivity() {
 
             override fun getPageTitle(position: Int): CharSequence? {
                 return if (position == 0) {
-                    "相册选择"
+                    R.string.app_photos_folder_select.getString()
                 } else {
-                    "最近照片"
+                    R.string.app_photos_folder_nearly.getString()
                 }
             }
         }
@@ -172,15 +167,24 @@ class SelectPhotoActivity : BaseFragmentActivity() {
                 .setLeftImage(R.drawable.app_icon_back)
                 .setLeftTextStr("")
                 .setLeftClickListener{ finish() }
-                .setRightTextStr("取消")
+                .setRightTextStr(R.string.app_cancel.getString())
                 .setRightClickListener{ finish() }
         } else if (getCurrentFragment() is SelectPhotoFragment) {
             getTopBar().setCenterTextStr(title)
                 .setCenterImage(R.drawable.app_icon_search)
-                .setCenterClickListener { changeFragment(SelectPhotoFolderFragment::class.java.name, "相册选择") }
+                .setCenterClickListener {
+                    changeFragment(SelectPhotoFolderFragment::class.java.name,
+                        R.string.app_photos_folder_select.getString())
+                }
                 .setLeftImage(R.drawable.app_icon_back)
                 .setLeftClickListener{ finish() }
-                .setRightTextStr(if (photoList.isEmpty()) "取消" else "确定（" + photoList.size + "/" + maxNum + "）")
+                .setRightTextStr(
+                    if (photoList.isEmpty()) {
+                        R.string.app_cancel.getString()
+                    } else {
+                        "${R.string.app_confirm.getString()}（" + photoList.size + "/" + maxNum + "）"
+                    }
+                )
                 .setRightClickListener{
                     if (photoList.isEmpty()) {
                         finish()

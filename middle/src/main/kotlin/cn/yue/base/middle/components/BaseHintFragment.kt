@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewStub
 import cn.yue.base.common.activity.BaseFragment
+import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.common.utils.device.NetworkUtils
 import cn.yue.base.common.widget.dialog.WaitDialog
@@ -37,7 +38,7 @@ abstract class BaseHintFragment : BaseFragment(), IBaseView, IPhotoView {
             if (NetworkUtils.isAvailable()) {
                 showStatusView(loader.setPageStatus(PageStatus.NORMAL))
             } else {
-                showShortToast("网络不给力，请检查您的网络设置~")
+                showShortToast(R.string.app_no_net.getString())
             }
         }
         baseVS = findViewById(R.id.baseVS)

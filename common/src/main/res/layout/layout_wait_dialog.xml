@@ -42,7 +42,7 @@
             android:layout_marginTop="10dp"
             android:gravity="left|center_vertical"
             android:textColor="#ffffff"
-            tools:text="请稍等..."
+            tools:text="waiting..."
             />
     </RelativeLayout>
 

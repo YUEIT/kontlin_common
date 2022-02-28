@@ -1,6 +1,7 @@
 package cn.yue.base.middle.net.convert
 
-import cn.yue.base.common.utils.debug.LogUtils
+import cn.yue.base.common.utils.code.getString
+import cn.yue.base.middle.R
 import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
 import cn.yue.base.middle.net.wrapper.BaseBean
@@ -47,7 +48,6 @@ class PeelConverterFactory : Converter.Factory() {
         @Throws(IOException::class)
         override fun convert(value: ResponseBody): T {
             val response = value.string()
-            LogUtils.i("服务器返回:$response")
             try {
                 val baseBeanType = `$Gson$Types`.newParameterizedTypeWithOwner(null, BaseBean::class.java, type)
                 var baseBean: BaseBean<T>? = null
@@ -57,7 +57,6 @@ class PeelConverterFactory : Converter.Factory() {
                 if (baseBean?.code == null) {
                     //不是BaseBean结构
                     val realData = json.fromJson<T>(response, type)
-                    LogUtils.d("convert() called with: data = [$realData]")
                     if (type == Any::class.java) {
                         if (null == realData) {
                             return Any() as T
@@ -65,10 +64,10 @@ class PeelConverterFactory : Converter.Factory() {
                     } else {
                         //空数据返回异常
                         if (realData == null) {
-                            throw ResultException(ResponseCode.ERROR_NO_DATA, "服务器返回数据为空")
+                            throw ResultException(ResponseCode.ERROR_NO_DATA, R.string.app_server_response_empty.getString())
                         }
                         if (realData is List<*> && (realData as List<*>).isEmpty()) {
-                            throw ResultException(ResponseCode.ERROR_NO_DATA, "服务器返回数据为空")
+                            throw ResultException(ResponseCode.ERROR_NO_DATA, R.string.app_server_response_empty.getString())
                         }
                     }
                     return realData
@@ -82,7 +81,7 @@ class PeelConverterFactory : Converter.Factory() {
                 }
             } catch (e : JsonSyntaxException) {
                 e.printStackTrace()
-                throw ResultException(ResponseCode.ERROR_SERVER, "数据解析异常：${e.message}")
+                throw ResultException(ResponseCode.ERROR_SERVER, "${R.string.app_convert_data_fail.getString()}：${e.message}")
             } catch (e : IllegalStateException) {
                 e.printStackTrace()
                 throw ResultException(ResponseCode.ERROR_SERVER, "${e.message}")

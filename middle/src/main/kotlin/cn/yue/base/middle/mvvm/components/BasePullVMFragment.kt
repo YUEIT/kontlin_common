@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewStub
 import androidx.lifecycle.Observer
+import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.common.utils.device.NetworkUtils
 import cn.yue.base.middle.R
@@ -33,7 +34,7 @@ abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>(), IS
             if (NetworkUtils.isAvailable()) {
                 viewModel.refresh()
             } else {
-                showShortToast("网络不给力，请检查您的网络设置~")
+                showShortToast(R.string.app_no_net.getString())
             }
         }
         refreshL = findViewById<View>(R.id.refreshL) as IRefreshLayout

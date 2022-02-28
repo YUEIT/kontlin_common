@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">middle</string>
+
+    <string name="app_no_crop_picture">没有裁剪的图片~</string>
+    <string name="app_server_response_empty">服务器返回数据为空</string>
+    <string name="app_server_response_fail">服务器异常</string>
+    <string name="app_convert_data_fail">数据解析异常</string>
+    <string name="app_request_data_fail">数据访问失败</string>
+    <string name="app_request_list_params_error">请求的数据类型为list，且参数名未以[]结尾~</string>
+    <string name="app_request_cancel">请求取消~</string>
+    <string name="app_login_fail">登录失效~</string>
+    <string name="app_upload_fail">上传失败~</string>
+    <string name="app_find_not_page">找不到页面~</string>
+    <string name="app_footer_loading">加载中~</string>
+    <string name="app_footer_end">- END -</string>
+    <string name="app_footer_error">网络异常，点击重新加载~</string>
+    <string name="app_no_data">- 暂无数据 -</string>
+    <string name="app_reload">重新加载</string>
+    <string name="app_check_network">检查网络</string>
+    <string name="app_check_network_description">请确保手机连接的WIFI或者运营商网络正常</string>
+    <string name="app_network_error">哎呀！网络出问题了</string>
+    <string name="app_server_error">哎呀！服务器迷路了~</string>
 </resources>

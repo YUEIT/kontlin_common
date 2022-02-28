@@ -5,6 +5,8 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import cn.yue.base.common.Constant
+import cn.yue.base.common.utils.code.getString
+import cn.yue.base.middle.R
 import cn.yue.base.middle.net.RetrofitManager
 import okhttp3.Request
 import okhttp3.ResponseBody
@@ -26,13 +28,13 @@ class DownloadWorker(context: Context, workerParameters: WorkerParameters) : Wor
             if (response.isSuccessful) {
                 val body = response.body
                 if (body == null) {
-                    val workerData = workDataOf("error" to "接收数据失败!")
+                    val workerData = workDataOf("error" to R.string.app_request_data_fail.getString())
                     return Result.failure(workerData)
                 } else {
                     return saveFile(body)
                 }
             } else {
-                val workerData = workDataOf("error" to "数据访问失败!")
+                val workerData = workDataOf("error" to R.string.app_request_data_fail.getString())
                 return Result.failure(workerData)
             }
         } catch (e : IOException) {

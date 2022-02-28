@@ -46,6 +46,6 @@
         android:textSize="15sp"
         android:textColor="#4a4a4a"
         android:gravity="center"
-        tools:text="标题"/>
+        tools:text="title"/>
 
 </RelativeLayout>

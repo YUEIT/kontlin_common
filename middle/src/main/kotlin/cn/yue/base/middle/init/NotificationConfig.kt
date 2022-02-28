@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import cn.yue.base.common.utils.Utils.getContext
+import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.device.NotificationUtils
 import cn.yue.base.common.utils.device.NotificationUtils.ChannelConfig
 import cn.yue.base.common.utils.device.NotificationUtils.initChannelConfig
@@ -16,7 +17,7 @@ import cn.yue.base.middle.R
 object NotificationConfig {
     private const val CHANNEL_ID = "YUE_CHANNEL"
     fun initChannel() {
-        val channelConfig = ChannelConfig(CHANNEL_ID, "通知", NotificationUtils.IMPORTANCE_DEFAULT)
+        val channelConfig = ChannelConfig(CHANNEL_ID, R.string.app_notification.getString(), NotificationUtils.IMPORTANCE_DEFAULT)
         initChannelConfig(channelConfig)
     }
 

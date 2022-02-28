@@ -9,9 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.R
 import cn.yue.base.common.activity.BaseFragment
 import cn.yue.base.common.image.ImageLoader
+import cn.yue.base.common.photo.data.MediaData
 import cn.yue.base.common.photo.data.MediaFolderVO
 import cn.yue.base.common.photo.data.MediaType
-import cn.yue.base.common.photo.data.MediaData
+import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
@@ -60,7 +61,7 @@ class SelectPhotoFolderFragment : BaseFragment() {
                     lastMediaFolderVO.id = ""
                     lastMediaFolderVO.coverUri = lastPhotos[0].uri
                     lastMediaFolderVO.count = lastPhotos.size
-                    lastMediaFolderVO.name = "最近照片"
+                    lastMediaFolderVO.name = R.string.app_photos_folder_nearly.getString()
                     allFolder.add(0, lastMediaFolderVO)
                 }
                 handler.sendMessage(Message.obtain(handler, 101, allFolder))

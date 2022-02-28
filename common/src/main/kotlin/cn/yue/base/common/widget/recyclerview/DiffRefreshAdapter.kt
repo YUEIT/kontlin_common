@@ -80,6 +80,9 @@ abstract class DiffRefreshAdapter<T> : CommonAdapter<T> {
 
     abstract fun areContentsTheSame(oldItem: T, newItem: T): Boolean
 
+    override fun setList(list: List<T>?) {
+        setDataCollection(list)
+    }
 }
 
 

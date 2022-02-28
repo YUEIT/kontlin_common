@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="cn.yue.base.kotlin.test">
+    package="cn.yue.test">
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -10,7 +10,7 @@
     <uses-sdk tools:overrideLibrary="androidx.camera.camera2" />
 
     <application
-        android:name=".AppApplication"
+        android:name="cn.yue.test.AppApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -19,7 +19,7 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity"
+        <activity android:name="cn.yue.test.MainActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden"
@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".utils.UpdateService"/>
+        <service android:name="cn.yue.test.service.UpdateService"/>
 
         <!--适配android 7.0以及以上更新APK路径-->
         <provider

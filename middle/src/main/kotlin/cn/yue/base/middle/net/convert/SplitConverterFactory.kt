@@ -1,6 +1,7 @@
 package cn.yue.base.middle.net.convert
 
-import cn.yue.base.common.utils.debug.LogUtils
+import cn.yue.base.common.utils.code.getString
+import cn.yue.base.middle.R
 import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
 import cn.yue.base.middle.net.wrapper.BaseBean
@@ -46,7 +47,6 @@ class SplitConverterFactory : Converter.Factory() {
         @Throws(IOException::class)
         override fun convert(value: ResponseBody): T {
             val response = value.string()
-            LogUtils.i("服务器返回:$response")
             val baseBeanType = `$Gson$Types`.newParameterizedTypeWithOwner(null, BaseBean::class.java, type)
             val (message, code, data) = json.fromJson<BaseBean<T>>(response, baseBeanType)
             if (ResponseCode.SUCCESS_FLAG == code) {
@@ -55,10 +55,10 @@ class SplitConverterFactory : Converter.Factory() {
                 if (type !== Any::class.java) {
                     //空数据返回异常
                     if (data == null) {
-                        throw ResultException(ResponseCode.ERROR_NO_DATA, "服务器返回数据为空")
+                        throw ResultException(ResponseCode.ERROR_NO_DATA, R.string.app_server_response_empty.getString())
                     }
                     if (data is List<*> && (data as List<*>).isEmpty()) {
-                        throw ResultException(ResponseCode.ERROR_NO_DATA, "服务器返回数据为空")
+                        throw ResultException(ResponseCode.ERROR_NO_DATA, R.string.app_server_response_empty.getString())
                     }
                 } else if (null == data) {
                     //Rxjava sucess complete 都不能传空数据 所以....
@@ -68,11 +68,8 @@ class SplitConverterFactory : Converter.Factory() {
                 return data
             } else if (null == code) {
                 //不是BaseBean结构
-                val json = json.fromJson<T>(response, type)
-                LogUtils.d("TAG", "convert() called with: json = [$json]")
-                return json
+                return json.fromJson<T>(response, type)
             } else {
-                LogUtils.d(" error $code , $message")
                 throw ResultException(code, message?:"")
             }
 

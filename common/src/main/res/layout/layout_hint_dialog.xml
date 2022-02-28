@@ -59,7 +59,7 @@
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
                     android:gravity="center"
-                    android:text="取消"
+                    android:text="@string/app_cancel"
                     android:textColor="@drawable/selector_bg_4a4a4a_to_9b9b9b"
                     android:textSize="15sp" />
 
@@ -77,7 +77,7 @@
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
                     android:gravity="center"
-                    android:text="确定"
+                    android:text="@string/app_confirm"
                     android:textColor="@drawable/selector_bg_4a4a4a_to_9b9b9b"
                     android:textSize="15sp" />
             </LinearLayout>

@@ -2,10 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-
         <variable
             name="viewModel"
-            type="cn.yue.base.kotlin.test.mvvm.TestItemViewModel2" />
+            type="cn.yue.test.mvvm.ui_vm.TestItemViewModel" />
     </data>
 
     <LinearLayout
@@ -18,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:gravity="center"
-            android:text="@{viewModel.nameField}"
+            android:text="@{viewModel.itemBean.name}"
             android:textColor="#ff0000"
             android:textSize="15sp" />
 

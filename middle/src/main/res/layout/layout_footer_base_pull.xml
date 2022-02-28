@@ -25,7 +25,7 @@
             android:layout_marginBottom="10dp"
             android:textColor="#4a4a4a"
             android:textSize="15sp"
-            android:text="加载中~"/>
+            android:text="@string/app_footer_loading"/>
     </LinearLayout>
 
     <LinearLayout
@@ -43,7 +43,7 @@
             android:layout_marginBottom="10dp"
             android:textColor="#4a4a4a"
             android:textSize="15sp"
-            android:text="- END -"/>
+            android:text="@string/app_footer_end"/>
     </LinearLayout>
 
     <LinearLayout
@@ -63,7 +63,7 @@
             android:layout_marginBottom="10dp"
             android:textColor="#4a4a4a"
             android:textSize="15sp"
-            android:text="网络异常，点击重新加载~"/>
+            android:text="@string/app_footer_error"/>
     </LinearLayout>
 
     <LinearLayout

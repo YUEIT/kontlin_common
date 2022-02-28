@@ -1,5 +1,7 @@
 package cn.yue.base.middle.net.observer
 
+import cn.yue.base.common.utils.code.getString
+import cn.yue.base.middle.R
 import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
 import cn.yue.base.middle.net.upload.ImageResult
@@ -15,7 +17,7 @@ abstract class BaseUploadObserver : DisposableSingleObserver<ImageResultListData
 
     override fun onSuccess(t: ImageResultListData) {
         if (t.data == null || t.data!!.isEmpty()) {
-            onException(ResultException(ResponseCode.ERROR_SERVER, "上传失败"))
+            onException(ResultException(ResponseCode.ERROR_SERVER, R.string.app_upload_fail.getString()))
             return
         }
         onSuccess(t.data!!)

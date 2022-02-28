@@ -138,6 +138,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
     fun notifyItemInsertedReally(position: Int) {
         if (position > -1 && position < innerAdapter.itemCount) {
             innerAdapter.notifyItemInserted(position)
+            //更新插入位置之后所有viewHolder
             innerAdapter.notifyItemRangeChanged(position, getListSize() - position)
         }
     }
@@ -148,6 +149,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
     fun notifyItemRemovedReally(position: Int) {
         if (position > -1 && position < innerAdapter.itemCount) {
             innerAdapter.notifyItemRemoved(position)
+            //更新删除位置之后所有viewHolder
             innerAdapter.notifyItemRangeChanged(position, getListSize() - position)
         }
     }
@@ -159,6 +161,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (fromPosition > -1 && fromPosition < innerAdapter.itemCount
                 && toPosition > -1 && toPosition < innerAdapter.itemCount) {
             innerAdapter.notifyItemMoved(fromPosition, toPosition)
+            //更新移动位置之间所有viewHolder
             innerAdapter.notifyItemRangeChanged(Math.min(fromPosition, toPosition), Math.abs(fromPosition - toPosition) + 1)
         }
     }
@@ -175,7 +178,7 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (list.hasValue()) {
             list.clear()
         }
-        notifyDataSetChanged()
+        notifyDataSetChangedReally()
     }
 
     /**
@@ -185,14 +188,15 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
     open fun setList(list: List<T>?) {
         if (list != null) {
             this.list = list.toMutableList()
-            notifyDataSetChanged()
+            notifyDataSetChangedReally()
         }
     }
 
     open fun addList(list: Collection<T>?) {
         if (list != null) {
+            val oldSize = list.size
             this.list.addAll(list)
-            notifyDataSetChanged()
+            innerAdapter.notifyItemRangeChanged(oldSize, getListSize() - oldSize)
         }
     }
 
@@ -203,21 +207,21 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
     open fun addItem(t: T?) {
         if (null != t) {
             list.add(t)
+            notifyItemInsertedReally(list.size - 1)
         }
-        notifyDataSetChanged()
     }
 
     open fun remove(t: T?) {
         if (null != t) {
-            list.remove(t)
+            val index = list.indexOf(t)
+            remove(index)
         }
-        notifyDataSetChanged()
     }
 
     open fun remove(position: Int) {
         if (position > -1 && list.size > position) {
             list.removeAt(position)
-            innerAdapter.notifyDataSetChanged()
+            notifyItemRemovedReally(position)
         }
     }
 
@@ -304,6 +308,8 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     }
 
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when {
             viewType in inHeaderType..-1 -> {
@@ -352,9 +358,6 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
             inFooterType + position - headerViewsCountCount - innerCount
         }
     }
-
-
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     protected fun setVisible(view: View?, visible: Boolean) {
         if (null != view) {

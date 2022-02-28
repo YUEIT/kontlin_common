@@ -5,6 +5,7 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.common.utils.device.NetworkUtils
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
@@ -40,7 +41,7 @@ abstract class BaseListVMFragment<VM : ListViewModel<*, S>, S> : BaseVMFragment<
                     viewModel.refresh()
                 }
             } else {
-                showShortToast("网络不给力，请检查您的网络设置~")
+                showShortToast(R.string.app_no_net.getString())
             }
         }
         refreshL = findViewById<View>(R.id.refreshL) as IRefreshLayout

@@ -60,7 +60,11 @@ class FormattedEditText : AppCompatEditText {
         init(context, attrs, 0)
     }
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
         init(context, attrs, defStyleAttr)
     }
 
@@ -71,35 +75,44 @@ class FormattedEditText : AppCompatEditText {
         mTouchSlop = viewConfiguration.scaledTouchSlop
         if (attrs != null) {
             val ta = context.obtainStyledAttributes(
-                    attrs, R.styleable.FormattedEditText, defStyleAttr, 0)
+                attrs, R.styleable.FormattedEditText, defStyleAttr, 0
+            )
             try {
                 @Mode val mode = ta.getInt(R.styleable.FormattedEditText_fet_mode, MODE_NONE)
                 val mark = ta.getString(R.styleable.FormattedEditText_fet_mark)
                 val hintColor = ta.getColor(R.styleable.FormattedEditText_fet_hintTextColor, 0)
                 val placeHolder = ta.getString(R.styleable.FormattedEditText_fet_placeholder)
-                val emptyPlaceHolder = ta.getString(R.styleable.FormattedEditText_fet_emptyPlaceholder)
+                val emptyPlaceHolder =
+                    ta.getString(R.styleable.FormattedEditText_fet_emptyPlaceholder)
                 val formatStyle = ta.getString(R.styleable.FormattedEditText_fet_formatStyle)
                 val hintText = ta.getString(R.styleable.FormattedEditText_fet_hintText)
-                val showHintWhileEmpty = ta.getBoolean(R.styleable.FormattedEditText_fet_showHintWhileEmpty, false)
+                val showHintWhileEmpty =
+                    ta.getBoolean(R.styleable.FormattedEditText_fet_showHintWhileEmpty, false)
                 mClearDrawable = ta.getDrawable(R.styleable.FormattedEditText_fet_clearDrawable)
                 mGravity = ta.getInt(
-                        R.styleable.FormattedEditText_fet_drawableGravity, GRAVITY_CENTER)
+                    R.styleable.FormattedEditText_fet_drawableGravity, GRAVITY_CENTER
+                )
                 mDrawablePadding = ta.getDimensionPixelSize(
-                        R.styleable.FormattedEditText_fet_drawablePadding, 0)
+                    R.styleable.FormattedEditText_fet_drawablePadding, 0
+                )
                 setConfig(
-                        Config.create()
-                                .mode(mode)
-                                .placeholder(
-                                        if (placeHolder == null || placeHolder.isEmpty()) DEFAULT_PLACE_HOLDER else placeHolder[0])
-                                .hintColor(hintColor)
-                                .hintText(hintText)
-                                .mark(
-                                        if (mark == null || mark.isEmpty()) DEFAULT_MARK else mark[0])
-                                .emptyPlaceholder(
-                                        if (emptyPlaceHolder == null || emptyPlaceHolder.isEmpty()) 0.toChar() else emptyPlaceHolder[0])
-                                .formatStyle(formatStyle)
-                                .showHintWhileEmpty(showHintWhileEmpty),
-                        true)
+                    Config.create()
+                        .mode(mode)
+                        .placeholder(
+                            if (placeHolder == null || placeHolder.isEmpty()) DEFAULT_PLACE_HOLDER else placeHolder[0]
+                        )
+                        .hintColor(hintColor)
+                        .hintText(hintText)
+                        .mark(
+                            if (mark == null || mark.isEmpty()) DEFAULT_MARK else mark[0]
+                        )
+                        .emptyPlaceholder(
+                            if (emptyPlaceHolder == null || emptyPlaceHolder.isEmpty()) 0.toChar() else emptyPlaceHolder[0]
+                        )
+                        .formatStyle(formatStyle)
+                        .showHintWhileEmpty(showHintWhileEmpty),
+                    true
+                )
             } finally {
                 ta.recycle()
             }
@@ -108,7 +121,8 @@ class FormattedEditText : AppCompatEditText {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
                 throw UnsupportedOperationException(
-                        "We can not support this feature when the layout is right-to-left")
+                    "We can not support this feature when the layout is right-to-left"
+                )
             }
         }
     }
@@ -204,10 +218,11 @@ class FormattedEditText : AppCompatEditText {
                 val scrollX = scrollX
                 val scrollY = scrollY
                 invalidate(
-                        dirty.left + scrollX,
-                        dirty.top + scrollY,
-                        dirty.right + scrollX,
-                        dirty.bottom + scrollY)
+                    dirty.left + scrollX,
+                    dirty.top + scrollY,
+                    dirty.right + scrollX,
+                    dirty.bottom + scrollY
+                )
             }
         }
         super.drawableStateChanged()
@@ -224,9 +239,13 @@ class FormattedEditText : AppCompatEditText {
                 }
                 MotionEvent.ACTION_UP -> {
                     val rect = mClearDrawable!!.bounds
-                    if (rect.top - mDrawablePadding <= y && rect.bottom + mDrawablePadding >= y && rect.left - mDrawablePadding <= x && rect.right + mDrawablePadding >= x) {
+                    if (rect.top - mDrawablePadding <= y
+                        && rect.bottom + mDrawablePadding >= y
+                        && rect.left - mDrawablePadding <= x
+                        && rect.right + mDrawablePadding >= x) {
                         if (Math.abs(mDownPoint[0] - x) <= mTouchSlop
-                                && Math.abs(mDownPoint[1] - y) <= mTouchSlop) {
+                            && Math.abs(mDownPoint[1] - y) <= mTouchSlop
+                        ) {
                             if (mClearClickListener != null) {
                                 if (!mClearClickListener!!.onClearClick(this, mClearDrawable)) {
                                     clearTextInTouch(event)
@@ -450,14 +469,16 @@ class FormattedEditText : AppCompatEditText {
             spans = EMPTY_SPANS
         } else if (mode < MODE_MASK) {
             spans = value.getSpans(
-                    0,
-                    Math.min(value.length, mHolders!![mHolders!!.size - 1]!!.index),
-                    IPlaceholderSpan::class.java)
+                0,
+                Math.min(value.length, mHolders!![mHolders!!.size - 1]!!.index),
+                IPlaceholderSpan::class.java
+            )
         } else {
             spans = value.getSpans(
-                    0,
-                    Math.min(value.length, formatStyle!!.length),
-                    IPlaceholderSpan::class.java)
+                0,
+                Math.min(value.length, formatStyle!!.length),
+                IPlaceholderSpan::class.java
+            )
             if (spans.size == formatStyle!!.length) {
                 return ""
             }
@@ -485,7 +506,12 @@ class FormattedEditText : AppCompatEditText {
                 require(indexInText < hintText.length) { "Hint text style must be conform to formatting style" }
                 val charInStyle = formatStyle!![indexInStyle]
                 if (!nextCharIsText && isMaskChar(charInStyle)) {
-                    require(!isMismatchMask(charInStyle, hintText[indexInText])) { "Hint text style must be conform to formatting style" }
+                    require(
+                        !isMismatchMask(
+                            charInStyle,
+                            hintText[indexInText]
+                        )
+                    ) { "Hint text style must be conform to formatting style" }
                     indexInText += 1
                     indexInStyle += 1
                 } else if (!nextCharIsText && charInStyle == ESCAPE_CHAR) {
@@ -512,7 +538,12 @@ class FormattedEditText : AppCompatEditText {
             val newRight = getWidth() - mRealPaddingRight - mDrawablePadding
             val h = getHeight()
             when (mGravity) {
-                GRAVITY_TOP -> mClearDrawable!!.setBounds(newRight - width, top, newRight, top + height)
+                GRAVITY_TOP -> mClearDrawable!!.setBounds(
+                    newRight - width,
+                    top,
+                    newRight,
+                    top + height
+                )
                 GRAVITY_CENTER -> {
                     val newTop = top + (h - top - bottom - height) / 2
                     mClearDrawable!!.setBounds(newRight - width, newTop, newRight, newTop + height)
@@ -520,12 +551,14 @@ class FormattedEditText : AppCompatEditText {
                 GRAVITY_BOTTOM -> {
                     val newBottom = h - bottom
                     mClearDrawable!!.setBounds(
-                            newRight - width, newBottom - height, newRight, newBottom)
+                        newRight - width, newBottom - height, newRight, newBottom
+                    )
                 }
                 else -> {
                     val newBottom = h - bottom
                     mClearDrawable!!.setBounds(
-                            newRight - width, newBottom - height, newRight, newBottom)
+                        newRight - width, newBottom - height, newRight, newBottom
+                    )
                 }
             }
         }
@@ -640,15 +673,17 @@ class FormattedEditText : AppCompatEditText {
             editable.filters = filters
             if (mLengthFilterDelegate != null) {
                 val out = mLengthFilterDelegate!!.mFilter.filter(
-                        editable, 0, editable.length, EMPTY_SPANNED, 0, 0)
+                    editable, 0, editable.length, EMPTY_SPANNED, 0, 0
+                )
                 if (out != null) {
                     editable.delete(out.length, editable.length)
                 }
             }
             Selection.setSelection(
-                    editable,
-                    Math.min(selectionStart, editable.length),
-                    Math.min(selectionEnd, editable.length))
+                editable,
+                Math.min(selectionStart, editable.length),
+                Math.min(selectionEnd, editable.length)
+            )
         } else {
             editable.filters = filters
         }
@@ -705,10 +740,11 @@ class FormattedEditText : AppCompatEditText {
             if (placeholder.toInt() != 0) {
                 editable.insert(indexInText, placeholder.toString())
                 editable.setSpan(
-                        PlaceholderSpan(),
-                        indexInText,
-                        indexInText + 1,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    PlaceholderSpan(),
+                    indexInText,
+                    indexInText + 1,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
                 indexInText += 1
                 if (selectionIndex == -1) {
                     if (indexInText == start + 1) {
@@ -723,7 +759,8 @@ class FormattedEditText : AppCompatEditText {
         }
         if (deletion && start == 0 && selectionIndex != -1) {
             editable.setSpan(
-                    SELECTION_SPAN, selectionIndex, selectionIndex, Spanned.SPAN_MARK_MARK)
+                SELECTION_SPAN, selectionIndex, selectionIndex, Spanned.SPAN_MARK_MARK
+            )
         }
     }
 
@@ -734,8 +771,9 @@ class FormattedEditText : AppCompatEditText {
             return
         }
         if (deletion
-                && start == editable.length && (mode == MODE_MASK && emptyPlaceholder.toInt() == 0
-                        || mode == MODE_HINT && hintText == null)) {
+            && start == editable.length && (mode == MODE_MASK && emptyPlaceholder.toInt() == 0
+                    || mode == MODE_HINT && hintText == null)
+        ) {
             return
         }
         var indexInStyle = start + rangeCountEscapeChar(start)
@@ -751,10 +789,11 @@ class FormattedEditText : AppCompatEditText {
                         if (emptyPlaceholder.toInt() != 0) {
                             editable.insert(indexInText, emptyPlaceholder.toString())
                             editable.setSpan(
-                                    EmptyPlaceholderSpan(),
-                                    indexInText,
-                                    indexInText + 1,
-                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                                EmptyPlaceholderSpan(),
+                                indexInText,
+                                indexInText + 1,
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
                             indexInText += 1
                             indexInStyle += 1
                         } else {
@@ -765,13 +804,16 @@ class FormattedEditText : AppCompatEditText {
                             break
                         }
                         editable.insert(
-                                indexInText, hintText!!.subSequence(indexInText, indexInText + 1))
+                            indexInText, hintText!!.subSequence(indexInText, indexInText + 1)
+                        )
                         editable.setSpan(
-                                HintPlaceholderSpan(
-                                        if (hintColor == Color.TRANSPARENT) currentHintTextColor else hintColor),
-                                indexInText,
-                                indexInText + 1,
-                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            HintPlaceholderSpan(
+                                if (hintColor == Color.TRANSPARENT) currentHintTextColor else hintColor
+                            ),
+                            indexInText,
+                            indexInText + 1,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
                         indexInText += 1
                         indexInStyle += 1
                     }
@@ -787,10 +829,11 @@ class FormattedEditText : AppCompatEditText {
             } else {
                 editable.insert(indexInText, charInStyle.toString())
                 editable.setSpan(
-                        PlaceholderSpan(),
-                        indexInText,
-                        indexInText + 1,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    PlaceholderSpan(),
+                    indexInText,
+                    indexInText + 1,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
                 nextCharIsText = false
                 indexInText += 1
                 indexInStyle += 1
@@ -801,7 +844,8 @@ class FormattedEditText : AppCompatEditText {
         }
         if (deletion && start == 0 && selectionIndex != -1) {
             editable.setSpan(
-                    SELECTION_SPAN, selectionIndex, selectionIndex, Spanned.SPAN_MARK_MARK)
+                SELECTION_SPAN, selectionIndex, selectionIndex, Spanned.SPAN_MARK_MARK
+            )
         }
     }
 
@@ -900,7 +944,11 @@ class FormattedEditText : AppCompatEditText {
         return count
     }
 
-    private fun clearNonEmptySpans(editable: Editable, spans: Array<IPlaceholderSpan?>, sorted: Boolean) {
+    private fun clearNonEmptySpans(
+        editable: Editable,
+        spans: Array<IPlaceholderSpan?>,
+        sorted: Boolean
+    ) {
         if (!sorted) {
             mComparator.mEditable = editable
             Arrays.sort(spans, mComparator)
@@ -982,9 +1030,10 @@ class FormattedEditText : AppCompatEditText {
             mFilterRestoreTextChangeEvent = false
             val text = text
             Selection.setSelection(
-                    text,
-                    Math.min(state.mSelectionStart, text!!.length),
-                    Math.min(state.mSelectionEnd, text.length))
+                text,
+                Math.min(state.mSelectionStart, text!!.length),
+                Math.min(state.mSelectionEnd, text.length)
+            )
         } else {
             super.onRestoreInstanceState(state.superState)
         }
@@ -1006,7 +1055,9 @@ class FormattedEditText : AppCompatEditText {
 
     private class PlaceholderSpan : IPlaceholderSpan
     private class EmptyPlaceholderSpan : IEmptyPlaceholderSpan
-    private class HintPlaceholderSpan internal constructor(color: Int) : ForegroundColorSpan(color), IEmptyPlaceholderSpan
+    private class HintPlaceholderSpan internal constructor(color: Int) : ForegroundColorSpan(color),
+        IEmptyPlaceholderSpan
+
     class Config private constructor() {
         var mMode: Int? = null
         var mHintColor: Int? = null
@@ -1114,15 +1165,16 @@ class FormattedEditText : AppCompatEditText {
         }
 
         companion object {
-            val CREATOR: Parcelable.Creator<SavedState?> = object : Parcelable.Creator<SavedState?> {
-                override fun createFromParcel(`in`: Parcel): SavedState? {
-                    return SavedState(`in`)
-                }
+            val CREATOR: Parcelable.Creator<SavedState?> =
+                object : Parcelable.Creator<SavedState?> {
+                    override fun createFromParcel(`in`: Parcel): SavedState? {
+                        return SavedState(`in`)
+                    }
 
-                override fun newArray(size: Int): Array<SavedState?> {
-                    return arrayOfNulls(size)
+                    override fun newArray(size: Int): Array<SavedState?> {
+                        return arrayOfNulls(size)
+                    }
                 }
-            }
         }
     }
 
@@ -1138,7 +1190,8 @@ class FormattedEditText : AppCompatEditText {
     private inner class PlaceholderFilter : InputFilter {
         private val mFilterBuilder = StringBuilder()
         override fun filter(
-                source: CharSequence, start: Int, end: Int, dest: Spanned, dstart: Int, dend: Int): CharSequence? {
+            source: CharSequence, start: Int, end: Int, dest: Spanned, dstart: Int, dend: Int
+        ): CharSequence? {
             if (mRestoring) {
                 return null
             }
@@ -1162,7 +1215,8 @@ class FormattedEditText : AppCompatEditText {
 
     private inner class LengthFilterDelegate(val mFilter: InputFilter) : InputFilter {
         override fun filter(
-                source: CharSequence, start: Int, end: Int, dest: Spanned, dstart: Int, dend: Int): CharSequence? {
+            source: CharSequence, start: Int, end: Int, dest: Spanned, dstart: Int, dend: Int
+        ): CharSequence? {
             if (mRestoring) {
                 return null
             }

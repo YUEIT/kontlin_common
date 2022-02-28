@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">common</string>
+
+    <string name="app_no_net">网络不给力，请检查您的网络设置~</string>
+    <string name="app_notification">通知</string>
+    <string name="app_message">消息</string>
+    <string name="app_permission_no_granted_and_to_request">当前应用无此权限，该功能暂时无法使用。如若需要，请单击确定按钮进行权限授权！</string>
+    <string name="app_permission_request_fail">获取%d权限失败~</string>
+    <string name="app_confirm">确定</string>
+    <string name="app_cancel">取消</string>
+    <string name="app_photos_folder_select">相册选择</string>
+    <string name="app_photos_folder_nearly">最近照片</string>
+    <string name="app_permission_write_external_storage">写入存储空间</string>
+    <string name="app_permission_read_external_storage">读取存储空间</string>
+    <string name="app_permission_read_phone_state">手机识别码</string>
+    <string name="app_permission_camera">相机拍照</string>
+    <string name="app_permission_access_fine_location">定位</string>
 </resources>

@@ -36,10 +36,7 @@ abstract class BaseDialogFragment : DialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context !is FragmentActivity) {
-            throw RuntimeException("BaseDialogFragment必须与FragmentActivity配合使用")
-        }
-        mActivity = context
+        mActivity = context as FragmentActivity
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,7 +63,7 @@ abstract class BaseDialogFragment : DialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        if (cacheView == null || !needCache()) {//如果view没有被初始化或者不需要缓存的情况下，重新初始化控件
+        if (cacheView == null || !needCache()) {
             cacheView = if (getLayoutId() == 0) {
                 null
             } else {
@@ -101,9 +98,13 @@ abstract class BaseDialogFragment : DialogFragment() {
     abstract fun getLayoutId(): Int
 
     /**
-     * 直接findViewById()初始化组件
+     * 初始化组件
      */
     abstract fun initView(savedInstanceState: Bundle?)
+
+    /**
+     * 换场动画
+     */
     abstract fun initEnterStyle()
 
     fun setEnterStyle(transition: Int) {
@@ -161,23 +162,25 @@ abstract class BaseDialogFragment : DialogFragment() {
         if (dialog == null) {
             return
         }
-        val mView = view
-        if (mView != null) {
-            check(mView.parent == null) { "DialogFragment can not be attached to a container view" }
-            dialog!!.setContentView(mView)
-        }
-        val activity: Activity? = activity
-        if (activity != null) {
-            dialog!!.setOwnerActivity(activity)
-        }
-        dialog!!.setCancelable(isCancelable)
-        // 使用静态内部类取代，防止message中持有fragment的引用而造成内存泄漏
-        dialog!!.setOnCancelListener(onCancelListener)
-        dialog!!.setOnDismissListener(onDismissListener)
-        if (savedInstanceState != null) {
-            val dialogState = savedInstanceState.getBundle("android:savedDialogState")
-            if (dialogState != null) {
-                dialog!!.onRestoreInstanceState(dialogState)
+        dialog?.apply {
+            view?.let {
+                check(it.parent == null) {
+                    "DialogFragment can not be attached to a container view"
+                }
+                setContentView(it)
+            }
+            activity?.let {
+                setOwnerActivity(it)
+            }
+            setCancelable(isCancelable)
+            // 使用静态内部类取代，防止message中持有fragment的引用而造成内存泄漏
+            setOnCancelListener(onCancelListener)
+            setOnDismissListener(onDismissListener)
+            if (savedInstanceState != null) {
+                val dialogState = savedInstanceState.getBundle("android:savedDialogState")
+                if (dialogState != null) {
+                    onRestoreInstanceState(dialogState)
+                }
             }
         }
     }

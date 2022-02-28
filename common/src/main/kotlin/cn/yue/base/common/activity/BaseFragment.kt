@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -23,7 +24,7 @@ abstract class BaseFragment : Fragment(), View.OnTouchListener {
     private var cacheView: View? = null
     lateinit var mActivity: BaseFragmentActivity
     lateinit var topBar: TopBar
-    var mHandler = Handler()
+    var mHandler = Handler(Looper.getMainLooper())
 
     /**
      * 获取布局
@@ -32,10 +33,7 @@ abstract class BaseFragment : Fragment(), View.OnTouchListener {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context !is BaseFragmentActivity) {
-            throw RuntimeException("BaseFragment必须与BaseFragmentActivity配合使用")
-        }
-        mActivity = context
+        mActivity = context as BaseFragmentActivity
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

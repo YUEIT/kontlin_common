@@ -8,8 +8,10 @@ import android.net.Uri
 import android.provider.MediaStore
 import cn.yue.base.common.activity.BaseFragmentActivity
 import cn.yue.base.common.utils.app.RunTimePermissionUtil
+import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.ToastUtils
 import cn.yue.base.common.utils.file.BitmapFileUtils
+import cn.yue.base.middle.R
 import cn.yue.base.middle.router.FRouter
 import java.io.File
 
@@ -95,10 +97,10 @@ class PhotoHelper(val context: BaseFragmentActivity, val iPhotoView: IPhotoView)
         if (cachePhotoPath != null) {
             targetUri = Uri.fromFile(File(cachePhotoPath))
             val tempFile = BitmapFileUtils.createRandomFile()
-            cachePhotoPath = tempFile.getAbsolutePath()
+            cachePhotoPath = tempFile.absolutePath
             outPutUri = Uri.fromFile(tempFile)
         } else {
-            ToastUtils.showShortToast("没有裁剪的图片~")
+            ToastUtils.showShortToast(R.string.app_no_crop_picture.getString())
             return
         }
         val intent = Intent("com.android.camera.action.CROP")

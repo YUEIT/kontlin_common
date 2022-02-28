@@ -4,7 +4,7 @@
     <data>
         <variable
             name="viewModel"
-            type="cn.yue.base.kotlin.test.mvvm.TestPullViewModel" />
+            type="cn.yue.test.mvvm.TestPullViewModel" />
     </data>
 
     <LinearLayout

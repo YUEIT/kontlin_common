@@ -14,9 +14,9 @@ import android.os.Build
 import android.os.Process
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
 import androidx.annotation.RequiresPermission
 import cn.yue.base.common.utils.Utils
+import cn.yue.base.common.utils.debug.LogUtils
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -47,9 +47,9 @@ object ProcessUtils {
             val pm: PackageManager = Utils.getContext().packageManager
             val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
             val list = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-            Log.i("ProcessUtils", list.toString())
+            LogUtils.i("ProcessUtils", list.toString())
             if (list.size <= 0) {
-                Log.i("ProcessUtils",
+                LogUtils.i("ProcessUtils",
                         "getForegroundProcessName: noun of access to usage information.")
                 return ""
             }
@@ -65,7 +65,7 @@ object ProcessUtils {
                 if (aom.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
                                 info.uid,
                                 info.packageName) != AppOpsManager.MODE_ALLOWED) {
-                    Log.i("ProcessUtils",
+                    LogUtils.i("ProcessUtils",
                             "getForegroundProcessName: refuse to device usage stats.")
                     return ""
                 }

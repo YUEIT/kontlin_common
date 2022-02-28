@@ -1,5 +1,7 @@
 package cn.yue.base.middle.net.intercept
 
+import cn.yue.base.common.utils.code.getString
+import cn.yue.base.middle.R
 import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
 import cn.yue.base.middle.net.wrapper.BaseBean
@@ -21,17 +23,17 @@ class ResponseInterceptor : Interceptor {
         val statusCode: Int = proceed.code
         if (statusCode < 200 || statusCode >= 300) {
             val body = proceed.body
-                    ?: throw ResultException(ResponseCode.ERROR_NO_NET, "服务器异常: ${chain.request().url}")
+                    ?: throw ResultException(ResponseCode.ERROR_NO_NET, R.string.app_server_response_fail.getString())
             try {
                 val (message, code, data) = Gson().fromJson(body.string(), BaseBean::class.java)
                 if (code == null) {
-                    throw ResultException(ResponseCode.ERROR_SERVER, "服务器异常: ${chain.request().url} $message")
+                    throw ResultException(ResponseCode.ERROR_SERVER, R.string.app_server_response_fail.getString())
                 } else {
                     throw ResultException(code, message ?: "")
                 }
             } catch (e: JsonSyntaxException) {
                 e.printStackTrace()
-                throw ResultException(ResponseCode.ERROR_SERVER, "服务器异常: ${chain.request().url} 数据解析异常：${e.message}")
+                throw ResultException(ResponseCode.ERROR_SERVER, R.string.app_convert_data_fail.getString())
             }
         }
         return proceed

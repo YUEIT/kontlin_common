@@ -1,6 +1,8 @@
 package cn.yue.base.middle.net.intercept
 
 import android.text.TextUtils
+import cn.yue.base.common.utils.code.getString
+import cn.yue.base.middle.R
 import cn.yue.base.middle.init.InitConstant
 import cn.yue.base.middle.net.CharsetConfig
 import cn.yue.base.middle.net.ResponseCode
@@ -120,7 +122,7 @@ class SignInterceptor : Interceptor {
                         map[key.replace("[]", "")] = list
                     } else {
                         if (original.url.queryParameterValues(key).size > 1) {
-                            throw ResultException(ResponseCode.ERROR_OPERATION, "请求的数据类型为list，且参数名未以[]结尾~")
+                            throw ResultException(ResponseCode.ERROR_OPERATION, R.string.app_request_list_params_error.getString())
                         }
                         val value = original.url.queryParameterValues(key)[0]
                         try {

@@ -11,6 +11,6 @@
         android:layout_gravity="center"
         android:textSize="15sp"
         android:textColor="#d2d2d2"
-        android:text="- 暂无数据 -"/>
+        android:text="@string/app_no_data"/>
 
 </FrameLayout>

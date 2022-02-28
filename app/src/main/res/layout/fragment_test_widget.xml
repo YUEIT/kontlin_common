@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
 
-    <cn.yue.base.kotlin.test.widget.KeyboardLayout
+    <cn.yue.test.widget.KeyboardLayout
         android:id="@+id/keyboard"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,5 +16,5 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </cn.yue.base.kotlin.test.widget.KeyboardLayout>
+    </cn.yue.test.widget.KeyboardLayout>
 </RelativeLayout>

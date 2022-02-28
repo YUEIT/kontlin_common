@@ -8,10 +8,12 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.Lifecycle
+import cn.yue.base.common.R
 import cn.yue.base.common.activity.rx.ILifecycleProvider
 import cn.yue.base.common.activity.rx.RxLifecycleProvider
 import cn.yue.base.common.utils.app.BarUtils
 import cn.yue.base.common.utils.app.RunTimePermissionUtil
+import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.ToastUtils
 import cn.yue.base.common.widget.dialog.HintDialog
 
@@ -80,10 +82,10 @@ abstract class BaseActivity : ComponentActivity() {
     fun showFailDialog() {
         if (failDialog == null) {
             failDialog = HintDialog.Builder(this)
-                    .setTitleStr("消息")
-                    .setContentStr("当前应用无此权限，该功能暂时无法使用。如若需要，请单击确定按钮进行权限授权！")
-                    .setLeftClickStr("取消")
-                    .setRightClickStr("确定")
+                    .setTitleStr(R.string.app_message.getString())
+                    .setContentStr(R.string.app_permission_no_granted_and_to_request.getString())
+                    .setLeftClickStr(R.string.app_cancel.getString())
+                    .setRightClickStr(R.string.app_confirm.getString())
                     .setOnRightClickListener { startSettings() }
                     .build()
         }
@@ -97,7 +99,8 @@ abstract class BaseActivity : ComponentActivity() {
                 if (verificationPermissions(grantResults)) {
                     permissionSuccess?.invoke(permissions[i])
                 } else {
-                    ToastUtils.showShortToast("获取" + RunTimePermissionUtil.getPermissionName(permissions[i]) + "权限失败~")
+                    ToastUtils.showShortToast(String.format(R.string.app_permission_request_fail.toString(),
+                        RunTimePermissionUtil.getPermissionName(permissions[i])))
                     permissionFailed?.invoke(permissions[i])
                 }
             }

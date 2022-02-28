@@ -8,8 +8,10 @@ import android.os.Build
 import android.text.TextUtils
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import cn.yue.base.common.R
 import cn.yue.base.common.activity.BaseActivity
 import cn.yue.base.common.activity.BaseFragmentActivity
+import cn.yue.base.common.utils.code.getString
 import java.util.*
 
 /**
@@ -122,11 +124,11 @@ object RunTimePermissionUtil {
 
     fun getPermissionName(permission: String): String {
         if (permissionMap.isEmpty()) {
-            permissionMap[Manifest.permission.WRITE_EXTERNAL_STORAGE] = "写入存储空间"
-            permissionMap[Manifest.permission.READ_EXTERNAL_STORAGE] = "读取存储空间"
-            permissionMap[Manifest.permission.READ_PHONE_STATE] = "手机识别码"
-            permissionMap[Manifest.permission.CAMERA] = "相机拍照"
-            permissionMap[Manifest.permission.ACCESS_FINE_LOCATION] = "定位"
+            permissionMap[Manifest.permission.WRITE_EXTERNAL_STORAGE] = R.string.app_permission_write_external_storage.getString()
+            permissionMap[Manifest.permission.READ_EXTERNAL_STORAGE] = R.string.app_permission_read_external_storage.getString()
+            permissionMap[Manifest.permission.READ_PHONE_STATE] = R.string.app_permission_read_phone_state.getString()
+            permissionMap[Manifest.permission.CAMERA] = R.string.app_permission_camera.getString()
+            permissionMap[Manifest.permission.ACCESS_FINE_LOCATION] = R.string.app_permission_access_fine_location.getString()
         }
         val permissionName = permissionMap[permission]
         return if (!TextUtils.isEmpty(permissionName)) {
