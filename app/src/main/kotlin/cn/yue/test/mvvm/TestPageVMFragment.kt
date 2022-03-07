@@ -6,8 +6,8 @@ import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
 import cn.yue.base.common.widget.recyclerview.DiffRefreshAdapter
 import cn.yue.base.middle.mvvm.components.BaseListVMFragment
-import cn.yue.test.R
 import cn.yue.test.BR
+import cn.yue.test.R
 import cn.yue.test.mode.ItemBean
 import com.alibaba.android.arouter.facade.annotation.Route
 
@@ -42,6 +42,20 @@ class TestPageVMFragment : BaseListVMFragment<TestPageViewModel, ItemBean>() {
                 return oldItem == newItem
             }
         }
+//        return object : CommonAdapter<ItemBean>(mActivity) {
+//
+//            override fun getLayoutIdByType(viewType: Int): Int {
+//                return R.layout.item_test_other
+//            }
+//
+//            override fun bindData(holder: CommonViewHolder, position: Int, itemData: ItemBean) {
+//                val binding: ViewDataBinding? = DataBindingUtil.bind(holder.itemView)
+//                if (binding != null) {
+//                    binding.setVariable(BR.data, itemData)
+//                    binding.executePendingBindings()
+//                }
+//            }
+//        }
     }
 
     override fun setData(list: MutableList<ItemBean>) {

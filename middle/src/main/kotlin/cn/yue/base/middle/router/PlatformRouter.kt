@@ -1,12 +1,10 @@
 package cn.yue.base.middle.router
 
-import android.content.Context
-
 /**
  * Description : 跨平台路由 支持Flutter页面跳转
  * Created by yue on 2020/4/22
  */
-class PlatformRouter : INavigation {
+class PlatformRouter() : INavigation() {
 
     companion object {
         val instance: PlatformRouter = PlatformRouterHolder.instance
@@ -38,7 +36,7 @@ class PlatformRouter : INavigation {
         return this
     }
 
-    override fun navigation(context: Context, requestCode: Int, toActivity: String?) {
+    override fun navigation(context: Any, requestCode: Int, toActivity: String?) {
         navigation?.apply {
             navigation(context, requestCode, toActivity)
         }

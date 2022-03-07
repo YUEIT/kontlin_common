@@ -10,9 +10,7 @@ import androidx.viewpager.widget.ViewPager
  * Description :
  * Created by yue on 2019/3/11
  */
-class PhotoViewPager : ViewPager {
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+class PhotoViewPager(context: Context, attrs: AttributeSet?) : ViewPager(context, attrs) {
 
     override fun canScroll(v: View, checkV: Boolean, dx: Int, x: Int, y: Int): Boolean {
         return if (v is PhotoView) {

@@ -151,7 +151,7 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
             if (TextUtils.isEmpty(p.getPageNt())) {
                 try {
                     pageNt = if (p.getPageNo() == 0) {
-                        Integer.valueOf(pageNt + 1).toString()
+                        (pageNt.toInt() + 1).toString()
                     } else {
                         (p.getPageNo() + 1).toString()
                     }
@@ -247,7 +247,7 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
         return PageObserver()
     }
 
-    fun hasLoad(layoutManager: RecyclerView.LayoutManager?) {
+    fun scrollToLoad(layoutManager: RecyclerView.LayoutManager?) {
         if (dataList.size <= 0) {
             return
         }

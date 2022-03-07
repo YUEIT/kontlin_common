@@ -8,12 +8,12 @@ import android.content.Intent
 import android.os.Parcel
 import android.os.Parcelable
 import android.text.TextUtils
-import androidx.fragment.app.DialogFragment
-import cn.yue.base.common.activity.BaseFragmentActivity
+import cn.yue.base.common.activity.BaseFragment
 import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.middle.R
 import cn.yue.base.middle.activity.CommonActivity
+import cn.yue.base.middle.mvvm.BaseViewModel
 import com.alibaba.android.arouter.core.LogisticsCenter
 import com.alibaba.android.arouter.exception.NoRouteFoundException
 import com.alibaba.android.arouter.facade.enums.RouteType
@@ -23,7 +23,7 @@ import com.alibaba.android.arouter.launcher.ARouter
  * Description : 路由
  * Created by yue on 2019/3/11
  */
-class FRouter() : INavigation, Parcelable {
+class FRouter() : INavigation(), Parcelable {
 
     private var mRouterCard = RouterCard(this)
 
@@ -65,16 +65,26 @@ class FRouter() : INavigation, Parcelable {
         return this
     }
 
-    override fun navigation(context: Context, requestCode: Int, toActivity: String?) {
-        if (mRouterCard.isInterceptLogin() && interceptLogin(context)) {
+    override fun navigation(context: Any, requestCode: Int, toActivity: String?) {
+        if (context is BaseViewModel) {
+            mRouterCard.navigation(context, requestCode, toActivity)
+            return
+        }
+        val realContext = when (context) {
+            is Activity -> context
+            is Context -> context
+            is BaseFragment -> context.mActivity
+            else -> null
+        } ?: return
+        if (mRouterCard.isInterceptLogin() && interceptLogin(realContext)) {
             return
         }
         when (getRouteType()) {
             RouteType.ACTIVITY -> {
-                jumpToActivity(context, requestCode)
+                jumpToActivity(realContext, requestCode)
             }
             RouteType.FRAGMENT -> {
-                jumpToFragment(context, toActivity, requestCode)
+                jumpToFragment(realContext, toActivity, requestCode)
             }
             else -> {
                 showShortToast(R.string.app_find_not_page.getString())
@@ -111,25 +121,14 @@ class FRouter() : INavigation, Parcelable {
         } else {
             intent.setClassName(context, toActivity)
         }
-        if (requestCode <= 0) {
+        if (requestCode <= 0 || context !is Activity) {
             context.startActivity(intent)
         } else {
-            if (context is Activity) {
-                context.startActivityForResult(intent, requestCode)
-            }
+            context.startActivityForResult(intent, requestCode)
         }
         if (context is Activity) {
             context.overridePendingTransition(mRouterCard.getRealEnterAnim(), mRouterCard.getRealExitAnim())
         }
-    }
-
-    fun navigationDialogFragment(context: BaseFragmentActivity): DialogFragment {
-        val dialogFragment = ARouter.getInstance()
-                .build(mRouterCard.getPath())
-                .with(mRouterCard.getExtras())
-                .navigation(context) as DialogFragment
-        dialogFragment.show(context.supportFragmentManager, null)
-        return dialogFragment
     }
 
     private var onInterceptLoginListener: ((content: Context?) -> Boolean)? = null

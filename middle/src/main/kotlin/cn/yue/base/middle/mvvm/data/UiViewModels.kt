@@ -1,5 +1,6 @@
-package cn.yue.base.middle.mvvm
+package cn.yue.base.middle.mvvm.data
 
+import cn.yue.base.middle.mvvm.ItemViewModel
 import cn.yue.base.middle.net.wrapper.IListModel
 
 

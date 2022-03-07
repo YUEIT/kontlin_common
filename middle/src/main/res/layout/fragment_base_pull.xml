@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
+    <cn.yue.base.middle.view.PageStateView
+        android:id="@+id/stateView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -15,12 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <cn.yue.base.middle.view.PageHintView
-            android:id="@+id/hintView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </FrameLayout>
+    </cn.yue.base.middle.view.PageStateView>
 
 </cn.yue.base.middle.view.refresh.SwipeRefreshLayout>
 

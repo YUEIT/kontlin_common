@@ -316,6 +316,7 @@ class ActivityLifecycleImpl : Application.ActivityLifecycleCallbacks {
         return activityThread ?: getActivityThreadInLoadedApkField()
     }
 
+    @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
     private fun getActivityThreadInActivityThreadStaticField(): Any? {
         try {
             val activityThreadClass = Class.forName("android.app.ActivityThread")
@@ -324,27 +325,21 @@ class ActivityLifecycleImpl : Application.ActivityLifecycleCallbacks {
             sCurrentActivityThreadField.isAccessible = true
             return sCurrentActivityThreadField
         } catch (e: Exception) {
-            Log.e(
-                "UtilsActivityLifecycle",
-                "getActivityThreadInActivityThreadStaticField: " + e.message
-            )
             return null
         }
     }
 
+    @SuppressLint("PrivateApi")
     private fun getActivityThreadInActivityThreadStaticMethod(): Any? {
         try {
             val activityThreadClass = Class.forName("android.app.ActivityThread")
             return activityThreadClass.getMethod("currentActivityThread").invoke(null)
         } catch (e: Exception) {
-            Log.e(
-                "UtilsActivityLifecycle",
-                "getActivityThreadInActivityThreadStaticMethod: " + e.message
-            )
             return null
         }
     }
 
+    @SuppressLint("DiscouragedPrivateApi")
     private fun getActivityThreadInLoadedApkField(): Any? {
         try {
             val mLoadedApkField = Application::class.java.getDeclaredField("mLoadedApk")
@@ -354,7 +349,6 @@ class ActivityLifecycleImpl : Application.ActivityLifecycleCallbacks {
             mActivityThreadField.isAccessible = true
             return mActivityThreadField[mLoadedApk]
         } catch (e: Exception) {
-            Log.e("UtilsActivityLifecycle", "getActivityThreadInLoadedApkField: " + e.message)
             return null
         }
     }

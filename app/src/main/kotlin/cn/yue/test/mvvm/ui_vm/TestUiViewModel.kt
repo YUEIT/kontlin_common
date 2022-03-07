@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.viewModelScope
 import cn.yue.base.middle.mvvm.ItemViewModel
 import cn.yue.base.middle.mvvm.ListViewModel
-import cn.yue.base.middle.mvvm.UiViewModels
+import cn.yue.base.middle.mvvm.data.UiViewModels
 import cn.yue.base.middle.net.coroutine.request
 import cn.yue.base.middle.net.wrapper.DataListBean
 import cn.yue.test.mode.ItemBean

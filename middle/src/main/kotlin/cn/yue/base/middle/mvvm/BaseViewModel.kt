@@ -25,6 +25,7 @@ import java.util.*
 open class BaseViewModel(application: Application) : AndroidViewModel(application),
         ILifecycleProvider<Lifecycle.Event>, DefaultLifecycleObserver, IWaitView, IRouterNavigation {
 
+    val coroutineScope by lazy { viewModelScope }
     var loader = LoaderLiveData()
     var waitEvent = MutableLiveData<String?>()
     var routerEvent = MutableLiveData<RouterModel>()

@@ -17,7 +17,7 @@ import cn.yue.base.middle.mvp.IBaseView
 import cn.yue.base.middle.mvp.IPullView
 import cn.yue.base.middle.mvp.photo.IPhotoView
 import cn.yue.base.middle.mvp.photo.PhotoHelper
-import cn.yue.base.middle.view.PageHintView
+import cn.yue.base.middle.view.PageStateView
 import cn.yue.base.middle.view.refresh.IRefreshLayout
 
 /**
@@ -27,16 +27,15 @@ import cn.yue.base.middle.view.refresh.IRefreshLayout
 abstract class BasePullFragment : BaseFragment(), IBaseView, IPhotoView, IPullView {
     private val loader = Loader()
     private lateinit var refreshL: IRefreshLayout
-    private lateinit var hintView: PageHintView
-    private lateinit var contentView: View
+    private lateinit var stateView: PageStateView
 
     override fun getLayoutId(): Int {
         return R.layout.fragment_base_pull
     }
 
     override fun initView(savedInstanceState: Bundle?) {
-        hintView = findViewById(R.id.hintView)
-        hintView.setOnReloadListener {
+        stateView = findViewById(R.id.stateView)
+        stateView.setOnReloadListener {
             if (NetworkUtils.isAvailable()) {
                 refresh()
             } else {
@@ -49,12 +48,11 @@ abstract class BasePullFragment : BaseFragment(), IBaseView, IPhotoView, IPullVi
         }
         refreshL.setEnabledRefresh(canPullDown())
         if (canPullDown()) {
-            hintView.setRefreshTarget(refreshL)
+            stateView.setRefreshTarget(refreshL)
         }
         val baseVS = findViewById<ViewStub>(R.id.baseVS)
         baseVS.layoutResource = getContentLayoutId()
         baseVS.setOnInflateListener { _, inflated ->
-            contentView = inflated
             bindLayout(inflated)
         }
         baseVS.inflate()
@@ -89,7 +87,6 @@ abstract class BasePullFragment : BaseFragment(), IBaseView, IPhotoView, IPullVi
             return
         }
         if (isPageRefreshAnim) {
-            contentView.visibility = View.GONE
             showStatusView(loader.setPageStatus(PageStatus.LOADING))
         } else {
             startRefresh()
@@ -116,15 +113,9 @@ abstract class BasePullFragment : BaseFragment(), IBaseView, IPhotoView, IPullVi
      */
     override fun showStatusView(status: PageStatus?) {
         if (loader.isFirstLoad) {
-            hintView.show(status)
-            if (loader.pageStatus === PageStatus.NORMAL) {
-                contentView.visibility = View.VISIBLE
-            } else {
-                contentView.visibility = View.GONE
-            }
+            stateView.show(status)
         } else {
-            hintView.show(PageStatus.NORMAL)
-            contentView.visibility = View.VISIBLE
+            stateView.show(PageStatus.NORMAL)
         }
         if (status === PageStatus.NORMAL) {
             loader.isFirstLoad = false

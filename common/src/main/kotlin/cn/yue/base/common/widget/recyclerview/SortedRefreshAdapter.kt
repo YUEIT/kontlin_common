@@ -38,11 +38,11 @@ abstract class SortedRefreshAdapter<T> : CommonAdapter<T> {
      */
     inner class AutoSortedListCallback : SortedList.Callback<T>() {
         override fun onInserted(position: Int, count: Int) {
-            notifyItemInsertedReally(position)
+            notifyItemInsertedReally(position, count)
         }
 
         override fun onRemoved(position: Int, count: Int) {
-            notifyItemRemovedReally(position)
+            notifyItemRemovedReally(position, count)
         }
 
         override fun onMoved(fromPosition: Int, toPosition: Int) {
@@ -50,7 +50,7 @@ abstract class SortedRefreshAdapter<T> : CommonAdapter<T> {
         }
 
         override fun onChanged(position: Int, count: Int) {
-            notifyItemChangedReally(position)
+            notifyItemChangedReally(position, count)
         }
 
         override fun compare(o1: T, o2: T): Int {

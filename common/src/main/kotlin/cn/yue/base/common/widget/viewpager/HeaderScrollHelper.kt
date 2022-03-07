@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class HeaderScrollHelper {
 
-    private val sysVersion: Int         //当前sdk版本，用于判断api版本
+    private val sysVersion: Int = Build.VERSION.SDK_INT         //当前sdk版本，用于判断api版本
     private var mCurrentScrollableContainer: ScrollableContainer? = null
 
     val scrollableView: View?
@@ -41,10 +41,6 @@ class HeaderScrollHelper {
             }
             throw IllegalStateException("scrollableView must be a instance of AdapterView|ScrollView|RecyclerView")
         }
-
-    init {
-        sysVersion = Build.VERSION.SDK_INT
-    }
 
     /** 包含有 ScrollView ListView RecyclerView 的组件  */
     interface ScrollableContainer {

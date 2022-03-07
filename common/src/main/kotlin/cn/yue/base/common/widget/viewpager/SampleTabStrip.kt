@@ -22,11 +22,6 @@ import androidx.viewpager.widget.ViewPager.OnAdapterChangeListener
 import cn.yue.base.common.R
 import java.util.*
 
-/**
- * 介绍：viewPager 带文字的指示器
- * 邮箱：luobiao@imcoming.cn
- * 时间：2016/10/26.
- */
 class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0)
     : HorizontalScrollView(context, attrs, defStyle) {
 

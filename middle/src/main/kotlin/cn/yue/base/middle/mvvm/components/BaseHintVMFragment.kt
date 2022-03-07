@@ -11,13 +11,14 @@ import cn.yue.base.middle.R
 import cn.yue.base.middle.components.load.PageStatus
 import cn.yue.base.middle.mvp.IStatusView
 import cn.yue.base.middle.mvvm.BaseViewModel
-import cn.yue.base.middle.view.PageHintView
+import cn.yue.base.middle.view.PageStateView
+
 /**
  * Description :
  * Created by yue on 2020/8/8
  */
 abstract class BaseHintVMFragment<VM : BaseViewModel> : BaseVMFragment<VM>(), IStatusView {
-    private lateinit var hintView: PageHintView
+    private lateinit var stateView: PageStateView
 
     override fun getLayoutId(): Int {
         return R.layout.fragment_base_hint
@@ -26,8 +27,8 @@ abstract class BaseHintVMFragment<VM : BaseViewModel> : BaseVMFragment<VM>(), IS
     abstract fun getContentLayoutId(): Int
 
     override fun initView(savedInstanceState: Bundle?) {
-        hintView = findViewById(R.id.hintView)
-        hintView.setOnReloadListener {
+        stateView = findViewById(R.id.stateView)
+        stateView.setOnReloadListener {
             if (NetworkUtils.isAvailable()) {
                 viewModel.loader.pageStatus = PageStatus.NORMAL
             } else {
@@ -56,14 +57,14 @@ abstract class BaseHintVMFragment<VM : BaseViewModel> : BaseVMFragment<VM>(), IS
 
     override fun showStatusView(status: PageStatus?) {
         if (viewModel.loader.isFirstLoad) {
-            hintView.show(status)
+            stateView.show(status)
         }
         if (status == PageStatus.NORMAL) {
             viewModel.loader.isFirstLoad = false
         }
     }
 
-    fun getPageHintView(): PageHintView {
-        return hintView
+    fun getPageStateView(): PageStateView {
+        return stateView
     }
 }

@@ -10,7 +10,7 @@ import java.io.File
  * Created by yue on 2018/11/12
  */
 object Constant {
-    const val COMMON_NAME = "MyShop"
+    private const val COMMON_NAME = "YUE"
 
     fun getExternalStorage(): String {
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {

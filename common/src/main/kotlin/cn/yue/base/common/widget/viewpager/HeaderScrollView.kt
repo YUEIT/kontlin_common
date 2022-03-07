@@ -14,7 +14,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import cn.yue.base.common.R
 import cn.yue.base.common.widget.viewpager.HeaderScrollHelper.ScrollableContainer
 
-class HeaderScrollView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : LinearLayout(context, attrs, defStyleAttr) {
+class  HeaderScrollView(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
     private var topOffset = 0 //滚动的最大偏移量
     private val mScroller: Scroller?
 

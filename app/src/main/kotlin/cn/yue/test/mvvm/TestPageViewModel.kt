@@ -12,16 +12,18 @@ import io.reactivex.Single
 class TestPageViewModel(application: Application)
     : ListViewModel<DataListBean<ItemBean>, ItemBean>(application) {
 
+    var loadTemp = 0
+
      fun getRequestScope(nt: String): DataListBean<ItemBean> {
         val listBean = BaseListBean<ItemBean>()
-        listBean.mPageSize = 20
         listBean.mTotal = 22
 //        val list: MutableList<ItemBean> = ArrayList()
          var list: DataListBean<ItemBean> = DataListBean()
+         loadTemp++
         for (i in 0..19) {
             val testItemBean = ItemBean()
             testItemBean.index = i
-            testItemBean.name = "this is $i"
+            testItemBean.name = "this is $loadTemp $i"
             list.add(testItemBean)
         }
         listBean.mList = list

@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import cn.yue.base.common.activity.BaseFragment
 import cn.yue.base.common.activity.rx.ILifecycleProvider
 import cn.yue.base.common.widget.dialog.WaitDialog
@@ -19,6 +20,8 @@ import java.lang.reflect.ParameterizedType
 abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment(), IWaitView {
 
     lateinit var viewModel: VM
+    val coroutineScope by lazy { lifecycleScope }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         var viewModel = initViewModel()
         if (viewModel == null) {

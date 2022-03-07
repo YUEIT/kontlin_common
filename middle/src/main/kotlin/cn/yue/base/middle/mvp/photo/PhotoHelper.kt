@@ -19,7 +19,7 @@ import java.io.File
  * Description :
  * Created by yue on 2019/6/18
  */
-class PhotoHelper(val context: BaseFragmentActivity, val iPhotoView: IPhotoView) {
+class PhotoHelper(val context: BaseFragmentActivity, private val iPhotoView: IPhotoView) {
 
     private var maxNum: Int = 1
 
@@ -95,7 +95,7 @@ class PhotoHelper(val context: BaseFragmentActivity, val iPhotoView: IPhotoView)
     fun toCrop(autoCrop: Boolean, aspectX: Int, aspectY: Int) {
         val outPutUri: Uri
         if (cachePhotoPath != null) {
-            targetUri = Uri.fromFile(File(cachePhotoPath))
+            targetUri = Uri.fromFile(File(cachePhotoPath!!))
             val tempFile = BitmapFileUtils.createRandomFile()
             cachePhotoPath = tempFile.absolutePath
             outPutUri = Uri.fromFile(tempFile)

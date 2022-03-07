@@ -1,6 +1,5 @@
 package cn.yue.base.middle.router
 
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcel
@@ -16,7 +15,12 @@ import java.lang.ref.WeakReference
  * Description : 路由数据
  * Created by yue on 2020/4/22
  */
-class RouterCard : INavigation, Parcelable {
+class RouterCard() : INavigation(), Parcelable {
+
+    constructor(navigation: INavigation?): this() {
+        this.navigation = WeakReference<INavigation>(navigation)
+    }
+
     private var uri: Uri? = null
 
     private var tag: Any? = null
@@ -40,12 +44,6 @@ class RouterCard : INavigation, Parcelable {
     private var isInterceptLogin = false //是否登录拦截
 
     private var navigation: WeakReference<INavigation>? = null
-
-    constructor()
-
-    constructor(navigation: INavigation?) {
-        this.navigation = WeakReference<INavigation>(navigation)
-    }
 
     fun setNavigationImpl(navigation: INavigation) {
         this.navigation = WeakReference<INavigation>(navigation)
@@ -342,7 +340,7 @@ class RouterCard : INavigation, Parcelable {
         return null
     }
 
-    override fun navigation(context: Context, requestCode: Int, toActivity: String?) {
+    override fun navigation(context: Any, requestCode: Int, toActivity: String?) {
         navigation?.get()?.apply {
             navigation(context, requestCode, toActivity)
         }

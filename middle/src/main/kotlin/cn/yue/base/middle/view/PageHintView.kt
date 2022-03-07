@@ -1,6 +1,8 @@
 package cn.yue.base.middle.view
 
 import android.content.Context
+import android.content.Intent
+import android.provider.Settings
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +10,6 @@ import androidx.annotation.LayoutRes
 import androidx.core.widget.NestedScrollView
 import cn.yue.base.middle.R
 import cn.yue.base.middle.components.load.PageStatus
-import cn.yue.base.middle.router.FRouter.Companion.instance
 import cn.yue.base.middle.view.refresh.IRefreshLayout
 
 /**
@@ -22,6 +23,7 @@ class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeS
     private var noDataView: View? = null
     private var loadingView: View? = null
     private var serverErrorView: View? = null
+
 
     init {
         initView(context)
@@ -38,23 +40,17 @@ class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeS
         noNetView = View.inflate(context, R.layout.layout_page_hint_no_net, null)
         noDataView = View.inflate(context, R.layout.layout_page_hint_no_data, null)
         serverErrorView = View.inflate(context, R.layout.layout_page_hint_server_error, null)
-//        val loadingIV = loadingView?.findViewById<ImageView>(R.id.loadingIV)
-//        ImageLoader.getLoader().loadGif(loadingIV, R.drawable.app_icon_wait)
         noNetView?.findViewById<View>(R.id.reloadTV)?.setOnClickListener {
-                onReloadListener?.apply {
-                    invoke()
-                }
+            onReloadListener?.invoke()
         }
         noNetView?.findViewById<View>(R.id.checkNetTV)?.setOnClickListener {
-            instance.build("/middle/noNet").navigation(context)
+            context.startActivity(Intent(Settings.ACTION_SETTINGS))
         }
         serverErrorView?.findViewById<View>(R.id.reloadTV)?.setOnClickListener {
-            onReloadListener?.apply {
-                invoke()
-            }
+            onReloadListener?.invoke()
         }
         serverErrorView?.findViewById<View>(R.id.checkNetTV)?.setOnClickListener {
-            instance.build("/middle/noNet").navigation(context)
+            context.startActivity(Intent(Settings.ACTION_SETTINGS))
         }
     }
 
@@ -62,7 +58,6 @@ class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeS
     fun setOnReloadListener(onReloadListener: (() -> Unit)?) {
         this.onReloadListener = onReloadListener
     }
-
 
     fun setNoNetView(noNetView: View?) {
         if (noNetView != null) {
@@ -89,7 +84,7 @@ class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     fun setLoadingView(loadingView: View?) {
-        if (noDataView != null) {
+        if (loadingView != null) {
             this.loadingView = loadingView
         }
     }
@@ -111,10 +106,10 @@ class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     fun showLoading() {
-        if (loadingView != null) {
+        loadingView?.let {
             visibility = View.VISIBLE
             removeAllViews()
-            addView(loadingView!!)
+            addView(it)
             setRefreshEnable(false)
         }
     }
@@ -125,28 +120,28 @@ class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     fun showErrorNet() {
-        if (noNetView != null) {
+        noNetView?.let {
             visibility = View.VISIBLE
             removeAllViews()
-            addView(noNetView!!)
+            addView(it)
             setRefreshEnable(true)
         }
     }
 
     fun showErrorNoData() {
-        if (noDataView != null) {
+        noDataView?.let {
             visibility = View.VISIBLE
             removeAllViews()
-            addView(noDataView!!)
+            addView(it)
             setRefreshEnable(true)
         }
     }
 
     fun showErrorOperation() {
-        if (noNetView != null) {
+        serverErrorView?.let {
             visibility = View.VISIBLE
             removeAllViews()
-            addView(serverErrorView!!)
+            addView(it)
         }
     }
 
@@ -157,9 +152,7 @@ class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun setRefreshEnable(enable: Boolean) {
-        if (refreshLayout != null) {
-            refreshLayout!!.setEnabledRefresh(enable)
-        }
+        refreshLayout?.setEnabledRefresh(enable)
     }
 
     override fun addView(child: View) {

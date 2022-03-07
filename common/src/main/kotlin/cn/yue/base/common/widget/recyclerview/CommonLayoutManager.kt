@@ -557,7 +557,7 @@ open class CommonLayoutManager : RecyclerView.LayoutManager {
 
         companion object {
 
-            @JvmStatic
+            @JvmField
             val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.Creator<SavedState> {
                 override fun createFromParcel(`in`: Parcel): SavedState {
                     return SavedState(`in`)

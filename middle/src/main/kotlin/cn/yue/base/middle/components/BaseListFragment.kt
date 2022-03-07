@@ -26,7 +26,7 @@ import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
 import cn.yue.base.middle.net.observer.BaseNetObserver
 import cn.yue.base.middle.net.wrapper.IListModel
-import cn.yue.base.middle.view.PageHintView
+import cn.yue.base.middle.view.PageStateView
 import cn.yue.base.middle.view.refresh.IRefreshLayout
 import io.reactivex.Single
 import io.reactivex.SingleSource
@@ -45,8 +45,7 @@ abstract class BaseListFragment<P : IListModel<S>, S> : BaseFragment(), IBaseVie
     private var adapter: CommonAdapter<S>? = null
     private lateinit var footer: BaseFooter
     private lateinit var refreshL: IRefreshLayout
-    private lateinit var baseRV: RecyclerView
-    private lateinit var hintView: PageHintView
+    private lateinit var stateView: PageStateView
     private val loader = Loader()
 
     override fun getLayoutId(): Int {
@@ -54,8 +53,8 @@ abstract class BaseListFragment<P : IListModel<S>, S> : BaseFragment(), IBaseVie
     }
 
     override fun initView(savedInstanceState: Bundle?) {
-        hintView = findViewById(R.id.hintView)
-        hintView.setOnReloadListener{
+        stateView = findViewById(R.id.stateView)
+        stateView.setOnReloadListener{
             if (NetworkUtils.isAvailable()) {
                 if (autoRefresh()) {
                     refresh()
@@ -70,45 +69,16 @@ abstract class BaseListFragment<P : IListModel<S>, S> : BaseFragment(), IBaseVie
             refresh()
         }
         if (canPullDown()) {
-            hintView.setRefreshTarget(refreshL)
+            stateView.setRefreshTarget(refreshL)
         }
         footer = BaseFooter(mActivity)
         footer.setOnReloadListener {
             loadData()
         }
-        baseRV = findViewById(R.id.baseRV)
+        val baseRV = findViewById<RecyclerView>(R.id.baseRV)
         refreshL.setTargetView(baseRV)
         initRecyclerView(baseRV)
-        baseRV.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dataList.isEmpty()) {
-                    return
-                }
-                var isTheLast = false
-                recyclerView.layoutManager?.let {
-                    if (it is LinearLayoutManager) {
-                        isTheLast = it.findLastVisibleItemPosition() >= dataList.size - 1
-                    } else if (it is GridLayoutManager) {
-                        isTheLast = it.findLastVisibleItemPosition() >= dataList.size - it.spanCount - 1
-                    } else if (it is StaggeredGridLayoutManager) {
-                        val lastSpan = it.findLastVisibleItemPositions(null)
-                        for (position in lastSpan) {
-                            if (position >= dataList.size - it.spanCount - 1) {
-                                isTheLast = true
-                                break
-                            }
-                        }
-                    }
-                }
-
-                if (isTheLast
-                        && loader.pageStatus === PageStatus.NORMAL
-                        && loader.loadStatus === LoadStatus.NORMAL) {
-                    footer.showStatusView(loader.setLoadStatus(LoadStatus.LOADING))
-                    loadData()
-                }
-            }
-        })
+        addOnScrollListener(baseRV)
     }
 
     override fun initOther() {
@@ -136,6 +106,39 @@ abstract class BaseListFragment<P : IListModel<S>, S> : BaseFragment(), IBaseVie
         baseRV.adapter = adapter
         adapter!!.addFooterView(footer)
         footer.showStatusView(loader.setLoadStatus(LoadStatus.NORMAL))
+    }
+
+    private fun addOnScrollListener(baseRV: RecyclerView) {
+        baseRV.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dataList.isEmpty()) {
+                    return
+                }
+                var isTheLast = false
+                recyclerView.layoutManager?.let {
+                    if (it is LinearLayoutManager) {
+                        isTheLast = it.findLastVisibleItemPosition() >= dataList.size - 1
+                    } else if (it is GridLayoutManager) {
+                        isTheLast = it.findLastVisibleItemPosition() >= dataList.size - it.spanCount - 1
+                    } else if (it is StaggeredGridLayoutManager) {
+                        val lastSpan = it.findLastVisibleItemPositions(null)
+                        for (position in lastSpan) {
+                            if (position >= dataList.size - it.spanCount - 1) {
+                                isTheLast = true
+                                break
+                            }
+                        }
+                    }
+                }
+
+                if (isTheLast
+                    && loader.pageStatus === PageStatus.NORMAL
+                    && loader.loadStatus === LoadStatus.NORMAL) {
+                    footer.showStatusView(loader.setLoadStatus(LoadStatus.LOADING))
+                    loadData()
+                }
+            }
+        })
     }
 
     open fun getLayoutManager(): RecyclerView.LayoutManager {
@@ -179,8 +182,8 @@ abstract class BaseListFragment<P : IListModel<S>, S> : BaseFragment(), IBaseVie
         return footer
     }
 
-    fun getPageHintView(): PageHintView {
-        return hintView
+    fun getPageStateView(): PageStateView {
+        return stateView
     }
 
     /**
@@ -408,15 +411,9 @@ abstract class BaseListFragment<P : IListModel<S>, S> : BaseFragment(), IBaseVie
 
     override fun showStatusView(status: PageStatus?) {
         if (loader.isFirstLoad) {
-            hintView.show(status)
-            if (loader.pageStatus === PageStatus.NORMAL) {
-                baseRV.visibility = View.VISIBLE
-            } else {
-                baseRV.visibility = View.GONE
-            }
+            stateView.show(status)
         } else {
-            hintView.show(PageStatus.NORMAL)
-            baseRV.visibility = View.VISIBLE
+            stateView.show(PageStatus.NORMAL)
         }
         if (status === PageStatus.NORMAL) {
             loader.isFirstLoad = false

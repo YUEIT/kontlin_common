@@ -15,7 +15,7 @@ import cn.yue.base.middle.components.load.LoadStatus
 import cn.yue.base.middle.components.load.PageStatus
 import cn.yue.base.middle.mvp.IStatusView
 import cn.yue.base.middle.mvvm.ListViewModel
-import cn.yue.base.middle.view.PageHintView
+import cn.yue.base.middle.view.PageStateView
 import cn.yue.base.middle.view.refresh.IRefreshLayout
 
 /**
@@ -26,16 +26,15 @@ abstract class BaseListVMFragment<VM : ListViewModel<*, S>, S> : BaseVMFragment<
     private var adapter: CommonAdapter<S>? = null
     private lateinit var footer: BaseFooter
     private lateinit var refreshL: IRefreshLayout
-    private lateinit var baseRV: RecyclerView
-    private lateinit var hintView: PageHintView
+    private lateinit var stateView: PageStateView
 
     override fun getLayoutId(): Int {
         return R.layout.fragment_base_pull_page
     }
 
     override fun initView(savedInstanceState: Bundle?) {
-        hintView = findViewById(R.id.hintView)
-        hintView.setOnReloadListener {
+        stateView = findViewById(R.id.stateView)
+        stateView.setOnReloadListener {
             if (NetworkUtils.isAvailable()) {
                 if (autoRefresh()) {
                     viewModel.refresh()
@@ -50,20 +49,16 @@ abstract class BaseListVMFragment<VM : ListViewModel<*, S>, S> : BaseVMFragment<
             viewModel.refresh()
         }
         if (canPullDown()) {
-            hintView.setRefreshTarget(refreshL)
+            stateView.setRefreshTarget(refreshL)
         }
         footer = initFooter()
         footer.setOnReloadListener {
             viewModel.loadData()
         }
-        baseRV = findViewById(R.id.baseRV)
+        val baseRV = findViewById<RecyclerView>(R.id.baseRV)
         refreshL.setTargetView(baseRV)
         initRecyclerView(baseRV)
-        baseRV.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                viewModel.hasLoad(recyclerView.layoutManager)
-            }
-        })
+        addOnScrollListener(baseRV)
     }
 
     override fun initOther() {
@@ -109,6 +104,14 @@ abstract class BaseListVMFragment<VM : ListViewModel<*, S>, S> : BaseVMFragment<
         }
     }
 
+    private fun addOnScrollListener(baseRV: RecyclerView) {
+        baseRV.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                viewModel.scrollToLoad(recyclerView.layoutManager)
+            }
+        })
+    }
+
     abstract fun initAdapter(): CommonAdapter<S>?
 
     open fun getAdapter(): CommonAdapter<S>? {
@@ -127,21 +130,15 @@ abstract class BaseListVMFragment<VM : ListViewModel<*, S>, S> : BaseVMFragment<
         return footer
     }
 
-    fun getPageHintView(): PageHintView {
-        return hintView
+    fun getPageStateView(): PageStateView {
+        return stateView
     }
 
     override fun showStatusView(status: PageStatus?) {
         if (viewModel.loader.isFirstLoad) {
-            hintView.show(status)
-            if (status == PageStatus.NORMAL) {
-                baseRV.visibility = View.VISIBLE
-            } else {
-                baseRV.visibility = View.GONE
-            }
+            stateView.show(status)
         } else {
-            hintView.show(PageStatus.NORMAL)
-            baseRV.visibility = View.VISIBLE
+            stateView.show(PageStatus.NORMAL)
         }
         if (status == PageStatus.NORMAL) {
             viewModel.loader.isFirstLoad = false

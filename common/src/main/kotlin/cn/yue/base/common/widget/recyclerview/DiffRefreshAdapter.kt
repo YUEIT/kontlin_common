@@ -18,22 +18,28 @@ abstract class DiffRefreshAdapter<T> : CommonAdapter<T> {
 
     fun setDataCollection(mData: List<T>?) {
         val newList = mData ?: ArrayList()
-        if ((this.getList().isEmpty() && newList.isNotEmpty()) || (this.getList().isNotEmpty() && newList.isEmpty())) {
+        if (this.getList().isEmpty() || newList.isEmpty()) {
             this.getList().clear()
             this.getList().addAll(newList)
-            notifyDataSetChanged()
+            notifyDataSetChangedReally()
         } else {
             this.mDiffCallback.setNewList(newList)
             val diffResult = DiffUtil.calculateDiff(this.mDiffCallback, false)
+            val oldListSize = this.mDiffCallback.oldListSize
             this.getList().clear()
             this.getList().addAll(newList)
             diffResult.dispatchUpdatesTo(object : ListUpdateCallback {
                 override fun onInserted(position: Int, count: Int) {
-                    notifyItemInsertedReally(position)
+                    notifyItemInsertedReally(position, count)
                 }
 
                 override fun onRemoved(position: Int, count: Int) {
-                    notifyItemRemovedReally(position)
+                    //数据刷新时，先onRemoved然后再onInserted，会导致RecycleView滑动到底部
+                    if (count == oldListSize) {
+                        notifyDataSetChangedReally()
+                    } else {
+                        notifyItemRemovedReally(position, count)
+                    }
                 }
 
                 override fun onMoved(fromPosition: Int, toPosition: Int) {
@@ -41,7 +47,7 @@ abstract class DiffRefreshAdapter<T> : CommonAdapter<T> {
                 }
 
                 override fun onChanged(position: Int, count: Int, payload: Any?) {
-                    notifyItemChangedReally(position)
+                    notifyItemChangedReally(position, count)
                 }
             })
         }

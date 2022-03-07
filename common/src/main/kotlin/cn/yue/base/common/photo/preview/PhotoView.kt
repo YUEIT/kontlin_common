@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.TextUtils
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
@@ -37,7 +36,8 @@ import com.bumptech.glide.request.target.Target
  * Description :
  * Created by yue on 2019/3/11
  */
-class PhotoView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : AppCompatImageView(context, attrs, defStyle) {
+class PhotoView(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0)
+    : AppCompatImageView(context, attrs, defStyle) {
     private var mContext: Context? = null
 
     /**
@@ -165,17 +165,23 @@ class PhotoView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
         }
         builder.apply(requestOptions)
                 .listener(object : RequestListener<Drawable?> {
-                    override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>, isFirstResource: Boolean): Boolean {
+                    override fun onLoadFailed(e: GlideException?,
+                                              model: Any,
+                                              target: Target<Drawable?>,
+                                              isFirstResource: Boolean): Boolean {
                         return false
                     }
 
-                    override fun onResourceReady(resource: Drawable?, model: Any, target: Target<Drawable?>, dataSource: DataSource, isFirstResource: Boolean): Boolean {
+                    override fun onResourceReady(resource: Drawable?,
+                                                 model: Any,
+                                                 target: Target<Drawable?>,
+                                                 dataSource: DataSource,
+                                                 isFirstResource: Boolean): Boolean {
                         if (resource == null) {
                             return false
                         }
                         val preWidth = resource.intrinsicWidth
                         val preHeight = resource.intrinsicHeight
-                        Log.i(TAG, "Glide drawable size:($preWidth,$preHeight)")
                         if (preWidth != mWidth || preHeight != mHeight) {
                             mWidth = preWidth
                             mHeight = preHeight
@@ -226,7 +232,6 @@ class PhotoView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
         mWidth = preWidth
         mHeight = preHeight
         isWidgetLoaded = true
-        Log.d(TAG, "*****************控件加载成功")
         //图片资源已有并且控件还没有加载 || 控件已经加载但控件尺寸发生变化
         val needUpdate = isImageLoaded && hasSizeChanged
         if (needUpdate) {
@@ -263,12 +268,7 @@ class PhotoView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
             checkBorder()
         }
     }
-    /**
-     * 缩放时检查图片边缘，并添加相应的移动做调整
-     *
-     * @param dx
-     * @param dy
-     */
+
     /**
      * 缩放时检查图片边缘，并添加相应的移动做调整
      */
@@ -316,16 +316,6 @@ class PhotoView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
         val rectF = getScaledRect(mMatrix)
         isLeftSide = rectF.left >= 0
         isRightSide = rectF.right <= mWidth
-        printStatusLog()
-    }
-
-    /**
-     * 打印图片的状态信息
-     */
-    private fun printStatusLog() {
-        val rectF = getScaledRect(mMatrix)
-        Log.i(TAG, "位置：(" + rectF.left + "," + rectF.top + "," + rectF.right + "," + rectF.bottom + ")")
-        Log.i(TAG, "是否原始大小：$isOriginalSize, 是否靠左：$isLeftSide ,是否靠右：$isRightSide")
     }
 
     /**
@@ -425,7 +415,8 @@ class PhotoView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
                 Math.max(mMinimumVelocity.toFloat(), Math.min(absVelocityY, mMaximumVelocity.toFloat()))
             }
             if (absVelocityX != 0f || absVelocityY != 0f) {
-                mFlingUtil!!.fling((if (velocityX > 0) absVelocityX else -absVelocityX).toInt(), (if (velocityY > 0) absVelocityY else -absVelocityY).toInt())
+                mFlingUtil!!.fling((if (velocityX > 0) absVelocityX else -absVelocityX).toInt(),
+                    (if (velocityY > 0) absVelocityY else -absVelocityY).toInt())
             }
             return true
         }
@@ -454,8 +445,8 @@ class PhotoView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
          * RecyclerView使用的惯性滑动插值器
          * f(x) = (x-1)^5 + 1
          */
-        private val sQuinticInterpolator = Interpolator { t ->
-            var t = t
+        private val sQuinticInterpolator = Interpolator {
+            var t = it
             t -= 1.0f
             t * t * t * t * t + 1.0f
         }
@@ -533,10 +524,10 @@ class PhotoView @JvmOverloads constructor(context: Context, attrs: AttributeSet?
             mImageWidth = mHeight * mImageWidth / mImageHeight
             mImageHeight = mHeight
         }
-        mImageRectF = RectF((mWidth - mImageWidth).toFloat() / 2, (mHeight - mImageHeight).toFloat() / 2, (mWidth + mImageWidth).toFloat() / 2, (mHeight + mImageHeight).toFloat() / 2)
-        Log.i(TAG, "widget size：（$mWidth ,$mHeight）")
-        Log.i(TAG, "drawable size：（$mImageWidth ,$mImageHeight）")
-        Log.i(TAG, "drawable rect：[" + mImageRectF!!.left + " ," + mImageRectF!!.top + " ," + mImageRectF!!.right + " ," + mImageRectF!!.bottom + "]")
+        mImageRectF = RectF((mWidth - mImageWidth).toFloat() / 2,
+            (mHeight - mImageHeight).toFloat() / 2,
+            (mWidth + mImageWidth).toFloat() / 2,
+            (mHeight + mImageHeight).toFloat() / 2)
     }
 
     /**

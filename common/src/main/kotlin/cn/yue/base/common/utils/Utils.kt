@@ -1,5 +1,6 @@
 package cn.yue.base.common.utils
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import cn.yue.base.common.utils.app.ActivityLifecycleImpl
@@ -61,6 +62,7 @@ import cn.yue.base.common.utils.file.BitmapFileUtils
  * SDCardUtils
  * ZipUtils
  */
+@SuppressLint("StaticFieldLeak")
 object Utils {
 
     private var mContext: Context? = null
@@ -86,7 +88,7 @@ object Utils {
      */
     @JvmStatic
     fun getContext(): Context {
-        if (mContext != null) return mContext as Context
+        if (mContext != null) return mContext!!
         throw NullPointerException("u should init first")
     }
 

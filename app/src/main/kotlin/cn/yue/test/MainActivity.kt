@@ -45,8 +45,8 @@ class MainActivity : BaseActivity() {
     }
 
     private fun initItem(): MutableList<ItemAction> {
-        //LE2110  OnePlus  RKQ1.201105.002  OnePlus9_CH
         val list = ArrayList<ItemAction>()
+        list.map {  }
         list.add(ItemAction("test camera") {
             FRouter.instance.build("/app/testCamera").navigation(this)
         })
@@ -63,7 +63,7 @@ class MainActivity : BaseActivity() {
             FRouter.instance.build("/app/testPullVM").navigation(this)
         })
         list.add(ItemAction("Page ViewModel") {
-            FRouter.instance.build("/app/testPageVM2").navigation(this)
+            FRouter.instance.build("/app/testPageVM").navigation(this)
         })
         list.add(ItemAction("Select Photo") {
             FRouter.instance.build("/common/selectPhoto")
@@ -80,6 +80,9 @@ class MainActivity : BaseActivity() {
         })
         list.add(ItemAction("widget") {
             FRouter.instance.build("/app/testWidget").navigation(this)
+        })
+        list.add(ItemAction("web") {
+            FRouter.instance.build("/app/testWeb").navigation(this)
         })
         return list
     }

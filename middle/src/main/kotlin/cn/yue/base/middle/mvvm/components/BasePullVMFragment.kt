@@ -12,7 +12,7 @@ import cn.yue.base.middle.components.load.LoadStatus
 import cn.yue.base.middle.components.load.PageStatus
 import cn.yue.base.middle.mvp.IStatusView
 import cn.yue.base.middle.mvvm.PullViewModel
-import cn.yue.base.middle.view.PageHintView
+import cn.yue.base.middle.view.PageStateView
 import cn.yue.base.middle.view.refresh.IRefreshLayout
 
 /**
@@ -21,16 +21,15 @@ import cn.yue.base.middle.view.refresh.IRefreshLayout
  */
 abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>(), IStatusView {
     private lateinit var refreshL: IRefreshLayout
-    private lateinit var hintView: PageHintView
-    private lateinit var contentView: View
+    private lateinit var stateView: PageStateView
 
     override fun getLayoutId(): Int {
         return R.layout.fragment_base_pull
     }
 
     override fun initView(savedInstanceState: Bundle?) {
-        hintView = findViewById(R.id.hintView)
-        hintView.setOnReloadListener {
+        stateView = findViewById(R.id.stateView)
+        stateView.setOnReloadListener {
             if (NetworkUtils.isAvailable()) {
                 viewModel.refresh()
             } else {
@@ -43,12 +42,11 @@ abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>(), IS
         }
         refreshL.setEnabledRefresh(canPullDown())
         if (canPullDown()) {
-            hintView.setRefreshTarget(refreshL)
+            stateView.setRefreshTarget(refreshL)
         }
         val baseVS = findViewById<ViewStub>(R.id.baseVS)
         baseVS.layoutResource = getContentLayoutId()
         baseVS.setOnInflateListener { _, inflated ->
-            contentView = inflated
             bindLayout(inflated)
         }
         baseVS.inflate()
@@ -81,21 +79,15 @@ abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>(), IS
         return true
     }
 
-    fun getPageHintView(): PageHintView {
-        return hintView
+    fun getPageStateView(): PageStateView {
+        return stateView
     }
 
     override fun showStatusView(status: PageStatus?) {
         if (viewModel.loader.isFirstLoad) {
-            hintView.show(status)
-            if (status == PageStatus.NORMAL) {
-                contentView.visibility = View.VISIBLE
-            } else {
-                contentView.visibility = View.GONE
-            }
+            stateView.show(status)
         } else {
-            hintView.show(PageStatus.NORMAL)
-            contentView.visibility = View.VISIBLE
+            stateView.show(PageStatus.NORMAL)
         }
         if (status == PageStatus.NORMAL) {
             viewModel.loader.isFirstLoad = false

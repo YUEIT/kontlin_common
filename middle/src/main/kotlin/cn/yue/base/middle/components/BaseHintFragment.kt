@@ -15,7 +15,7 @@ import cn.yue.base.middle.components.load.PageStatus
 import cn.yue.base.middle.mvp.IBaseView
 import cn.yue.base.middle.mvp.photo.IPhotoView
 import cn.yue.base.middle.mvp.photo.PhotoHelper
-import cn.yue.base.middle.view.PageHintView
+import cn.yue.base.middle.view.PageStateView
 
 /**
  * Description :
@@ -23,8 +23,8 @@ import cn.yue.base.middle.view.PageHintView
  */
 abstract class BaseHintFragment : BaseFragment(), IBaseView, IPhotoView {
     var loader = Loader()
-    private lateinit var hintView: PageHintView
-    private lateinit var baseVS: ViewStub
+    private lateinit var stateView: PageStateView
+
     private var photoHelper: PhotoHelper? = null
 
     override fun getLayoutId(): Int {
@@ -33,15 +33,15 @@ abstract class BaseHintFragment : BaseFragment(), IBaseView, IPhotoView {
 
     override fun initView(savedInstanceState: Bundle?) {
         loader.setPageStatus(PageStatus.NORMAL)
-        hintView = findViewById(R.id.hintView)
-        hintView.setOnReloadListener {
+        stateView = findViewById(R.id.stateView)
+        stateView.setOnReloadListener {
             if (NetworkUtils.isAvailable()) {
                 showStatusView(loader.setPageStatus(PageStatus.NORMAL))
             } else {
                 showShortToast(R.string.app_no_net.getString())
             }
         }
-        baseVS = findViewById(R.id.baseVS)
+        val baseVS = findViewById<ViewStub>(R.id.baseVS)
         baseVS.layoutResource = getContentLayoutId()
         baseVS.setOnInflateListener { _, inflated -> bindLayout(inflated) }
         baseVS.inflate()
@@ -60,15 +60,15 @@ abstract class BaseHintFragment : BaseFragment(), IBaseView, IPhotoView {
 
     open fun bindLayout(inflated: View) {}
 
-    fun getPageHintView(): PageHintView {
-        return hintView
+    fun getPageStateView(): PageStateView {
+        return stateView
     }
 
     override fun showStatusView(status: PageStatus?) {
         if (loader.isFirstLoad) {
-            hintView.show(status)
+            stateView.show(status)
         } else {
-            hintView.show(PageStatus.NORMAL)
+            stateView.show(PageStatus.NORMAL)
         }
         if (status === PageStatus.NORMAL) {
             loader.isFirstLoad = false

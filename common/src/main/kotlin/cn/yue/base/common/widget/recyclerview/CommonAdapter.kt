@@ -124,33 +124,29 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     /**
-     * 单条刷新
+     * 刷新
      */
-    fun notifyItemChangedReally(position: Int) {
+    fun notifyItemChangedReally(position: Int, count: Int = 1) {
         if (position > -1 && position < innerAdapter.itemCount) {
-            innerAdapter.notifyItemChanged(position)
+            innerAdapter.notifyItemRangeChanged(position, count)
         }
     }
 
     /**
-     * 单条插入
+     * 插入
      */
-    fun notifyItemInsertedReally(position: Int) {
+    fun notifyItemInsertedReally(position: Int, count: Int = 1) {
         if (position > -1 && position < innerAdapter.itemCount) {
-            innerAdapter.notifyItemInserted(position)
-            //更新插入位置之后所有viewHolder
-            innerAdapter.notifyItemRangeChanged(position, getListSize() - position)
+            innerAdapter.notifyItemRangeInserted(position, count)
         }
     }
 
     /**
-     * 单条删除
+     * 删除
      */
-    fun notifyItemRemovedReally(position: Int) {
+    fun notifyItemRemovedReally(position: Int, count: Int = 1) {
         if (position > -1 && position < innerAdapter.itemCount) {
-            innerAdapter.notifyItemRemoved(position)
-            //更新删除位置之后所有viewHolder
-            innerAdapter.notifyItemRangeChanged(position, getListSize() - position)
+            innerAdapter.notifyItemRangeRemoved(position, count)
         }
     }
 
@@ -161,8 +157,6 @@ abstract class CommonAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (fromPosition > -1 && fromPosition < innerAdapter.itemCount
                 && toPosition > -1 && toPosition < innerAdapter.itemCount) {
             innerAdapter.notifyItemMoved(fromPosition, toPosition)
-            //更新移动位置之间所有viewHolder
-            innerAdapter.notifyItemRangeChanged(Math.min(fromPosition, toPosition), Math.abs(fromPosition - toPosition) + 1)
         }
     }
 
