@@ -1,4 +1,4 @@
-package cn.yue.test.components
+package cn.yue.test.mvp
 
 import android.os.Bundle
 import cn.yue.base.common.activity.BaseFragment

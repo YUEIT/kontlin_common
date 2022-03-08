@@ -1,4 +1,4 @@
-package cn.yue.test.components
+package cn.yue.test.mvp
 
 import android.os.Bundle
 import android.view.View
@@ -7,7 +7,7 @@ import android.widget.EditText
 import cn.yue.base.common.utils.device.KeyboardUtils
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.dialog.HintDialog
-import cn.yue.base.middle.components.binding.BaseHintBindFragment
+import cn.yue.base.middle.mvp.components.binding.BaseHintBindFragment
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestWebviewBinding
 import com.alibaba.android.arouter.facade.annotation.Route

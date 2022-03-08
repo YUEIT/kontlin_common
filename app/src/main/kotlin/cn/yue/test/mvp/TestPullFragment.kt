@@ -1,4 +1,4 @@
-package cn.yue.test.components
+package cn.yue.test.mvp
 
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -7,7 +7,7 @@ import cn.yue.base.common.utils.debug.ToastUtils
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
-import cn.yue.base.middle.components.BasePullFragment
+import cn.yue.base.middle.mvp.components.BasePullFragment
 import cn.yue.base.middle.net.observer.BasePullObserver
 import cn.yue.test.R
 import cn.yue.test.mode.ItemBean

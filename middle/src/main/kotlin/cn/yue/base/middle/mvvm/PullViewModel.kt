@@ -1,14 +1,15 @@
 package cn.yue.base.middle.mvvm
 
 import android.app.Application
-import cn.yue.base.middle.components.load.LoadStatus
-import cn.yue.base.middle.components.load.PageStatus
-import cn.yue.base.middle.mvp.IPullView
+import cn.yue.base.middle.mvp.IStatusView
+import cn.yue.base.middle.view.load.LoadStatus
+import cn.yue.base.middle.view.load.PageStatus
+
 /**
  * Description :
  * Created by yue on 2020/8/8
  */
-abstract class PullViewModel(application: Application) : BaseViewModel(application), IPullView {
+abstract class PullViewModel(application: Application) : BaseViewModel(application), IStatusView {
 
     /**
      * 刷新
@@ -37,11 +38,11 @@ abstract class PullViewModel(application: Application) : BaseViewModel(applicati
         loader.loadStatus = LoadStatus.REFRESH
     }
 
-    override fun finishRefresh() {
-        loader.loadStatus = LoadStatus.NORMAL
+    override fun changePageStatus(status: PageStatus) {
+        loader.pageStatus = status
     }
 
-    override fun loadComplete(pageStatus: PageStatus?) {
-        loader.pageStatus = pageStatus
+    override fun changeLoadStatus(status: LoadStatus) {
+        loader.loadStatus = status
     }
 }

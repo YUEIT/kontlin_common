@@ -8,18 +8,17 @@ import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.common.utils.device.NetworkUtils
 import cn.yue.base.middle.R
-import cn.yue.base.middle.components.load.LoadStatus
-import cn.yue.base.middle.components.load.PageStatus
-import cn.yue.base.middle.mvp.IStatusView
 import cn.yue.base.middle.mvvm.PullViewModel
 import cn.yue.base.middle.view.PageStateView
+import cn.yue.base.middle.view.load.LoadStatus
+import cn.yue.base.middle.view.load.PageStatus
 import cn.yue.base.middle.view.refresh.IRefreshLayout
 
 /**
  * Description :
  * Created by yue on 2020/8/8
  */
-abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>(), IStatusView {
+abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>() {
     private lateinit var refreshL: IRefreshLayout
     private lateinit var stateView: PageStateView
 
@@ -83,7 +82,7 @@ abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>(), IS
         return stateView
     }
 
-    override fun showStatusView(status: PageStatus?) {
+    private fun showStatusView(status: PageStatus?) {
         if (viewModel.loader.isFirstLoad) {
             stateView.show(status)
         } else {

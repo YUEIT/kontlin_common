@@ -1,4 +1,7 @@
-package cn.yue.base.middle.components.load
+package cn.yue.base.middle.mvp.components.data
+
+import cn.yue.base.middle.view.load.LoadStatus
+import cn.yue.base.middle.view.load.PageStatus
 
 class Loader {
 

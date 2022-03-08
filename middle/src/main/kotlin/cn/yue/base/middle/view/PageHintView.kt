@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.core.widget.NestedScrollView
 import cn.yue.base.middle.R
-import cn.yue.base.middle.components.load.PageStatus
+import cn.yue.base.middle.view.load.PageStatus
 import cn.yue.base.middle.view.refresh.IRefreshLayout
 
 /**

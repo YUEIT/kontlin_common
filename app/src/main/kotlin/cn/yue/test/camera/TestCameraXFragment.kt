@@ -18,7 +18,7 @@ import androidx.lifecycle.LifecycleOwner
 import cn.yue.base.common.Constant
 import cn.yue.base.common.utils.app.RunTimePermissionUtil
 import cn.yue.base.common.utils.debug.ToastUtils
-import cn.yue.base.middle.components.binding.BaseHintBindFragment
+import cn.yue.base.middle.mvp.components.binding.BaseHintBindFragment
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestCameraxBinding
 import com.alibaba.android.arouter.facade.annotation.Route

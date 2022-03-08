@@ -18,7 +18,7 @@ import android.view.TextureView
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import cn.yue.base.common.utils.debug.ToastUtils
-import cn.yue.base.middle.components.binding.BaseHintBindFragment
+import cn.yue.base.middle.mvp.components.binding.BaseHintBindFragment
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestCamera2Binding
 import com.alibaba.android.arouter.facade.annotation.Route

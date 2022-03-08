@@ -14,6 +14,7 @@ import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.middle.R
 import cn.yue.base.middle.activity.CommonActivity
 import cn.yue.base.middle.mvvm.BaseViewModel
+import cn.yue.base.middle.mvvm.data.RouterModel
 import com.alibaba.android.arouter.core.LogisticsCenter
 import com.alibaba.android.arouter.exception.NoRouteFoundException
 import com.alibaba.android.arouter.facade.enums.RouteType
@@ -66,16 +67,25 @@ class FRouter() : INavigation(), Parcelable {
     }
 
     override fun navigation(context: Any, requestCode: Int, toActivity: String?) {
-        if (context is BaseViewModel) {
-            mRouterCard.navigation(context, requestCode, toActivity)
-            return
+        val realContext: Context
+        when (context) {
+            is Activity -> {
+                realContext = context
+            }
+            is Context -> {
+                realContext = context
+            }
+            is BaseFragment -> {
+                realContext = context.mActivity
+            }
+            is BaseViewModel -> {
+                context.navigation(RouterModel(mRouterCard, requestCode, toActivity))
+                return
+            }
+            else -> {
+                return
+            }
         }
-        val realContext = when (context) {
-            is Activity -> context
-            is Context -> context
-            is BaseFragment -> context.mActivity
-            else -> null
-        } ?: return
         if (mRouterCard.isInterceptLogin() && interceptLogin(realContext)) {
             return
         }

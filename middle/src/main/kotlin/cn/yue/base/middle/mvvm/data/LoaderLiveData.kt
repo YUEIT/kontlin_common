@@ -3,8 +3,8 @@ package cn.yue.base.middle.mvvm.data
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import cn.yue.base.middle.components.load.LoadStatus
-import cn.yue.base.middle.components.load.PageStatus
+import cn.yue.base.middle.view.load.LoadStatus
+import cn.yue.base.middle.view.load.PageStatus
 /**
  * Description :
  * Created by yue on 2020/8/8

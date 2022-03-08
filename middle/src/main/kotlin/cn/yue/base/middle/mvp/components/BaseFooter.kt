@@ -1,4 +1,4 @@
-package cn.yue.base.middle.components
+package cn.yue.base.middle.mvp.components
 
 import android.content.Context
 import android.graphics.Color
@@ -7,7 +7,7 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import cn.yue.base.common.widget.dialog.AppProgressBar
 import cn.yue.base.middle.R
-import cn.yue.base.middle.components.load.LoadStatus
+import cn.yue.base.middle.view.load.LoadStatus
 
 /**
  * Description :

@@ -9,7 +9,6 @@ import androidx.lifecycle.lifecycleScope
 import cn.yue.base.common.activity.BaseFragment
 import cn.yue.base.common.activity.rx.ILifecycleProvider
 import cn.yue.base.common.widget.dialog.WaitDialog
-import cn.yue.base.middle.mvp.IWaitView
 import cn.yue.base.middle.mvvm.BaseViewModel
 import cn.yue.base.middle.router.FRouter
 import java.lang.reflect.ParameterizedType
@@ -17,7 +16,7 @@ import java.lang.reflect.ParameterizedType
  * Description :
  * Created by yue on 2020/8/8
  */
-abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment(), IWaitView {
+abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment() {
 
     lateinit var viewModel: VM
     val coroutineScope by lazy { lifecycleScope }
@@ -81,14 +80,14 @@ abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment(), IWaitView {
     }
 
     private var waitDialog: WaitDialog? = null
-    override fun showWaitDialog(title: String) {
+    private fun showWaitDialog(title: String) {
         if (waitDialog == null) {
             waitDialog = WaitDialog(mActivity)
         }
         waitDialog?.show(title, true, null)
     }
 
-    override fun dismissWaitDialog() {
+    private fun dismissWaitDialog() {
         if (waitDialog != null && waitDialog!!.isShowing()) {
             waitDialog?.cancel()
         }

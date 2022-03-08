@@ -1,4 +1,4 @@
-package cn.yue.base.middle.components
+package cn.yue.base.middle.mvp.components
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,108 +10,62 @@ import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.common.utils.device.NetworkUtils
 import cn.yue.base.common.widget.dialog.WaitDialog
 import cn.yue.base.middle.R
-import cn.yue.base.middle.components.load.LoadStatus
-import cn.yue.base.middle.components.load.Loader
-import cn.yue.base.middle.components.load.PageStatus
 import cn.yue.base.middle.mvp.IBaseView
-import cn.yue.base.middle.mvp.IPullView
+import cn.yue.base.middle.mvp.components.data.Loader
 import cn.yue.base.middle.mvp.photo.IPhotoView
 import cn.yue.base.middle.mvp.photo.PhotoHelper
 import cn.yue.base.middle.view.PageStateView
-import cn.yue.base.middle.view.refresh.IRefreshLayout
+import cn.yue.base.middle.view.load.LoadStatus
+import cn.yue.base.middle.view.load.PageStatus
 
 /**
  * Description :
- * Created by yue on 2019/3/7
+ * Created by yue on 2019/3/8
  */
-abstract class BasePullFragment : BaseFragment(), IBaseView, IPhotoView, IPullView {
-    private val loader = Loader()
-    private lateinit var refreshL: IRefreshLayout
+abstract class BaseHintFragment : BaseFragment(), IBaseView, IPhotoView {
+    var loader = Loader()
     private lateinit var stateView: PageStateView
 
+    private var photoHelper: PhotoHelper? = null
+
     override fun getLayoutId(): Int {
-        return R.layout.fragment_base_pull
+        return R.layout.fragment_base_hint
     }
 
     override fun initView(savedInstanceState: Bundle?) {
+        loader.setPageStatus(PageStatus.NORMAL)
         stateView = findViewById(R.id.stateView)
         stateView.setOnReloadListener {
             if (NetworkUtils.isAvailable()) {
-                refresh()
+                changePageStatus(PageStatus.NORMAL)
             } else {
                 showShortToast(R.string.app_no_net.getString())
             }
         }
-        refreshL = (findViewById<View>(R.id.refreshL) as IRefreshLayout)
-        refreshL.setOnRefreshListener {
-            refresh()
-        }
-        refreshL.setEnabledRefresh(canPullDown())
-        if (canPullDown()) {
-            stateView.setRefreshTarget(refreshL)
-        }
         val baseVS = findViewById<ViewStub>(R.id.baseVS)
         baseVS.layoutResource = getContentLayoutId()
-        baseVS.setOnInflateListener { _, inflated ->
-            bindLayout(inflated)
-        }
+        baseVS.setOnInflateListener { _, inflated -> bindLayout(inflated) }
         baseVS.inflate()
     }
 
-    open fun bindLayout(inflated: View) {}
-
     override fun initOther() {
+        super.initOther()
         if (NetworkUtils.isAvailable()) {
-            refresh()
+            changePageStatus(PageStatus.NORMAL)
         } else {
-            showStatusView(loader.setPageStatus(PageStatus.NO_NET))
+            changePageStatus(PageStatus.NO_NET)
         }
     }
 
     abstract fun getContentLayoutId(): Int
 
-    //回调继承 BasePullSingleObserver 以适应加载逻辑
-    abstract fun loadData()
+    open fun bindLayout(inflated: View) {}
 
-    open fun canPullDown(): Boolean {
-        return true
+    fun getPageStateView(): PageStateView {
+        return stateView
     }
 
-    /**
-     * 刷新 选择是否页面加载动画
-     */
-    @JvmOverloads
-    fun refresh(isPageRefreshAnim: Boolean = loader.isFirstLoad) {
-        if (loader.pageStatus === PageStatus.LOADING
-                || loader.loadStatus === LoadStatus.REFRESH) {
-            return
-        }
-        if (isPageRefreshAnim) {
-            showStatusView(loader.setPageStatus(PageStatus.LOADING))
-        } else {
-            startRefresh()
-        }
-        loadData()
-    }
-
-    private fun startRefresh() {
-        loader.setLoadStatus(LoadStatus.REFRESH)
-        refreshL.startRefresh()
-    }
-
-    override fun finishRefresh() {
-        loader.setLoadStatus(LoadStatus.NORMAL)
-        refreshL.finishRefreshing()
-    }
-
-    override fun loadComplete(status: PageStatus?) {
-        showStatusView(loader.setPageStatus(status!!))
-    }
-
-    /**
-     * @hide 子类切勿直接调用
-     */
-    override fun showStatusView(status: PageStatus?) {
+    private fun showStatusView(status: PageStatus) {
         if (loader.isFirstLoad) {
             stateView.show(status)
         } else {
@@ -120,6 +74,14 @@ abstract class BasePullFragment : BaseFragment(), IBaseView, IPhotoView, IPullVi
         if (status === PageStatus.NORMAL) {
             loader.isFirstLoad = false
         }
+    }
+
+    override fun changePageStatus(status: PageStatus) {
+        showStatusView(loader.setPageStatus(status))
+    }
+
+    override fun changeLoadStatus(status: LoadStatus) {
+
     }
 
     private var waitDialog: WaitDialog? = null
@@ -135,8 +97,6 @@ abstract class BasePullFragment : BaseFragment(), IBaseView, IPhotoView, IPullVi
             waitDialog?.cancel()
         }
     }
-
-    private var photoHelper: PhotoHelper? = null
 
     fun getPhotoHelper(): PhotoHelper {
         if (photoHelper == null) {

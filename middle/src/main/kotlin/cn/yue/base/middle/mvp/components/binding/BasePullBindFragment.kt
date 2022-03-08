@@ -1,15 +1,11 @@
-package cn.yue.base.middle.components.binding
+package cn.yue.base.middle.mvp.components.binding
 
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import cn.yue.base.middle.components.BaseHintFragment
+import cn.yue.base.middle.mvp.components.BasePullFragment
 
-/**
- * Description :
- * Created by yue on 2019/3/11
- */
-abstract class BaseHintBindFragment<T : ViewDataBinding> : BaseHintFragment() {
+abstract class BasePullBindFragment<T : ViewDataBinding> : BasePullFragment() {
     lateinit var binding: T
     override fun bindLayout(inflated: View) {
         super.bindLayout(inflated)

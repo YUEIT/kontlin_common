@@ -8,16 +8,15 @@ import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.common.utils.device.NetworkUtils
 import cn.yue.base.middle.R
-import cn.yue.base.middle.components.load.PageStatus
-import cn.yue.base.middle.mvp.IStatusView
 import cn.yue.base.middle.mvvm.BaseViewModel
 import cn.yue.base.middle.view.PageStateView
+import cn.yue.base.middle.view.load.PageStatus
 
 /**
  * Description :
  * Created by yue on 2020/8/8
  */
-abstract class BaseHintVMFragment<VM : BaseViewModel> : BaseVMFragment<VM>(), IStatusView {
+abstract class BaseHintVMFragment<VM : BaseViewModel> : BaseVMFragment<VM>() {
     private lateinit var stateView: PageStateView
 
     override fun getLayoutId(): Int {
@@ -55,7 +54,7 @@ abstract class BaseHintVMFragment<VM : BaseViewModel> : BaseVMFragment<VM>(), IS
         })
     }
 
-    override fun showStatusView(status: PageStatus?) {
+    private fun showStatusView(status: PageStatus?) {
         if (viewModel.loader.isFirstLoad) {
             stateView.show(status)
         }

@@ -1,4 +1,4 @@
-package cn.yue.base.middle.components.load
+package cn.yue.base.middle.view.load
 
 /**
  * Description :

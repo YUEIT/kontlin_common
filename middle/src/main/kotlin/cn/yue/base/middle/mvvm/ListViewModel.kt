@@ -7,13 +7,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
-import cn.yue.base.middle.components.load.LoadStatus
-import cn.yue.base.middle.components.load.PageStatus
 import cn.yue.base.middle.mvvm.data.MutableListLiveData
 import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
 import cn.yue.base.middle.net.observer.BaseNetObserver
 import cn.yue.base.middle.net.wrapper.IListModel
+import cn.yue.base.middle.view.load.LoadStatus
+import cn.yue.base.middle.view.load.PageStatus
 import io.reactivex.Single
 import io.reactivex.SingleSource
 import io.reactivex.SingleTransformer

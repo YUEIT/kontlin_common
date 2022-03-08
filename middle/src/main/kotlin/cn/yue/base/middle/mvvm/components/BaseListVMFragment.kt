@@ -10,19 +10,18 @@ import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.common.utils.device.NetworkUtils
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.middle.R
-import cn.yue.base.middle.components.BaseFooter
-import cn.yue.base.middle.components.load.LoadStatus
-import cn.yue.base.middle.components.load.PageStatus
-import cn.yue.base.middle.mvp.IStatusView
+import cn.yue.base.middle.mvp.components.BaseFooter
 import cn.yue.base.middle.mvvm.ListViewModel
 import cn.yue.base.middle.view.PageStateView
+import cn.yue.base.middle.view.load.LoadStatus
+import cn.yue.base.middle.view.load.PageStatus
 import cn.yue.base.middle.view.refresh.IRefreshLayout
 
 /**
  * Description :
  * Created by yue on 2020/8/8
  */
-abstract class BaseListVMFragment<VM : ListViewModel<*, S>, S> : BaseVMFragment<VM>(), IStatusView {
+abstract class BaseListVMFragment<VM : ListViewModel<*, S>, S> : BaseVMFragment<VM>() {
     private var adapter: CommonAdapter<S>? = null
     private lateinit var footer: BaseFooter
     private lateinit var refreshL: IRefreshLayout
@@ -134,7 +133,7 @@ abstract class BaseListVMFragment<VM : ListViewModel<*, S>, S> : BaseVMFragment<
         return stateView
     }
 
-    override fun showStatusView(status: PageStatus?) {
+    private fun showStatusView(status: PageStatus?) {
         if (viewModel.loader.isFirstLoad) {
             stateView.show(status)
         } else {

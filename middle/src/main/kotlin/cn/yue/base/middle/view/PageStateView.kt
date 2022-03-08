@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.LayoutRes
-import cn.yue.base.middle.components.load.PageStatus
+import cn.yue.base.middle.view.load.PageStatus
 import cn.yue.base.middle.view.refresh.IRefreshLayout
 
 
