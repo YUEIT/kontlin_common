@@ -129,11 +129,15 @@ abstract class BaseDialogFragment : DialogFragment() {
         val dialog = object : Dialog(requireContext(), theme) {
 
             override fun setOnCancelListener(listener: DialogInterface.OnCancelListener?) {
-                //super.setOnCancelListener(listener)
+                if (listener == null) {
+                    super.setOnCancelListener(null)
+                }
             }
 
             override fun setOnDismissListener(listener: DialogInterface.OnDismissListener?) {
-                //super.setOnDismissListener(listener)
+                if (listener == null) {
+                    super.setOnDismissListener(null)
+                }
             }
 
             fun setWeakOnCancelListener(listener: DialogInterface.OnCancelListener?) {
