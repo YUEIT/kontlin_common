@@ -31,7 +31,7 @@ object BitmapFileUtils {
             file.mkdirs()
         }
         file = File(Constant.imagePath)
-        if (file != null && !file.exists()) {
+        if (!file.exists()) {
             file.mkdirs()
         }
     }

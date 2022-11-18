@@ -1,16 +1,16 @@
 package cn.yue.base.common.activity.rx
 
-import io.reactivex.*
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.*
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.reactivestreams.Publisher
 
 open class RxLifecycleTransformer<T>(private val transformer: LifecycleTransformer<T>) :
         ObservableTransformer<T, T>,
-        FlowableTransformer<T, T>,
-        SingleTransformer<T, T>,
-        MaybeTransformer<T, T>,
-        CompletableTransformer {
+    FlowableTransformer<T, T>,
+    SingleTransformer<T, T>,
+    MaybeTransformer<T, T>,
+    CompletableTransformer {
 
     override fun apply(upstream: Completable): CompletableSource {
         return upstream.compose(transformer)

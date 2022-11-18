@@ -11,4 +11,9 @@ abstract class BasePullBindFragment<T : ViewDataBinding> : BasePullFragment() {
         super.bindLayout(inflated)
         binding = DataBindingUtil.bind(inflated)!!
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.unbind()
+    }
 }

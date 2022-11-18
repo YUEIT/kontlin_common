@@ -75,9 +75,13 @@ object Utils {
     @JvmStatic
     fun init(mContext: Context) {
         Utils.mContext = mContext.applicationContext
-        BitmapFileUtils.init()
-        MMKVUtils.init()
         ActivityLifecycleImpl.INSTANCE.init(mContext as Application)
+        MMKVUtils.init()
+    }
+
+    @JvmStatic
+    fun initAfterAuth() {
+        BitmapFileUtils.init()
         NetworkUtils.register()
     }
 

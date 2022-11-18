@@ -3,10 +3,12 @@ package cn.yue.test.camera
 import android.graphics.Point
 import android.graphics.SurfaceTexture
 import android.hardware.Camera
-import android.os.*
+import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
+import android.os.SystemClock
 import android.view.Surface
 import android.view.TextureView
-import androidx.annotation.RequiresApi
 import cn.yue.base.common.Constant
 import cn.yue.base.middle.mvp.components.binding.BaseHintBindFragment
 import cn.yue.test.R
@@ -238,7 +240,7 @@ class TestCameraFragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
     }
 
     private fun takePicture() {
-        mCam?.takePicture(null, null, { data, camera ->
+        mCam?.takePicture(null, null) { data, camera ->
             val storePath = Constant.imagePath
             val appDir = File(storePath)
             if (!appDir.exists()) {
@@ -254,7 +256,7 @@ class TestCameraFragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-        })
+        }
     }
 
     // camera停止采集
@@ -316,7 +318,7 @@ class TestCameraFragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
 
     private val surfaceTextureListener by lazy {
         object : TextureView.SurfaceTextureListener {
-            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
             override fun onSurfaceTextureAvailable(
                 surface: SurfaceTexture,
                 width: Int,

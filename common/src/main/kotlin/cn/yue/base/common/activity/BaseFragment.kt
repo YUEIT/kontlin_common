@@ -55,11 +55,21 @@ abstract class BaseFragment : Fragment(), View.OnTouchListener {
         view.setOnTouchListener(this)
         if (!hasCache) {
             initView(savedInstanceState)
+        }
+        try {
+            //destroy后会移除liveData观察者，恢复后重新添加
+            initObserver()
+        } catch (e : IllegalArgumentException) {
+            //不能重复添加
+        }
+        if (!hasCache) {
             initOther()
         }
     }
 
     open fun initOther() {}
+
+    open fun initObserver() {}
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         if (cacheView == null || !needCache()) {//如果view没有被初始化或者不需要缓存的情况下，重新初始化控件
@@ -113,6 +123,15 @@ abstract class BaseFragment : Fragment(), View.OnTouchListener {
     override fun onDetach() {
         super.onDetach()
         mHandler.removeCallbacksAndMessages(null)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        lifecycle.removeObserver(lifecycleProvider)
+    }
+
+    fun isActive(): Boolean {
+        return lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)
     }
 
     fun clearCacheView() {

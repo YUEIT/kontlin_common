@@ -6,7 +6,7 @@ import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
 import cn.yue.base.middle.net.upload.ImageResult
 import cn.yue.base.middle.net.upload.ImageResultListData
-import io.reactivex.observers.DisposableSingleObserver
+import io.reactivex.rxjava3.observers.DisposableSingleObserver
 import java.util.concurrent.CancellationException
 
 /**

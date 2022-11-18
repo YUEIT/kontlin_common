@@ -14,9 +14,9 @@ import cn.yue.base.middle.net.observer.BaseNetObserver
 import cn.yue.base.middle.net.wrapper.IListModel
 import cn.yue.base.middle.view.load.LoadStatus
 import cn.yue.base.middle.view.load.PageStatus
-import io.reactivex.Single
-import io.reactivex.SingleSource
-import io.reactivex.SingleTransformer
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.SingleSource
+import io.reactivex.rxjava3.core.SingleTransformer
 
 abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : BaseViewModel(application) {
 

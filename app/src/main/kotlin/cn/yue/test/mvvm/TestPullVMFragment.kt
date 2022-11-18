@@ -3,7 +3,6 @@ package cn.yue.test.mvvm
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
@@ -30,27 +29,26 @@ class TestPullVMFragment : BasePullVMBindFragment<TestPullViewModel, FragmentTes
 
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
-        val rv = findViewById<RecyclerView>(R.id.rv)
-        rv.layoutManager = LinearLayoutManager(mActivity)
-        adapter = object : CommonAdapter<ItemBean>(mActivity) {
-            override fun getLayoutIdByType(viewType: Int): Int {
-                return R.layout.item_test
-            }
+        binding.setVariable(BR.viewModel, viewModel)
+        binding.rv.apply {
+            layoutManager = LinearLayoutManager(mActivity)
+            adapter = object : CommonAdapter<ItemBean>(mActivity) {
+                override fun getLayoutIdByType(viewType: Int): Int {
+                    return R.layout.item_test
+                }
 
-            override fun bindData(holder: CommonViewHolder, position: Int, itemData: ItemBean) {
-                holder.setText(R.id.testTV, itemData.name)
+                override fun bindData(holder: CommonViewHolder, position: Int, itemData: ItemBean) {
+                    holder.setText(R.id.testTV, itemData.name)
+                }
             }
         }
     }
 
-    override fun initOther() {
-        super.initOther()
+    override fun initObserver() {
+        super.initObserver()
         viewModel.userLiveData.observe(this, Observer {
             adapter.setList(it)
         })
     }
 
-    override fun variableId(): Int {
-        return BR.viewModel
-    }
 }

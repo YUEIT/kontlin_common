@@ -44,6 +44,7 @@ class BaseFooter(context: Context?) : RelativeLayout(context) {
             LoadStatus.END -> showEnd()
             LoadStatus.NO_DATA -> showNoData()
             LoadStatus.NO_NET -> showNoNet()
+            else -> {}
         }
     }
 

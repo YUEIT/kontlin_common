@@ -4,14 +4,13 @@ import cn.yue.base.common.activity.rx.ILifecycleProvider
 import cn.yue.base.common.utils.file.BitmapFileUtils
 import cn.yue.base.middle.net.RetrofitManager
 import cn.yue.base.middle.net.observer.BaseUploadObserver
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
-import java.util.*
 
 /**
  * Description :

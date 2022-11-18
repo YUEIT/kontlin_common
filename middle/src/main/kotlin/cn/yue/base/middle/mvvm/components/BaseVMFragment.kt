@@ -22,19 +22,19 @@ abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment() {
     val coroutineScope by lazy { lifecycleScope }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        var viewModel = initViewModel()
-        if (viewModel == null) {
-            val modelClass: Class<VM>
-            val type = javaClass.genericSuperclass
-            modelClass = if (type is ParameterizedType) {
-                type.actualTypeArguments[0] as Class<VM>
-            } else {
-                //如果没有指定泛型参数，则默认使用BaseViewModel
-                BaseViewModel::class.java as Class<VM>
-            }
-            viewModel = createViewModel(modelClass)
-        }
         if (!this::viewModel.isInitialized) {
+            var viewModel = initViewModel()
+            if (viewModel == null) {
+                val modelClass: Class<VM>
+                val type = javaClass.genericSuperclass
+                modelClass = if (type is ParameterizedType) {
+                    type.actualTypeArguments[0] as Class<VM>
+                } else {
+                    //如果没有指定泛型参数，则默认使用BaseViewModel
+                    BaseViewModel::class.java as Class<VM>
+                }
+                viewModel = createViewModel(modelClass)
+            }
             this.viewModel = viewModel
         }
         super.onCreate(savedInstanceState)
@@ -52,8 +52,8 @@ abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment() {
         return ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(mActivity.application))[cls]
     }
 
-    override fun initOther() {
-        super.initOther()
+    override fun initObserver() {
+        super.initObserver()
         viewModel.waitEvent.observe(this, Observer { s ->
             if (null == s) {
                 dismissWaitDialog()
@@ -91,15 +91,6 @@ abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment() {
         if (waitDialog != null && waitDialog!!.isShowing()) {
             waitDialog?.cancel()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        lifecycle.removeObserver(viewModel)
-        // 通过Transaction的移除再添加或者替换的操作，会出现复用已经被destroy的fragment情况
-        // 这种情况下如果使用缓存，会出现liveData无法监听，因为liveData的观察者已经在destroy时被移除了
-        // 这里就不使用缓存了，那么重复初始化的逻辑就需要检查了
-        clearCacheView()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

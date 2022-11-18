@@ -9,10 +9,8 @@ import android.text.TextUtils
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import cn.yue.base.common.R
-import cn.yue.base.common.activity.BaseActivity
 import cn.yue.base.common.activity.BaseFragmentActivity
 import cn.yue.base.common.utils.code.getString
-import java.util.*
 
 /**
  * Description :
@@ -26,33 +24,12 @@ object RunTimePermissionUtil {
                            success: (permission: String) -> Unit,
                            failed: (permission: String) -> Unit,
                            vararg permissions: String) {
-        if (context is BaseActivity) {
-            requestPermissions(context, requestCode, success, failed, *permissions)
-        } else if (context is BaseFragmentActivity) {
+        if (context is BaseFragmentActivity) {
             requestPermissions(context, requestCode, success, failed, *permissions)
         }
     }
 
     fun requestPermissions(context: BaseFragmentActivity,
-                           requestCode: Int,
-                           success: (permission: String) -> Unit,
-                           failed: (permission: String) -> Unit,
-                           vararg permissions: String) {
-        //检查权限是否授权
-        context.setPermissionCallBack(success, failed)
-        if (shouldShowRequestPermissionRationale(context, *permissions)) {
-            context.showFailDialog()
-        }
-        if (checkPermissions(context, *permissions)) {
-            for (permission in permissions) {
-                success.invoke(permission)
-            }
-        } else {
-            ActivityCompat.requestPermissions(context, getNeedRequestPermissions(context, *permissions), requestCode)
-        }
-    }
-
-    fun requestPermissions(context: BaseActivity,
                            requestCode: Int,
                            success: (permission: String) -> Unit,
                            failed: (permission: String) -> Unit,

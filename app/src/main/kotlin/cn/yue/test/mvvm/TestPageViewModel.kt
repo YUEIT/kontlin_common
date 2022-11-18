@@ -7,7 +7,7 @@ import cn.yue.base.middle.net.observer.BaseNetObserver
 import cn.yue.base.middle.net.wrapper.BaseListBean
 import cn.yue.base.middle.net.wrapper.DataListBean
 import cn.yue.test.mode.ItemBean
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 
 class TestPageViewModel(application: Application)
     : ListViewModel<DataListBean<ItemBean>, ItemBean>(application) {

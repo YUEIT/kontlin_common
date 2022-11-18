@@ -1,15 +1,14 @@
 package cn.yue.base.common.activity.rx
 
 import cn.yue.base.common.activity.rx.Functions.CANCEL_COMPLETABLE
-import io.reactivex.*
+import io.reactivex.rxjava3.core.*
 import org.reactivestreams.Publisher
-import java.lang.NullPointerException
 
 class LifecycleTransformer<T> internal constructor(private val observable: Observable<*>)
     : ObservableTransformer<T, T>,
-        FlowableTransformer<T, T>,
-        SingleTransformer<T, T>,
-        MaybeTransformer<T, T>, CompletableTransformer {
+    FlowableTransformer<T, T>,
+    SingleTransformer<T, T>,
+    MaybeTransformer<T, T>, CompletableTransformer {
 
 
     override fun apply(upstream: Observable<T>): ObservableSource<T> {

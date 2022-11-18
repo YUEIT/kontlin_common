@@ -2,10 +2,11 @@ package cn.yue.test
 
 import android.app.Activity
 import android.content.Intent
+import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import cn.yue.base.common.activity.BaseActivity
+import cn.yue.base.common.activity.BaseFragmentActivity
 import cn.yue.base.common.photo.data.MediaData
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
@@ -18,14 +19,15 @@ import com.alibaba.android.arouter.facade.annotation.Route
  * Created by yue on 2019/6/19
  */
 @Route(path = "/app/main")
-class MainActivity : BaseActivity() {
+class MainActivity : BaseFragmentActivity() {
 
-    override fun getLayoutId(): Int {
+    override fun getContentViewLayoutId(): Int {
         return R.layout.activity_main
     }
 
-
     override fun initView() {
+        super.initView()
+        getTopBar().setContentVisibility(View.GONE)
         val rv = findViewById<RecyclerView>(R.id.rv)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = object : CommonAdapter<ItemAction>(this, initItem()) {
@@ -46,7 +48,6 @@ class MainActivity : BaseActivity() {
 
     private fun initItem(): MutableList<ItemAction> {
         val list = ArrayList<ItemAction>()
-        list.map {  }
         list.add(ItemAction("test camera") {
             FRouter.instance.build("/app/testCamera").navigation(this)
         })
@@ -83,6 +84,9 @@ class MainActivity : BaseActivity() {
         })
         list.add(ItemAction("web") {
             FRouter.instance.build("/app/testWeb").navigation(this)
+        })
+        list.add(ItemAction("nested") {
+            FRouter.instance.build("/app/testNested").navigation(this)
         })
         return list
     }

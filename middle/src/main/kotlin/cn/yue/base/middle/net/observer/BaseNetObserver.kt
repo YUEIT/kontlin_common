@@ -7,7 +7,7 @@ import cn.yue.base.middle.module.IAppModule
 import cn.yue.base.middle.module.manager.ModuleManager
 import cn.yue.base.middle.net.ResponseCode
 import cn.yue.base.middle.net.ResultException
-import io.reactivex.observers.DisposableSingleObserver
+import io.reactivex.rxjava3.observers.DisposableSingleObserver
 import java.util.concurrent.CancellationException
 
 /**

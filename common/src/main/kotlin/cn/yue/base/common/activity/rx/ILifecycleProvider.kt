@@ -1,8 +1,8 @@
 package cn.yue.base.common.activity.rx
 
 import androidx.lifecycle.LifecycleObserver
-import io.reactivex.Observable
-import io.reactivex.annotations.CheckReturnValue
+import io.reactivex.rxjava3.annotations.CheckReturnValue
+import io.reactivex.rxjava3.core.Observable
 
 /**
  * Description :

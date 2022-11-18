@@ -10,7 +10,7 @@ import io.reactivex.plugins.RxJavaPlugins
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import java.util.concurrent.TimeUnit
 
 /**
@@ -69,7 +69,7 @@ class RetrofitManager private constructor() {
         return Retrofit.Builder()
                 .client(defaultClient)
                 .baseUrl(baseUrl)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                 //注册自定义的工厂类
                 .addConverterFactory(SplitConverterFactory.create())
                 .build()

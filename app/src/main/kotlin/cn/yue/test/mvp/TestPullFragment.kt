@@ -12,7 +12,7 @@ import cn.yue.base.middle.net.observer.BasePullObserver
 import cn.yue.test.R
 import cn.yue.test.mode.ItemBean
 import com.alibaba.android.arouter.facade.annotation.Route
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 
 @Route(path = "/app/testPull")
 class TestPullFragment : BasePullFragment() {

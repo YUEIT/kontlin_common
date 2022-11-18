@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.common.utils.device.NetworkUtils
+import cn.yue.base.common.widget.TopBar
 import cn.yue.base.middle.R
 import cn.yue.base.middle.mvvm.BaseViewModel
 import cn.yue.base.middle.view.PageStateView
@@ -49,9 +50,17 @@ abstract class BaseHintVMFragment<VM : BaseViewModel> : BaseVMFragment<VM>() {
         } else {
             viewModel.loader.pageStatus = PageStatus.NO_NET
         }
+    }
+
+    override fun initObserver() {
+        super.initObserver()
         viewModel.loader.observePage(this, Observer {
-            pageStatus -> showStatusView(pageStatus)
+                pageStatus -> showStatusView(pageStatus)
         })
+    }
+
+    override fun initTopBar(topBar: TopBar) {
+        super.initTopBar(topBar)
     }
 
     private fun showStatusView(status: PageStatus?) {

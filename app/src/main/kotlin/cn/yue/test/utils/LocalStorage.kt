@@ -9,7 +9,16 @@ import cn.yue.base.middle.init.UrlEnvironment
  */
 object LocalStorage {
 
+    private const val USER_PERMISSION = "user_permission"
     private const val SERVICE_ENVIRONMENT = "service_environment"
+
+    fun getUserPermission(): Boolean {
+        return MMKVUtils.getBoolean(USER_PERMISSION)
+    }
+
+    fun setUserPermission(boolean: Boolean) {
+        MMKVUtils.put(USER_PERMISSION, boolean)
+    }
 
     fun getServiceEnvironment(): UrlEnvironment {
         val environmentName = MMKVUtils.getString(SERVICE_ENVIRONMENT)

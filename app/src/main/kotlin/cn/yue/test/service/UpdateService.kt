@@ -56,6 +56,7 @@ class UpdateService : Service() {
                     downInfo.updateBlock?.invoke(0, true)
                     notification("下载失败 " + workInfo.outputData.getString("error"), 100, null)
                 }
+                else -> {}
             }
         }
     }

@@ -5,18 +5,20 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import cn.yue.base.common.activity.CommonApplication
+import cn.yue.base.common.utils.debug.LogUtils
 import cn.yue.base.middle.module.IBaseModule
 import cn.yue.base.middle.module.ModuleType
 import cn.yue.base.middle.module.manager.ModuleManager
+import cn.yue.base.middle.router.FRouter
 
 abstract class MiddleApplication : CommonApplication(), ViewModelStoreOwner {
-    override fun init() {
-        ModuleManager.register(ModuleType.MODULE_BASE, IBaseModule::class, BaseModuleService())
-        registerModule()
-        ModuleManager.doInit(this)
-    }
 
-    abstract fun registerModule()
+    override fun init() {
+        FRouter.init(this)
+        BaseUrlAddress.setDebug(InitConstant.isDebug())
+        LogUtils.setDebug(InitConstant.isDebug())
+        ModuleManager.register(ModuleType.MODULE_BASE, IBaseModule::class, BaseModuleService())
+    }
 
     override fun getViewModelStore(): ViewModelStore {
         return viewModelStore

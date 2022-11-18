@@ -1,6 +1,6 @@
 package cn.yue.base.middle.net.upload
 
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import okhttp3.MultipartBody
 import retrofit2.http.Multipart
 import retrofit2.http.POST

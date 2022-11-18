@@ -108,7 +108,7 @@ class ShapeDelegate(val view: View, attributeSet: AttributeSet) {
         this.strokeColor = strokeColor
     }
 
-    fun setbackColor(backColor: Int) {
+    fun setBackColor(backColor: Int) {
         this.backColor = backColor
     }
 

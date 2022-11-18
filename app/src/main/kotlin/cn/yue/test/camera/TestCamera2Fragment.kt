@@ -8,14 +8,12 @@ import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.*
 import android.media.ImageReader
-import android.os.Build
 import android.os.Bundle
 import android.util.Range
 import android.util.Size
 import android.util.SparseIntArray
 import android.view.Surface
 import android.view.TextureView
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import cn.yue.base.common.utils.debug.ToastUtils
 import cn.yue.base.middle.mvp.components.binding.BaseHintBindFragment
@@ -23,7 +21,6 @@ import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestCamera2Binding
 import com.alibaba.android.arouter.facade.annotation.Route
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 /**
@@ -37,7 +34,6 @@ class TestCamera2Fragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
         return R.layout.fragment_test_camera2
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
         binding.tv.setOnClickListener {
@@ -45,7 +41,6 @@ class TestCamera2Fragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onResume() {
         super.onResume()
         startCamera()
@@ -68,7 +63,6 @@ class TestCamera2Fragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
     private var previewSize: Size? = null
     private var imageReader: ImageReader? = null
     private val orientations = SparseIntArray()
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private var fps: Range<Int> = Range(0, 30)
 
     init {
@@ -78,7 +72,6 @@ class TestCamera2Fragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
         orientations.append(Surface.ROTATION_270, 180);
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun startCamera() {
         if (binding.texture.isAvailable) {
             if (cameraDevice == null) {
@@ -90,7 +83,6 @@ class TestCamera2Fragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
     }
 
     @SuppressLint("MissingPermission")
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun openCamera() {
         val cameraManager = mActivity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         try {
@@ -114,7 +106,6 @@ class TestCamera2Fragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setCameraCharacteristics(manager: CameraManager) {
         try {
             // 获取指定摄像头的特性
@@ -164,7 +155,6 @@ class TestCamera2Fragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
      * 为Size定义一个比较器Comparator
      */
     internal class CompareSizesByArea : Comparator<Size> {
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         override fun compare(lhs: Size, rhs: Size): Int {
             return java.lang.Long.signum(
                 lhs.width.toLong() * lhs.height -
@@ -173,7 +163,6 @@ class TestCamera2Fragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun chooseOptimalSize(choices: Array<Size>, width: Int, height: Int, aspectRatio: Size): Size {
         // 收集摄像头支持的大过预览Surface的分辨率
         val bigEnough: MutableList<Size> = ArrayList()
@@ -192,8 +181,6 @@ class TestCamera2Fragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
         }
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun takePreview() {
         val mSurfaceTexture: SurfaceTexture? = binding.texture.surfaceTexture
         //设置TextureView的缓冲区大小
@@ -239,7 +226,6 @@ class TestCamera2Fragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun takePicture() {
         try {
             if (cameraDevice == null) {
@@ -280,7 +266,7 @@ class TestCamera2Fragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
 
     private val surfaceTextureListener by lazy {
         object : TextureView.SurfaceTextureListener {
-            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
             override fun onSurfaceTextureAvailable(
                 surface: SurfaceTexture,
                 width: Int,
@@ -312,7 +298,6 @@ class TestCamera2Fragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
     }
 
     private val stateCallback by lazy {
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
         object : CameraDevice.StateCallback() {
             override fun onOpened(camera: CameraDevice) {
                 cameraDevice = camera
@@ -331,7 +316,6 @@ class TestCamera2Fragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
     }
 
     private val captureCallback by lazy {
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
         object : CameraCaptureSession.CaptureCallback() {
 
             override fun onCaptureCompleted(

@@ -69,6 +69,10 @@ abstract class BaseListVMFragment<VM : ListViewModel<*, S>, S> : BaseVMFragment<
         } else {
             viewModel.loader.pageStatus = PageStatus.NO_NET
         }
+    }
+
+    override fun initObserver() {
+        super.initObserver()
         viewModel.dataLiveData.observe(this, Observer { list ->
             adapter?.apply {
                 setData(list)

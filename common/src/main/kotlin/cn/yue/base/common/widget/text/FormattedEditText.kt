@@ -1176,6 +1176,20 @@ class FormattedEditText : AppCompatEditText {
                     }
                 }
         }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        object CREATOR : Parcelable.Creator<SavedState> {
+            override fun createFromParcel(parcel: Parcel): SavedState {
+                return SavedState(parcel)
+            }
+
+            override fun newArray(size: Int): Array<SavedState?> {
+                return arrayOfNulls(size)
+            }
+        }
     }
 
     private class PlaceholderComparator : Comparator<IPlaceholderSpan?> {

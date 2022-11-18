@@ -17,7 +17,6 @@ import cn.yue.base.common.photo.data.MediaType
 import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.widget.viewpager.PagerSlidingTabStrip
 import com.alibaba.android.arouter.facade.annotation.Route
-import java.util.*
 
 /**
  * Description :
@@ -51,8 +50,6 @@ class SelectPhotoActivity : BaseFragmentActivity() {
             mediaType = MediaType.valueOf(intent.getIntExtra("mediaType", MediaType.ALL.value))
             isPreview = intent.getBooleanExtra("isPreview", false)
         }
-        initTopBar()
-        initView()
 //        changeFragment(SelectPhotoFragment::class.java.name, "最近照片")
     }
 
@@ -73,7 +70,9 @@ class SelectPhotoActivity : BaseFragmentActivity() {
             }
     }
 
-    private fun initView() {
+    override fun initView() {
+        super.initView()
+        initTopBar()
         viewPager = findViewById<ViewPager>(R.id.viewPager)
         val adapter = object : FragmentPagerAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
             override fun getCount(): Int {

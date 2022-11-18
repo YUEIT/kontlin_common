@@ -92,7 +92,7 @@ class MaterialProgressDrawable : Drawable, Animatable {
         mRing = Ring(mCallback)
         mRing.setColors(COLORS)
 
-        updateSizes(DEFAULT)
+        updateSizes(1)
         setupAnimators()
     }
 

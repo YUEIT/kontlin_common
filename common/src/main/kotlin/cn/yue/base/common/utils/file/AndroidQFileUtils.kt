@@ -1,5 +1,6 @@
 package cn.yue.base.common.utils.file
 
+import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.ContentValues
 import android.database.Cursor
@@ -270,6 +271,7 @@ object AndroidQFileUtils {
      * @param uri
      * @return
      */
+    @SuppressLint("Range")
     fun getPath(uri: Uri?): String? {
         if (uri == null) {
             return null
@@ -302,6 +304,7 @@ object AndroidQFileUtils {
      * @param mimeType
      * @return
      */
+    @SuppressLint("Range")
     fun getMediaUriFromName(relativePath: String?, fileName: String?, mimeType: String?): Uri? {
         val mediaUri: Uri
         var selection: String

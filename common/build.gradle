@@ -33,10 +33,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation rootProject.ext.androidx["junit"]
-    androidTestImplementation rootProject.ext.androidx["junit-test"]
-    androidTestImplementation rootProject.ext.androidx["espresso-test"]
-
     api rootProject.ext.androidx["core"]
     api rootProject.ext.androidx["core-ktx"]
     api rootProject.ext.androidx["multidex"]
@@ -73,7 +69,6 @@ dependencies {
     //Rx
     api rootProject.ext.dependencies["rxjava"]
     api rootProject.ext.dependencies["rxandroid"]
-//    api rootProject.ext.dependencies["rxlifecycle"]
 
     api rootProject.ext.dependencies["autosize"]
     api rootProject.ext.dependencies["mmkv"]

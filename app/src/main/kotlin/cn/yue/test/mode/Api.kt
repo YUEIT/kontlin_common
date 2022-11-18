@@ -2,7 +2,7 @@ package cn.yue.test.mode
 
 import cn.yue.base.middle.init.BaseUrlAddress
 import cn.yue.base.middle.net.RetrofitManager
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
 
 interface Api {

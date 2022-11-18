@@ -1,6 +1,6 @@
 package cn.yue.base.common.activity
 
-import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -12,8 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
-import cn.yue.base.common.R
 import cn.yue.base.common.activity.TransitionAnimation.TRANSITION_BOTTOM
 import cn.yue.base.common.activity.TransitionAnimation.TRANSITION_CENTER
 import cn.yue.base.common.activity.TransitionAnimation.TRANSITION_LEFT
@@ -53,44 +53,15 @@ abstract class BaseDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initEnterStyle()
-        if (!hasCache) {
-            initView(savedInstanceState)
-            initOther()
-        }
-    }
-
-    open fun initOther() {
+        initView(savedInstanceState)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        if (cacheView == null || !needCache()) {
-            cacheView = if (getLayoutId() == 0) {
-                null
-            } else {
-                inflater.inflate(getLayoutId(), container, false)
-            }
-            hasCache = false
-        } else {
-            hasCache = true
-            val v = cacheView?.parent
-            if (v != null && v is ViewGroup) {
-                v.removeView(cacheView)
-            }
+        if (cacheView == null) {
+            cacheView = inflater.inflate(getLayoutId(), container, false)
         }
         return cacheView
     }
-
-    /**
-     * true 避免当前Fragment被replace后回退回来重走onCreateView，导致重复初始化View和数据
-     */
-    open fun needCache(): Boolean {
-        return true
-    }
-
-    /**
-     * 是否有缓存，避免重新走initView方法
-     */
-    private var hasCache = false
 
     /**
      * 获取布局
@@ -154,35 +125,28 @@ abstract class BaseDialogFragment : DialogFragment() {
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        val isShow = showsDialog
-        showsDialog = false
-        super.onActivityCreated(savedInstanceState)
-        showsDialog = isShow
-        if (dialog == null) {
-            return
-        }
-        dialog?.apply {
-            view?.let {
-                check(it.parent == null) {
-                    "DialogFragment can not be attached to a container view"
-                }
-                setContentView(it)
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = object : Dialog(requireContext(), theme) {
+
+            override fun setOnCancelListener(listener: DialogInterface.OnCancelListener?) {
+                //super.setOnCancelListener(listener)
             }
-            activity?.let {
-                setOwnerActivity(it)
+
+            override fun setOnDismissListener(listener: DialogInterface.OnDismissListener?) {
+                //super.setOnDismissListener(listener)
             }
-            setCancelable(isCancelable)
-            // 使用静态内部类取代，防止message中持有fragment的引用而造成内存泄漏
-            setOnCancelListener(onCancelListener)
-            setOnDismissListener(onDismissListener)
-            if (savedInstanceState != null) {
-                val dialogState = savedInstanceState.getBundle("android:savedDialogState")
-                if (dialogState != null) {
-                    onRestoreInstanceState(dialogState)
-                }
+
+            fun setWeakOnCancelListener(listener: DialogInterface.OnCancelListener?) {
+                super.setOnCancelListener(listener)
+            }
+
+            fun setWeakOnDismissListener(listener: DialogInterface.OnDismissListener?) {
+                super.setOnDismissListener(listener)
             }
         }
+        dialog.setWeakOnCancelListener(onCancelListener)
+        dialog.setWeakOnDismissListener(onDismissListener)
+        return dialog
     }
 
     override fun onCancel(dialog: DialogInterface) {
@@ -220,17 +184,14 @@ abstract class BaseDialogFragment : DialogFragment() {
     }
 
     fun dismissWaitDialog() {
-        if (waitDialog != null && waitDialog!!.isShowing()) {
+        if (waitDialog?.isShowing() == true) {
             waitDialog!!.cancel()
         }
     }
 
     fun setFragmentBackResult(resultCode: Int, data: Bundle?) {
-        var intent: Intent? = null
-        if (intent != null) {
-            intent = Intent()
-            intent.putExtras(data!!)
-        }
+        val intent= Intent()
+        data?.let { intent.putExtras(it) }
         mActivity.setResult(resultCode, intent)
     }
 
@@ -258,36 +219,28 @@ abstract class BaseDialogFragment : DialogFragment() {
         }
     }
 
-    //--------------------------------------------------------------------------------------------------------------
-    fun finishFragment() {
-        mActivity.onBackPressed()
+    open fun show(manager: FragmentManager?) {
+        try {
+            super.show(manager!!, this::class.java.simpleName)
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
+        }
     }
 
-    fun finishFragmentWithResult() {
-        setFragmentBackResult(Activity.RESULT_OK)
-        mActivity.onBackPressed()
+    override fun dismiss() {
+        try {
+            super.dismiss()
+        } catch (e : Exception) {
+            e.printStackTrace()
+        }
     }
 
-    fun finishFragmentWithResult(data: Bundle?) {
-        setFragmentBackResult(Activity.RESULT_OK, data)
-        mActivity.onBackPressed()
-    }
-
-    fun finishAll() {
-        mActivity.supportFinishAfterTransition()
-        mActivity.overridePendingTransition(R.anim.left_in, R.anim.right_out)
-    }
-
-    @JvmOverloads
-    fun finishAllWithResult(resultCode: Int, data: Intent? = null) {
-        mActivity.setResult(resultCode, data)
-        finishAll()
-    }
-
-    fun finishAllWithResult(data: Bundle?) {
-        val intent = Intent()
-        intent.putExtras(data!!)
-        finishAllWithResult(Activity.RESULT_OK, intent)
+    override fun dismissAllowingStateLoss() {
+        try {
+            super.dismissAllowingStateLoss()
+        } catch (e : Exception) {
+            e.printStackTrace()
+        }
     }
 
     //--------------------------------------------------------------------------------------------------------------

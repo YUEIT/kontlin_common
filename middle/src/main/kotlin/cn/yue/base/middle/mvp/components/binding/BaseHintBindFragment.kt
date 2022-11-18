@@ -15,4 +15,9 @@ abstract class BaseHintBindFragment<T : ViewDataBinding> : BaseHintFragment() {
         super.bindLayout(inflated)
         binding = DataBindingUtil.bind(inflated)!!
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.unbind()
+    }
 }

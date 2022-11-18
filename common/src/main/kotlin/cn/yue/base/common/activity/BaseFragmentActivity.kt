@@ -9,10 +9,8 @@ import android.os.Bundle
 import android.provider.Settings
 import android.text.TextUtils
 import android.view.View
-import android.view.ViewGroup
 import android.view.Window
 import android.widget.FrameLayout
-import android.widget.RelativeLayout
 import androidx.annotation.ColorInt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -47,17 +45,13 @@ abstract class BaseFragmentActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycleProvider = initLifecycleProvider()
-        lifecycle.addObserver(lifecycleProvider)
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        setStatusBar()
-        setContentView(getContentViewLayoutId())
+        initLifecycle(RxLifecycleProvider())
         initView()
-        replace(getFragment(), null, false)
     }
 
-    open fun initLifecycleProvider(): ILifecycleProvider<Lifecycle.Event> {
-        return RxLifecycleProvider()
+    open fun initLifecycle(provider: ILifecycleProvider<Lifecycle.Event>) {
+        lifecycleProvider = provider
+        lifecycle.addObserver(lifecycleProvider)
     }
 
     fun getLifecycleProvider(): ILifecycleProvider<Lifecycle.Event>? {
@@ -68,7 +62,10 @@ abstract class BaseFragmentActivity : FragmentActivity() {
 
     open fun getFragment(): Fragment? = null
 
-    private fun initView() {
+    open fun initView() {
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        setStatusBar()
+        setContentView(getContentViewLayoutId())
         topFL = findViewById(R.id.topBar)
         topFL?.addView(TopBar(this).also { topBar = it })
         content = findViewById(R.id.content)
@@ -81,27 +78,11 @@ abstract class BaseFragmentActivity : FragmentActivity() {
             resultCode = Activity.RESULT_CANCELED
             resultBundle = null
         })
+        replace(getFragment(), null, false)
     }
 
-    fun setStatusBar(isFullUpTop: Boolean = false, isDarkIcon: Boolean = true, bgColor: Int = Color.WHITE) {
+    fun setStatusBar(isDarkIcon: Boolean = true, bgColor: Int = Color.WHITE) {
         BarUtils.setStyle(this, true, isDarkIcon, bgColor)
-        setFullUpTopLayout(isFullUpTop)
-    }
-
-    private fun setFullUpTopLayout(isFullUpTop: Boolean) {
-        if (topBar == null) {
-            return
-        }
-        var subject: Int = R.id.topBar
-        if (isFullUpTop) {
-            subject = 0
-            topBar?.setBgColor(Color.TRANSPARENT)
-        }
-        val topBarLayoutParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        topFL?.layoutParams = topBarLayoutParams
-        val contentLayoutParams = RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        contentLayoutParams.addRule(RelativeLayout.BELOW, subject)
-        content?.layoutParams = contentLayoutParams
     }
 
     fun getTopBar(): TopBar {

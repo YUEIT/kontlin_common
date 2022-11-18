@@ -70,6 +70,7 @@ class PageStateView(context: Context, attributeSet: AttributeSet?): FrameLayout(
             PageStatus.NO_NET -> showErrorNet()
             PageStatus.NO_DATA -> showErrorNoData()
             PageStatus.ERROR -> showErrorOperation()
+            else -> {}
         }
     }
 

@@ -1,5 +1,6 @@
 package cn.yue.base.common.utils.debug
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
@@ -231,6 +232,7 @@ object ToastUtils {
      */
     private var sField_TN: Field? = null
     private var sField_TN_Handler: Field? = null
+    @SuppressLint("SoonBlockedPrivateApi")
     private fun initHook() {
         try {
             sField_TN = Toast::class.java.getDeclaredField("mTN")

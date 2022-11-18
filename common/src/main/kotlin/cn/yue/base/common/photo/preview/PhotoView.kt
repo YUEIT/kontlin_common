@@ -126,9 +126,9 @@ class PhotoView(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0
     private fun init(context: Context) {
         mContext = context
         mMatrix = Matrix()
-        mScaleGestureDetector = ScaleGestureDetector(mContext, mOnScaleGestureListener)
-        mGestureDetector = GestureDetector(mContext, mOnGestureListener)
-        val configuration = ViewConfiguration.get(mContext)
+        mScaleGestureDetector = ScaleGestureDetector(context, mOnScaleGestureListener)
+        mGestureDetector = GestureDetector(context, mOnGestureListener)
+        val configuration = ViewConfiguration.get(context)
         mMinimumVelocity = configuration.scaledMinimumFlingVelocity
         mMaximumVelocity = configuration.scaledMaximumFlingVelocity
         mFlingUtil = FlingUtil()

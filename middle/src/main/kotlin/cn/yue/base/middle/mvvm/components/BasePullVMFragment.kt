@@ -60,6 +60,10 @@ abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>() {
         } else {
             viewModel.loader.pageStatus = PageStatus.NO_NET
         }
+    }
+
+    override fun initObserver() {
+        super.initObserver()
         viewModel.loader.observePage(this, Observer { pageStatus ->
             showStatusView(pageStatus)
         })

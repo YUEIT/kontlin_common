@@ -8,7 +8,7 @@ import cn.yue.base.middle.mvvm.data.UiViewModels
 import cn.yue.base.middle.net.coroutine.request
 import cn.yue.base.middle.net.wrapper.DataListBean
 import cn.yue.test.mode.ItemBean
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 
 
 /**

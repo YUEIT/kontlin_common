@@ -102,6 +102,7 @@ class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeS
             PageStatus.NO_NET -> showErrorNet()
             PageStatus.NO_DATA -> showErrorNoData()
             PageStatus.ERROR -> showErrorOperation()
+            else -> {}
         }
     }
 

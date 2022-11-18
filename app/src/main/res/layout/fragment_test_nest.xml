@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <cn.yue.test.nested.PriorityNestedScrollView
+            android:id="@+id/sv_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp"
+                    android:background="#efefef"/>
+
+                <androidx.core.widget.NestedScrollView
+                    android:id="@+id/sv_child"
+                    android:layout_width="match_parent"
+                    android:layout_height="500dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <cn.yue.base.common.widget.shape.ShapeFrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="800dp"
+                            app:bg_start_color="#a9fe62"
+                            app:bg_end_color="#36a577" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:gravity="center"
+                            android:textColor="#000000"
+                            android:textSize="15sp"
+                            android:text="--END--"/>
+                    </LinearLayout>
+                </androidx.core.widget.NestedScrollView>
+            </LinearLayout>
+
+        </cn.yue.test.nested.PriorityNestedScrollView>
+
+    </FrameLayout>
+</layout>

@@ -1,10 +1,9 @@
 package cn.yue.base.common.activity.rx
 
-import io.reactivex.Observable
-import io.reactivex.annotations.CheckReturnValue
-import io.reactivex.functions.BiFunction
-import io.reactivex.functions.Function
-import java.lang.NullPointerException
+import io.reactivex.rxjava3.annotations.CheckReturnValue
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.functions.BiFunction
+import io.reactivex.rxjava3.functions.Function;
 
 object RxLifecycle {
     /**

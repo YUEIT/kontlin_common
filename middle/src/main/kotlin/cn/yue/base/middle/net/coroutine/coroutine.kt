@@ -5,8 +5,8 @@ import android.os.Handler
 import android.os.Looper
 import cn.yue.base.middle.init.InitConstant
 import cn.yue.base.middle.net.observer.BaseNetObserver
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.*
 import kotlin.concurrent.thread
 import kotlin.coroutines.CoroutineContext

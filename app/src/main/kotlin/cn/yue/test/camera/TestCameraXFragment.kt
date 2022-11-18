@@ -2,14 +2,12 @@ package cn.yue.test.camera
 
 import android.Manifest
 import android.graphics.SurfaceTexture
-import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.util.Size
 import android.view.Surface
 import android.view.TextureView
 import androidx.annotation.NonNull
-import androidx.annotation.RequiresApi
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -44,7 +42,7 @@ class TestCameraXFragment : BaseHintBindFragment<FragmentTestCameraxBinding>(){
     private val width = 640
     private val height = 360
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
         binding.tv.setOnClickListener {
@@ -61,7 +59,7 @@ class TestCameraXFragment : BaseHintBindFragment<FragmentTestCameraxBinding>(){
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
     private fun openCamera() {
         cameraProviderFuture = ProcessCameraProvider.getInstance(mActivity)
         cameraProviderFuture.addListener(Runnable {
@@ -74,8 +72,6 @@ class TestCameraXFragment : BaseHintBindFragment<FragmentTestCameraxBinding>(){
         }, ContextCompat.getMainExecutor(mActivity))
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun bindPreview(cameraProvider : ProcessCameraProvider) {
         val preview : Preview = Preview.Builder()
             .setTargetResolution(Size(width, height))
@@ -132,7 +128,7 @@ class TestCameraXFragment : BaseHintBindFragment<FragmentTestCameraxBinding>(){
         // This executor must have also been used with Preview.setSurfaceProvider() to
         // ensure onSurfaceRequested() is called on our GL thread.
 
-        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
         override fun onSurfaceRequested(@NonNull request: SurfaceRequest) {
             if (Looper.myLooper() != Looper.getMainLooper()) {
                 // Post on main thread to ensure thread safety.
@@ -142,41 +138,41 @@ class TestCameraXFragment : BaseHintBindFragment<FragmentTestCameraxBinding>(){
             // Create the surface and attempt to provide it to the camera.
             binding.texture.surfaceTexture?.setDefaultBufferSize(request.resolution.width, request.resolution.height)
             val surface = Surface(binding.texture.surfaceTexture)
-            request.provideSurface(surface, cameraExecutor, { result: SurfaceRequest.Result? ->
-                    // In all cases (even errors), we can clean up the state. As an
-                    // optimization, we could also optionally check for REQUEST_CANCELLED
-                    // since we may be able to reuse the surface on subsequent surface requests.
-                    when(result?.resultCode) {
-                        SurfaceRequest.Result.RESULT_INVALID_SURFACE -> {
+            request.provideSurface(surface, cameraExecutor) { result: SurfaceRequest.Result? ->
+                // In all cases (even errors), we can clean up the state. As an
+                // optimization, we could also optionally check for REQUEST_CANCELLED
+                // since we may be able to reuse the surface on subsequent surface requests.
+                when (result?.resultCode) {
+                    SurfaceRequest.Result.RESULT_INVALID_SURFACE -> {
 
-                        }
-                        SurfaceRequest.Result.RESULT_REQUEST_CANCELLED -> {
-
-                        }
-                        SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED -> {
-
-                        }
-                        SurfaceRequest.Result.RESULT_SURFACE_USED_SUCCESSFULLY -> {
-
-                        }
-                        SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE -> {
-
-                        }
                     }
-                })
+                    SurfaceRequest.Result.RESULT_REQUEST_CANCELLED -> {
+
+                    }
+                    SurfaceRequest.Result.RESULT_SURFACE_ALREADY_PROVIDED -> {
+
+                    }
+                    SurfaceRequest.Result.RESULT_SURFACE_USED_SUCCESSFULLY -> {
+
+                    }
+                    SurfaceRequest.Result.RESULT_WILL_NOT_PROVIDE_SURFACE -> {
+
+                    }
+                }
+            }
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
     private fun postToMain(request: SurfaceRequest) {
-        ContextCompat.getMainExecutor(context!!).execute {
+        ContextCompat.getMainExecutor(requireContext()).execute {
             mSurfaceProvider.onSurfaceRequested(request)
         }
     }
 
     private val surfaceTextureListener by lazy {
         object : TextureView.SurfaceTextureListener {
-            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+
             override fun onSurfaceTextureAvailable(
                 surface: SurfaceTexture,
                 width: Int,

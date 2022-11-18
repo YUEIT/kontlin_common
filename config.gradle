@@ -7,26 +7,26 @@ ext {
     ]
 
     android = [
-            'buildToolsVersion' : '31.0.0',
-            'targetSdkVersion' : 31,
-            'minSdkVersion' : 19,
+            'buildToolsVersion' : '33.0.0',
+            'targetSdkVersion' : 33,
+            'minSdkVersion' : 21,
     ]
 
     kotlin = [
-            "version"                              : "1.5.20",
-            "stdlib"                               : "org.jetbrains.kotlin:kotlin-stdlib:1.5.20",
+            "version"                              : "1.7.20",
+            "stdlib"                               : "org.jetbrains.kotlin:kotlin-stdlib:1.7.20",
             // 协程
             "coroutine"                            : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9",
             "coroutine-android"                    : "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9",
-            "reflect"                              : 'org.jetbrains.kotlin:kotlin-reflect:1.5.20'
+            "reflect"                              : 'org.jetbrains.kotlin:kotlin-reflect:1.7.20'
     ]
 
     androidx = [
-            'core'                                 : 'androidx.core:core:1.7.0',
-            'core-ktx'                             : 'androidx.core:core-ktx:1.7.0',
+            'core'                                 : 'androidx.core:core:1.9.0',
+            'core-ktx'                             : 'androidx.core:core-ktx:1.9.0',
             'multidex'                             : 'androidx.multidex:multidex:2.0.1',
             'legacy'                               : 'androidx.legacy:legacy-support-v4:1.0.0',
-            'appcompat'                            : 'androidx.appcompat:appcompat:1.2.0',
+            'appcompat'                            : 'androidx.appcompat:appcompat:1.5.1',
             'recyclerview'                         : 'androidx.recyclerview:recyclerview:1.2.1',
             'cardview'                             : 'androidx.cardview:cardview:1.0.0',
             "constraintlayout"                     : 'androidx.constraintlayout:constraintlayout:2.1.2',
@@ -34,38 +34,35 @@ ext {
             'gridlayout'                           : 'androidx.gridlayout:gridlayout:1.0.0',
             'viewpager2'                           : 'androidx.viewpager2:viewpager2:1.0.0',
             'design'                               : 'com.google.android.material:material:1.0.0',
-            'junit'                                : 'junit:junit:4.12',
-            'junit-test'                           : "androidx.test.ext:junit:1.1.1",
-            'espresso-test'                        : 'androidx.test.espresso:espresso-core:3.1.0',
-            'lifecycle-common'                     : 'androidx.lifecycle:lifecycle-common-java8:2.4.0',
-            'lifecycle-viewmodel'                  : 'androidx.lifecycle:lifecycle-viewmodel:2.4.0',
-            'lifecycle-livedata'                   : 'androidx.lifecycle:lifecycle-livedata:2.4.0',
-            'lifecycle-viewmodel-savestate'        : 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.4.0',
-            'lifecycle-compiler'                   : 'androidx.lifecycle:lifecycle-compiler:2.4.0',
-            'lifecycle-runtime-ktx'                : 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0',
-            'lifecycle-viewmodel-ktx'              : 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0',
-            'work'                                 : 'androidx.work:work-runtime-ktx:2.4.0',
-            'work-rxjava2'                         : 'androidx.work:work-rxjava2:2.4.0',
+            'lifecycle-common'                     : 'androidx.lifecycle:lifecycle-common-java8:2.5.1',
+            'lifecycle-viewmodel'                  : 'androidx.lifecycle:lifecycle-viewmodel:2.5.1',
+            'lifecycle-livedata'                   : 'androidx.lifecycle:lifecycle-livedata:2.5.1',
+            'lifecycle-viewmodel-savestate'        : 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.5.1',
+            'lifecycle-compiler'                   : 'androidx.lifecycle:lifecycle-compiler:2.5.1',
+            'lifecycle-runtime-ktx'                : 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1',
+            'lifecycle-viewmodel-ktx'              : 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1',
+            'work'                                 : 'androidx.work:work-runtime-ktx:2.7.1',
+            'work-rxjava2'                         : 'androidx.work:work-rxjava2:2.7.1',
             'collection'                           : 'androidx.collection:collection:1.2.0',
             'collection-ktx'                       : 'androidx.collection:collection-ktx:1.2.0',
-            'room'                                 : 'androidx.room:room-runtime:2.4.0',
-            'room-compiler'                        : 'androidx.room:room-compiler:2.4.0',
-            'camera-core'                          : 'androidx.camera:camera-core:1.0.2',
-            'camera-camera2'                       : 'androidx.camera:camera-camera2:1.0.2',
-            'camera-lifecycle'                     : 'androidx.camera:camera-lifecycle:1.0.2'
+            'room'                                 : 'androidx.room:room-runtime:2.4.3',
+            'room-compiler'                        : 'androidx.room:room-compiler:2.4.3',
+            'camera-core'                          : 'androidx.camera:camera-core:1.1.0',
+            'camera-camera2'                       : 'androidx.camera:camera-camera2:1.1.0',
+            'camera-lifecycle'                     : 'androidx.camera:camera-lifecycle:1.1.0',
+            'camera-view'                          : 'androidx.camera:camera-view:1.1.0'
     ]
 
     dependencies = [
-            "rxjava"                               : "io.reactivex.rxjava2:rxjava:2.2.12",
-            "rxandroid"                            : "io.reactivex.rxjava2:rxandroid:2.1.1",
-            "rxlifecycle"                          : "com.trello.rxlifecycle3:rxlifecycle-components:3.1.0",
-            "okhttp"                               : "com.squareup.okhttp3:okhttp:4.8.1",
-            'okhttp-log'                           : 'com.squareup.okhttp3:logging-interceptor:4.8.1',
+            "rxjava"                               : "io.reactivex.rxjava3:rxjava:3.1.5",
+            "rxandroid"                            : "io.reactivex.rxjava3:rxandroid:3.0.2",
+            "okhttp"                               : "com.squareup.okhttp3:okhttp:4.10.0",
+            'okhttp-log'                           : 'com.squareup.okhttp3:logging-interceptor:4.10.0',
             "retrofit"                             : "com.squareup.retrofit2:retrofit:2.9.0",
             "retrofit-converter-gson"              : "com.squareup.retrofit2:converter-gson:2.9.0",
-            "retrofit-adapter-rxjava"              : "com.squareup.retrofit2:adapter-rxjava2:2.9.0",
+            "retrofit-adapter-rxjava"              : "com.squareup.retrofit2:adapter-rxjava3:2.9.0",
             "glide"                                : "com.github.bumptech.glide:glide:4.10.0",
-            "gson"                                 : "com.google.code.gson:gson:2.8.6",
+            "gson"                                 : "com.google.code.gson:gson:2.8.5",
             "arouter-api"                          : "com.alibaba:arouter-api:1.5.0",
             "arouter-compiler"                     : "com.alibaba:arouter-compiler:1.2.2",
             "walle"                                : 'com.meituan.android.walle:library:1.1.6',

@@ -1,5 +1,6 @@
 package cn.yue.base.common.utils.app
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
@@ -18,6 +19,7 @@ object BarUtils {
      *
      * @return the status bar's height
      */
+    @SuppressLint("DiscouragedApi", "InternalInsetResource")
     fun getStatusBarHeight(): Int {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val windowManager = Utils.getContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -90,7 +92,7 @@ object BarUtils {
                 window.statusBarColor = bgColor
             }
             val windowInsetsCompat = WindowCompat.getInsetsController(window, decorView)
-            windowInsetsCompat?.isAppearanceLightStatusBars = isDarkIcon
+            windowInsetsCompat.isAppearanceLightStatusBars = isDarkIcon
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         } catch (e: Exception) {
             e.printStackTrace()
