@@ -1,12 +1,14 @@
 package cn.yue.test.mvvm
 
 import android.os.Bundle
+import android.view.View
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
-import cn.yue.base.middle.mvvm.components.binding.BasePullVMBindFragment
+import cn.yue.base.middle.mvvm.components.BasePullVMFragment
 import cn.yue.test.BR
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestPullVmBinding
@@ -14,12 +16,18 @@ import cn.yue.test.mode.ItemBean
 import com.alibaba.android.arouter.facade.annotation.Route
 
 @Route(path = "/app/testPullVM")
-class TestPullVMFragment : BasePullVMBindFragment<TestPullViewModel, FragmentTestPullVmBinding>() {
+class TestPullVMFragment : BasePullVMFragment<TestPullViewModel>() {
 
     override fun getContentLayoutId(): Int {
         return R.layout.fragment_test_pull_vm
     }
-
+    
+    private lateinit var binding: FragmentTestPullVmBinding
+    
+    override fun bindLayout(inflated: View) {
+        binding = DataBindingUtil.bind(inflated)!!
+    }
+    
     override fun initTopBar(topBar: TopBar) {
         super.initTopBar(topBar)
         topBar.setCenterTextStr("testPullVM")

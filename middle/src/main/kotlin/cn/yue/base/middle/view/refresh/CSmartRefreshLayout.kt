@@ -9,7 +9,7 @@ import com.scwang.smart.refresh.layout.SmartRefreshLayout
  * Description :
  * Created by yue on 2020/10/26
  */
-class SmartRefreshLayout(context: Context, attributeSet: AttributeSet) :
+class CSmartRefreshLayout(context: Context, attributeSet: AttributeSet) :
         SmartRefreshLayout(context, attributeSet), IRefreshLayout {
 
     init {

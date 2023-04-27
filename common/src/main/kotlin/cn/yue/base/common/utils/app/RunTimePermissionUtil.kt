@@ -21,8 +21,8 @@ object RunTimePermissionUtil {
     const val requestCode = 100
 
     fun requestPermissions(context: Context,
-                           success: (permission: String) -> Unit,
-                           failed: (permission: String) -> Unit,
+                           success: () -> Unit,
+                           failed: (permission: List<String>) -> Unit,
                            vararg permissions: String) {
         if (context is BaseFragmentActivity) {
             requestPermissions(context, requestCode, success, failed, *permissions)
@@ -31,8 +31,8 @@ object RunTimePermissionUtil {
 
     fun requestPermissions(context: BaseFragmentActivity,
                            requestCode: Int,
-                           success: (permission: String) -> Unit,
-                           failed: (permission: String) -> Unit,
+                           success: () -> Unit,
+                           failed: (permission: List<String>) -> Unit,
                            vararg permissions: String) {
         //检查权限是否授权
         context.setPermissionCallBack(success, failed)
@@ -40,9 +40,7 @@ object RunTimePermissionUtil {
             context.showFailDialog()
         }
         if (checkPermissions(context, *permissions)) {
-            for (permission in permissions) {
-                success.invoke(permission)
-            }
+            success.invoke()
         } else {
             ActivityCompat.requestPermissions(context, getNeedRequestPermissions(context, *permissions), requestCode)
         }

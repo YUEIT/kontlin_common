@@ -1,7 +1,8 @@
 package cn.yue.test.nested
 
 import android.os.Bundle
-import cn.yue.base.middle.mvp.components.binding.BaseHintBindFragment
+import android.view.View
+import cn.yue.base.middle.mvp.components.BaseHintFragment
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestNestBinding
 import com.alibaba.android.arouter.facade.annotation.Route
@@ -13,16 +14,18 @@ import com.alibaba.android.arouter.facade.annotation.Route
  */
 
 @Route(path = "/app/testNested")
-class TestNestedFragment : BaseHintBindFragment<FragmentTestNestBinding>() {
+class TestNestedFragment : BaseHintFragment() {
 
     override fun getContentLayoutId(): Int {
         return R.layout.fragment_test_nest
     }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    
+    private lateinit var binding: FragmentTestNestBinding
+    
+    override fun bindLayout(inflated: View) {
+        binding = FragmentTestNestBinding.bind(inflated)
     }
-
+    
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
         binding.svMain.setScrollContainer(object : PriorityNestedScrollView.ScrollContainer {

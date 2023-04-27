@@ -7,7 +7,7 @@ import android.widget.EditText
 import cn.yue.base.common.utils.device.KeyboardUtils
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.dialog.HintDialog
-import cn.yue.base.middle.mvp.components.binding.BaseHintBindFragment
+import cn.yue.base.middle.mvp.components.BaseHintFragment
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestWebviewBinding
 import com.alibaba.android.arouter.facade.annotation.Route
@@ -18,12 +18,18 @@ import com.alibaba.android.arouter.facade.annotation.Route
  * Created by yue on 2022/2/28
  */
 @Route(path = "/app/testWeb")
-class TestWebFragment : BaseHintBindFragment<FragmentTestWebviewBinding>() {
+class TestWebFragment : BaseHintFragment() {
 
     override fun getContentLayoutId(): Int {
         return R.layout.fragment_test_webview
     }
-
+    
+    private lateinit var binding: FragmentTestWebviewBinding
+    
+    override fun bindLayout(inflated: View) {
+        binding = FragmentTestWebviewBinding.bind(inflated)
+    }
+    
     override fun initTopBar(topBar: TopBar) {
         super.initTopBar(topBar)
         topBar.setRightImage(R.drawable.icon_search)

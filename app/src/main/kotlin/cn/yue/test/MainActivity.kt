@@ -67,9 +67,11 @@ class MainActivity : BaseFragmentActivity() {
             FRouter.instance.build("/app/testPageVM").navigation(this)
         })
         list.add(ItemAction("Select Photo") {
-            FRouter.instance.build("/common/selectPhoto")
-                .withBoolean("isPreview", true)
-                .navigation(this, 1)
+//            FRouter.instance.build("/common/selectPhoto")
+//                .withBoolean("isPreview", true)
+//                .navigation(this, 1)
+            FRouter.instance.build("/app/testPhoto")
+                .navigation(this)
         })
         list.add(ItemAction("View Photo") {
             FRouter.instance.build("/common/viewPhoto")

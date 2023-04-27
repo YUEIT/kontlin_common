@@ -7,6 +7,7 @@ import android.os.Looper
 import android.util.Size
 import android.view.Surface
 import android.view.TextureView
+import android.view.View
 import androidx.annotation.NonNull
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY
@@ -16,7 +17,7 @@ import androidx.lifecycle.LifecycleOwner
 import cn.yue.base.common.Constant
 import cn.yue.base.common.utils.app.RunTimePermissionUtil
 import cn.yue.base.common.utils.debug.ToastUtils
-import cn.yue.base.middle.mvp.components.binding.BaseHintBindFragment
+import cn.yue.base.middle.mvp.components.BaseHintFragment
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestCameraxBinding
 import com.alibaba.android.arouter.facade.annotation.Route
@@ -31,11 +32,17 @@ import java.util.concurrent.Executors
  */
 
 @Route(path = "/app/testCamerax")
-class TestCameraXFragment : BaseHintBindFragment<FragmentTestCameraxBinding>(){
+class TestCameraXFragment : BaseHintFragment(){
     override fun getContentLayoutId(): Int {
         return R.layout.fragment_test_camerax
     }
-
+    
+    private lateinit var binding: FragmentTestCameraxBinding
+    
+    override fun bindLayout(inflated: View) {
+        binding = FragmentTestCameraxBinding.bind(inflated)
+    }
+    
     private val cameraExecutor = Executors.newSingleThreadExecutor()
     private lateinit var cameraProviderFuture : ListenableFuture<ProcessCameraProvider>
     private lateinit var imageCapture: ImageCapture

@@ -89,7 +89,7 @@ class UpdateService : Service() {
         if (TextUtils.isEmpty(downloadApk)) return null
         val intent = Intent(Intent.ACTION_VIEW)
         val file = File(downloadApk!!)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             //适配Android Q,注意mFilePath是通过ContentResolver得到的，上述有相关代码
             val contentUri = FileProvider.getUriForFile(context, "cn.yue.base.kotlin.test.fileprovider", file)
             intent.setDataAndType(contentUri, "application/vnd.android.package-archive")

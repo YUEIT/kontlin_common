@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.database.Cursor
 import android.net.Uri
 import android.os.Binder
 import android.os.Build
@@ -48,15 +49,15 @@ object SettingsCompat {
                 return false
             }
             true
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+        } else {
             if (checkOp(context, OP_SYSTEM_ALERT_WINDOW)) {
                 true
             } else {
-                if (isShowPermission) startFloatWindowPermissionErrorToast(context)
+                if (isShowPermission) {
+                    startFloatWindowPermissionErrorToast(context)
+                }
                 false
             }
-        } else {
-            true
         }
     }
 
@@ -333,5 +334,62 @@ object SettingsCompat {
             //        intent.setClassName("com.smartisanos.security", "com.smartisanos.security.MainActivity");
             startSafely(context, intent)
         }
+    }
+    
+    /**
+     * 获取悬浮窗权限状态
+     *
+     * @param context
+     * @return 1或其他是没有打开，0是打开，该状态的定义和[android.app.AppOpsManager.MODE_ALLOWED]，MODE_IGNORED等值差不多，自行查阅源码
+     */
+    fun getFloatPermissionStatus(context: Context?): Int {
+        requireNotNull(context) { "context is null" }
+        val packageName = context.packageName
+        val uri = Uri.parse("content://com.iqoo.secure.provider.secureprovider/allowfloatwindowapp")
+        val selection = "pkgname = ?"
+        val selectionArgs = arrayOf(packageName)
+        val cursor: Cursor? = context
+            .contentResolver
+            .query(uri, null, selection, selectionArgs, null)
+        return if (cursor != null) {
+            cursor.getColumnNames()
+            if (cursor.moveToFirst()) {
+                val currentmode: Int = cursor.getInt(cursor.getColumnIndex("currentlmode"))
+                cursor.close()
+                currentmode
+            } else {
+                cursor.close()
+                getFloatPermissionStatus2(context)
+            }
+        } else {
+            getFloatPermissionStatus2(context)
+        }
+    }
+    
+    /**
+     * vivo比较新的系统获取方法
+     *
+     * @param context
+     * @return
+     */
+    private fun getFloatPermissionStatus2(context: Context): Int {
+        val packageName = context.packageName
+        val uri2 =
+            Uri.parse("content://com.vivo.permissionmanager.provider.permission/float_window_apps")
+        val selection = "pkgname = ?"
+        val selectionArgs = arrayOf(packageName)
+        val cursor = context
+            .contentResolver
+            .query(uri2, null, selection, selectionArgs, null)
+        return if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                val currentmode = cursor.getInt(cursor.getColumnIndex("currentmode"))
+                cursor.close()
+                currentmode
+            } else {
+                cursor.close()
+                1
+            }
+        } else 1
     }
 }

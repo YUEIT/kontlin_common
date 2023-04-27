@@ -3,9 +3,7 @@ package cn.yue.base.common.photo
 import android.Manifest
 import android.content.Intent
 import android.graphics.Color
-import android.os.Bundle
-import android.os.Handler
-import android.os.Message
+import android.os.*
 import android.text.TextUtils
 import android.view.View
 import android.widget.ImageView
@@ -26,7 +24,6 @@ import cn.yue.base.common.utils.variable.TimeUtils
 import cn.yue.base.common.widget.TopBar
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
-import java.util.*
 import java.util.concurrent.Executors
 
 /**
@@ -133,58 +130,66 @@ class SelectPhotoFragment : BaseFragment() {
 
     private var folderId: String? = null
     private fun getPhotoList() {
-        RunTimePermissionUtil.requestPermissions(mActivity, {
-                val threadPoolUtils = Executors.newSingleThreadExecutor()
-                threadPoolUtils.execute(Runnable {
-                    if (allMedia == null) {
-                        allMedia = when {
-                            TextUtils.isEmpty(folderId) -> {
-                                PhotoUtils.getTheLastMedias(mActivity, 100, getMediaType())
-                            }
-                            folderId!!.toInt() == -1 -> {
-                                PhotoUtils.getMediaByFolder(mActivity, true, folderId, getMediaType())
-                            }
-                            else -> {
-                                PhotoUtils.getMediaByFolder(mActivity, false, folderId, getMediaType())
-                            }
+        val searchBlock = {
+            val threadPoolUtils = Executors.newSingleThreadExecutor()
+            threadPoolUtils.execute(Runnable {
+                if (allMedia == null) {
+                    allMedia = when {
+                        TextUtils.isEmpty(folderId) -> {
+                            PhotoUtils.getTheLastMedias(mActivity, 100, getMediaType())
+                        }
+                        folderId!!.toInt() == -1 -> {
+                            PhotoUtils.getMediaByFolder(mActivity, true, folderId, getMediaType())
+                        }
+                        else -> {
+                            PhotoUtils.getMediaByFolder(mActivity, false, folderId, getMediaType())
                         }
                     }
-                    if (allMedia == null) {
-                        allMedia = ArrayList()
-                    }
-                    val fromIndex = page * pageCount
-                    if (fromIndex >= allMedia!!.size) {
-                        handler.sendMessage(Message.obtain(handler, 101, null))
-                        return@Runnable
-                    }
-                    var toIndex = (page + 1) * pageCount
-                    if (toIndex > allMedia!!.size) {
-                        toIndex = allMedia!!.size
-                    }
-                    val list = allMedia!!.subList(fromIndex, toIndex)
-                    handler.sendMessage(Message.obtain(handler, 101, list))
-                    page++
+                }
+                val fromIndex = page * pageCount
+                if (fromIndex >= allMedia!!.size) {
+                    handler.sendMessage(Message.obtain(handler, 101, Pair(page, null)))
+                    return@Runnable
+                }
+                var toIndex = (page + 1) * pageCount
+                if (toIndex > allMedia!!.size) {
+                    toIndex = allMedia!!.size
+                }
+                val list = allMedia!!.subList(fromIndex, toIndex)
+                handler.sendMessage(Message.obtain(handler, 101, Pair(page, list)))
             })
-        }, {}, Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            RunTimePermissionUtil.requestPermissions(mActivity, {
+                searchBlock.invoke()
+            }, {}, Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_AUDIO,
+                Manifest.permission.READ_MEDIA_VIDEO)
+        } else {
+            RunTimePermissionUtil.requestPermissions(mActivity, {
+                searchBlock.invoke()
+            }, {}, Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
     }
 
     private var allMedia: List<MediaData>? = null
-    private var handler = Handler(Handler.Callback { msg ->
+    private var handler = Handler(Looper.getMainLooper()) { msg ->
         if (msg.what == 101) {
-            val addList = msg.obj
-            if (addList is List<*>?) {
-                if (addList == null || addList.isEmpty()) {
-                    isCanLoadMore = false
-                } else {
-                    isCanLoadMore = true
-                    photoList.addAll(addList as List<MediaData>)
+            val addList = msg.obj as Pair<Int, List<MediaData>?>
+            if (addList.second.isNullOrEmpty()) {
+                isCanLoadMore = false
+            } else {
+                isCanLoadMore = true
+                if (page == addList.first) {
+                    photoList.addAll(addList.second!!)
                     adapter!!.setList(photoList)
                 }
+                page++
             }
         }
         false
-    })
-
+    }
+    
     private fun getSelectList(): MutableList<MediaData> {
         return (mActivity as SelectPhotoActivity).getPhotoList()
     }

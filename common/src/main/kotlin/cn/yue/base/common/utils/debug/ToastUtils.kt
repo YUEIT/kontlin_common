@@ -24,11 +24,11 @@ import java.lang.reflect.Field
 
 object ToastUtils {
 
-    private const val DEFAULT_COLOR = Color.WHITE
+    private const val DEFAULT_COLOR = Color.BLACK
     private var gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
     private var xOffset = 0
     private var yOffset = DisplayUtils.dip2px(100f)
-    private var bgResource = R.drawable.shape_bg_99000000_radius_10_padding_10
+    private var bgResource = R.drawable.shape_bg_white_radius_10
     private var bgResourceOneTime = -1
     private var messageColor = DEFAULT_COLOR
     private var messageColorOneTime = DEFAULT_COLOR

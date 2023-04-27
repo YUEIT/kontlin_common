@@ -217,16 +217,16 @@ abstract class BaseFragmentActivity : FragmentActivity() {
      * @param permissions
      */
     fun requestPermission(permissions: Array<String>,
-                          success: (permission: String) -> Unit,
-                          failed: (permission: String) -> Unit) {
+                          success: () -> Unit,
+                          failed: (permission: List<String>) -> Unit) {
         requestPermissions(this, success, failed, *permissions)
     }
 
-    private var permissionSuccess: ((permission: String) -> Unit)? = null
-    private var permissionFailed: ((permission: String) -> Unit)? = null
+    private var permissionSuccess: (() -> Unit)? = null
+    private var permissionFailed: ((permission: List<String>) -> Unit)? = null
 
-    fun setPermissionCallBack(success: (permission: String) -> Unit,
-                              failed: (permission: String) -> Unit) {
+    fun setPermissionCallBack(success: () -> Unit,
+                              failed: (permission: List<String>) -> Unit) {
         this.permissionSuccess = success
         this.permissionFailed = failed
     }
@@ -248,14 +248,18 @@ abstract class BaseFragmentActivity : FragmentActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == RunTimePermissionUtil.requestCode) {
+            val noPermission = arrayListOf<String>()
             for (i in grantResults.indices) {
-                if (verificationPermissions(grantResults)) {
-                    permissionSuccess?.invoke(permissions[i])
-                } else {
-                    ToastUtils.showShortToast(String.format(R.string.app_permission_request_fail.toString(),
+                if (!verificationPermissions(grantResults)) {
+                    ToastUtils.showShortToast(R.string.app_permission_request_fail.getString().replace("%d",
                         RunTimePermissionUtil.getPermissionName(permissions[i])))
-                    permissionFailed?.invoke((permissions[i]))
+                    noPermission.add(permissions[i])
                 }
+            }
+            if (noPermission.isEmpty()) {
+                permissionSuccess?.invoke()
+            } else {
+                permissionFailed?.invoke(noPermission)
             }
         }
     }

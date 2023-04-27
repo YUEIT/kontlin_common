@@ -31,8 +31,12 @@ class SelectPhotoActivity : BaseFragmentActivity() {
 
     private lateinit var viewPager: ViewPager
     private lateinit var tabs: PagerSlidingTabStrip
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+
+    override fun getContentViewLayoutId(): Int {
+        return R.layout.activity_select_photo
+    }
+    
+    private fun initBundle() {
         if (intent != null) {
             maxNum = intent.getIntExtra("maxNum", 1)
             val defaultList: List<Uri>? = intent.getParcelableArrayListExtra("uris")
@@ -50,11 +54,6 @@ class SelectPhotoActivity : BaseFragmentActivity() {
             mediaType = MediaType.valueOf(intent.getIntExtra("mediaType", MediaType.ALL.value))
             isPreview = intent.getBooleanExtra("isPreview", false)
         }
-//        changeFragment(SelectPhotoFragment::class.java.name, "最近照片")
-    }
-
-    override fun getContentViewLayoutId(): Int {
-        return R.layout.activity_select_photo
     }
 
     private fun initTopBar() {
@@ -72,6 +71,7 @@ class SelectPhotoActivity : BaseFragmentActivity() {
 
     override fun initView() {
         super.initView()
+        initBundle()
         initTopBar()
         viewPager = findViewById<ViewPager>(R.id.viewPager)
         val adapter = object : FragmentPagerAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {

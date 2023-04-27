@@ -10,7 +10,7 @@ import cn.yue.base.middle.R
  * Description :
  * Created by yue on 2019/6/19
  */
-class SwipeRefreshLayout(context: Context, attributeSet: AttributeSet): SwipeRefreshLayout(context, attributeSet), IRefreshLayout {
+class CSwipeRefreshLayout(context: Context, attributeSet: AttributeSet): SwipeRefreshLayout(context, attributeSet), IRefreshLayout {
 
     private val colors = intArrayOf(R.color.progress_color_1,
             R.color.progress_color_2,

@@ -3,10 +3,13 @@ package cn.yue.base.common.utils.file
 import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.ContentValues
+import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Environment
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.text.TextUtils
 import androidx.annotation.WorkerThread
@@ -358,5 +361,56 @@ object AndroidQFileUtils {
             cursor.close()
         }
         return uri
+    }
+    
+    fun getPathFromUri(context: Context, uri: Uri): String {
+        var imagePath: String? = ""
+        if (DocumentsContract.isDocumentUri(context, uri)) {
+            // 如果是document类型的Uri，则通过document id处理
+            val docId = DocumentsContract.getDocumentId(uri)
+            if ("com.android.providers.media.documents" == uri.authority) {
+                // 解析出数字格式的id
+                val id = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
+                val selection = MediaStore.Images.Media._ID + "=" + id
+                //注意！这里第二个参数千万不能传上面传参进来的uri
+                imagePath = getImagePath(context,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection)
+            } else if ("com.android.providers.downloads.documents" == uri.authority) {
+                val contentUri = ContentUris.withAppendedId(
+                    Uri.parse("content://downloads/public_downloads"),
+                    docId.toLong()
+                )
+                imagePath = getImagePath(context, contentUri, null)
+            } else if ("com.android.externalstorage.documents" == uri.authority) {
+                val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                val type = split[0]
+                if ("primary".equals(type, ignoreCase = true)) {
+                    imagePath = Environment.getExternalStorageDirectory().toString() + "/" + split[1]
+                }
+            }
+        } else if ("content".equals(uri.scheme, ignoreCase = true)) {
+            // 如果是content类型的Uri，则使用普通方式处理
+            imagePath = getImagePath(context, uri, null)
+        } else if ("file".equals(uri.scheme, ignoreCase = true)) {
+            // 如果是file类型的Uri，直接获取图片路径即可
+            imagePath = uri.path
+        }
+        return imagePath ?: ""
+    }
+    
+    fun getImagePath(context: Context, uri: Uri, selection: String?): String {
+        val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor = context.contentResolver.query(uri, filePathColumn, selection,
+            null, null)
+        val picPath = try {
+            cursor?.moveToFirst()
+            val columnIndex = cursor?.getColumnIndex(filePathColumn[0])
+            cursor?.getString(columnIndex!!) ?: ""
+        } catch (e: Exception) {
+            ""
+        } finally {
+            cursor?.close()
+        }
+        return picPath
     }
 }

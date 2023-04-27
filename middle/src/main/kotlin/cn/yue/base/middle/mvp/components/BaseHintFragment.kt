@@ -1,10 +1,12 @@
 package cn.yue.base.middle.mvp.components
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.ViewStub
 import cn.yue.base.common.activity.BaseFragment
+import cn.yue.base.common.photo.data.MediaData
 import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.common.utils.device.NetworkUtils
@@ -105,8 +107,8 @@ abstract class BaseHintFragment : BaseFragment(), IBaseView, IPhotoView {
         return photoHelper!!
     }
 
-    override fun selectImageResult(selectList: List<String>?) {}
-    override fun cropImageResult(image: String?) {}
+    override fun selectImageResult(selectList: List<MediaData>?) {}
+    override fun cropImageResult(image: Uri?) {}
     override fun uploadImageResult(serverList: List<String>?) {}
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

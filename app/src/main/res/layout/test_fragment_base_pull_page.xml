@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<cn.yue.base.middle.view.refresh.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/refreshL"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <cn.yue.base.middle.view.PageStateView
-        android:id="@+id/stateView"
+    <cn.yue.base.middle.view.refresh.CSwipeRefreshLayout
+        android:id="@+id/refreshL"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/baseRV"
+        <cn.yue.base.middle.view.PageStateView
+            android:id="@+id/stateView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:overScrollMode="never"/>
+            android:layout_height="match_parent">
 
-    </cn.yue.base.middle.view.PageStateView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/baseRV"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:overScrollMode="never" />
 
-</cn.yue.base.middle.view.refresh.SmartRefreshLayout>
+        </cn.yue.base.middle.view.PageStateView>
 
+    </cn.yue.base.middle.view.refresh.CSwipeRefreshLayout>
+</FrameLayout>
 

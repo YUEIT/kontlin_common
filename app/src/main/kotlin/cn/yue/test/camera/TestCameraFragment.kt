@@ -9,8 +9,9 @@ import android.os.HandlerThread
 import android.os.SystemClock
 import android.view.Surface
 import android.view.TextureView
+import android.view.View
 import cn.yue.base.common.Constant
-import cn.yue.base.middle.mvp.components.binding.BaseHintBindFragment
+import cn.yue.base.middle.mvp.components.BaseHintFragment
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestCamera2Binding
 import com.alibaba.android.arouter.facade.annotation.Route
@@ -21,18 +22,23 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
-
 /**
  * Description :
  * Created by yue on 2022/1/20
  */
 @Route(path = "/app/testCamera")
-class TestCameraFragment : BaseHintBindFragment<FragmentTestCamera2Binding>() {
+class TestCameraFragment : BaseHintFragment() {
 
     override fun getContentLayoutId(): Int {
         return R.layout.fragment_test_camera2
     }
-
+    
+    private lateinit var binding: FragmentTestCamera2Binding
+    
+    override fun bindLayout(inflated: View) {
+        binding = FragmentTestCamera2Binding.bind(inflated)
+    }
+    
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
         if (binding.texture.isAvailable) {

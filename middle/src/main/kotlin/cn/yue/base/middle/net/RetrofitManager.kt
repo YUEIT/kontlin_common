@@ -6,7 +6,7 @@ import cn.yue.base.middle.net.convert.SplitConverterFactory
 import cn.yue.base.middle.net.intercept.NoNetInterceptor
 import cn.yue.base.middle.net.intercept.ParamInterceptor
 import cn.yue.base.middle.net.intercept.ResponseInterceptor
-import io.reactivex.plugins.RxJavaPlugins
+import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
