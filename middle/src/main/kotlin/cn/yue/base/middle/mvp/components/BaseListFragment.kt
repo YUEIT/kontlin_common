@@ -1,7 +1,5 @@
 package cn.yue.base.middle.mvp.components
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
@@ -9,7 +7,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import cn.yue.base.common.activity.BaseFragment
-import cn.yue.base.common.photo.data.MediaData
 import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.common.utils.device.NetworkUtils
@@ -18,8 +15,6 @@ import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.middle.R
 import cn.yue.base.middle.mvp.IListView
 import cn.yue.base.middle.mvp.components.data.Loader
-import cn.yue.base.middle.mvp.photo.IPhotoView
-import cn.yue.base.middle.mvp.photo.PhotoHelper
 import cn.yue.base.middle.view.PageStateView
 import cn.yue.base.middle.view.load.LoadStatus
 import cn.yue.base.middle.view.load.PageStatus
@@ -29,7 +24,7 @@ import cn.yue.base.middle.view.refresh.IRefreshLayout
  * Description :
  * Created by yue on 2019/3/7
  */
-abstract class BaseListFragment<S> : BaseFragment(), IListView<S>, IPhotoView {
+abstract class BaseListFragment<S> : BaseFragment(), IListView<S> {
 
     private var adapter: CommonAdapter<S>? = null
     private lateinit var footer: BaseFooter
@@ -212,22 +207,5 @@ abstract class BaseListFragment<S> : BaseFragment(), IListView<S>, IPhotoView {
             waitDialog?.cancel()
         }
     }
-
-    private var photoHelper: PhotoHelper? = null
-    fun getPhotoHelper(): PhotoHelper {
-        if (photoHelper == null) {
-            photoHelper = PhotoHelper(mActivity, this)
-        }
-        return photoHelper!!
-    }
-
-    override fun selectImageResult(selectList: List<MediaData>?) {}
-    override fun cropImageResult(image: Uri?) {}
-    override fun uploadImageResult(serverList: List<String>?) {}
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (photoHelper != null) {
-            photoHelper!!.onActivityResult(requestCode, resultCode, data)
-        }
-    }
+    
 }

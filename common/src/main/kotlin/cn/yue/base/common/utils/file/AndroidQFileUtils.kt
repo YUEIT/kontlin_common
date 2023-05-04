@@ -267,6 +267,27 @@ object AndroidQFileUtils {
         }
         return resultUri
     }
+    
+    fun createNewFile(context: Context, uri: Uri): File {
+        val file = BitmapFileUtils.createRandomFile()
+        try {
+            //根据uri获取输入字节流
+            val inputStream = context.contentResolver.openInputStream(uri)
+            //把输入流写进file里
+            val fileOutputStream = FileOutputStream(file)
+            val buffer = ByteArray(1024)
+            var byteRead = 0
+            while (-1 != (inputStream!!.read(buffer).also { byteRead = it })){
+                fileOutputStream.write(buffer,0,byteRead)
+            }
+            fileOutputStream.flush();
+            inputStream.close();
+            fileOutputStream.close();
+        } catch (e : Exception) {
+            e.printStackTrace();
+        }
+        return file
+    }
 
     /**
      * 获取uri的文件路径 （DATA 已经被Deprecated，慎用！）
@@ -407,6 +428,7 @@ object AndroidQFileUtils {
             val columnIndex = cursor?.getColumnIndex(filePathColumn[0])
             cursor?.getString(columnIndex!!) ?: ""
         } catch (e: Exception) {
+            e.printStackTrace()
             ""
         } finally {
             cursor?.close()

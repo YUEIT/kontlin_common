@@ -1,12 +1,9 @@
 package cn.yue.base.middle.mvp.components
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.ViewStub
 import cn.yue.base.common.activity.BaseFragment
-import cn.yue.base.common.photo.data.MediaData
 import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.ToastUtils.showShortToast
 import cn.yue.base.common.utils.device.NetworkUtils
@@ -14,8 +11,6 @@ import cn.yue.base.common.widget.dialog.WaitDialog
 import cn.yue.base.middle.R
 import cn.yue.base.middle.mvp.IBaseView
 import cn.yue.base.middle.mvp.components.data.Loader
-import cn.yue.base.middle.mvp.photo.IPhotoView
-import cn.yue.base.middle.mvp.photo.PhotoHelper
 import cn.yue.base.middle.view.PageStateView
 import cn.yue.base.middle.view.load.LoadStatus
 import cn.yue.base.middle.view.load.PageStatus
@@ -25,7 +20,7 @@ import cn.yue.base.middle.view.refresh.IRefreshLayout
  * Description :
  * Created by yue on 2019/3/7
  */
-abstract class BasePullFragment : BaseFragment(), IBaseView, IPhotoView {
+abstract class BasePullFragment : BaseFragment(), IBaseView {
     private val loader = Loader()
     private lateinit var refreshL: IRefreshLayout
     private lateinit var stateView: PageStateView
@@ -133,23 +128,5 @@ abstract class BasePullFragment : BaseFragment(), IBaseView, IPhotoView {
             waitDialog?.cancel()
         }
     }
-
-    private var photoHelper: PhotoHelper? = null
-
-    fun getPhotoHelper(): PhotoHelper {
-        if (photoHelper == null) {
-            photoHelper = PhotoHelper(mActivity, this)
-        }
-        return photoHelper!!
-    }
-
-    override fun selectImageResult(selectList: List<MediaData>?) {}
-    override fun cropImageResult(image: Uri?) {}
-    override fun uploadImageResult(serverList: List<String>?) {}
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (photoHelper != null) {
-            photoHelper!!.onActivityResult(requestCode, resultCode, data)
-        }
-    }
+    
 }
