@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import cn.yue.base.common.image.ImageLoader
+import cn.yue.base.common.image.ImageLoader.Companion.loadImage
 
 class CommonViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -46,9 +46,7 @@ class CommonViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     fun setImageUrl(id: Int, url: String?) {
-        viewToAction<ImageView>(id) {
-            ImageLoader.getLoader().loadImage(it, url)
-        }
+        getView<ImageView>(id)?.loadImage(url)
     }
 
     fun setImageResource(id: Int, resId: Int) {

@@ -8,12 +8,11 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.R
-import cn.yue.base.common.image.ImageLoader
+import cn.yue.base.common.image.ImageLoader.Companion.loadImage
 import cn.yue.base.common.utils.code.hasValue
 import cn.yue.base.common.widget.keyboard.mode.IEmotionSort
 import cn.yue.base.common.widget.recyclerview.CommonAdapter
 import cn.yue.base.common.widget.recyclerview.CommonViewHolder
-import java.util.*
 
 /**
  * Description :
@@ -42,9 +41,7 @@ class EmotionBottomSortLayout(context: Context, attrs: AttributeSet?) : LinearLa
                     holder.itemView.setBackgroundColor(Color.parseColor("#ffffff"))
                 }
                 if (iEmotionSort.getIconUrl().hasValue()) {
-                    ImageLoader.getLoader().loadImage(holder.getView(R.id.emotionImageIV),
-                        iEmotionSort.getIconUrl()
-                    )
+                    holder.getView<ImageView>(R.id.emotionImageIV)?.loadImage(iEmotionSort.getIconUrl())
                 }
                 holder.setOnItemClickListener {
                     if (mListener != null) {

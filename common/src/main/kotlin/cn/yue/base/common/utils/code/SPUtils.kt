@@ -8,10 +8,9 @@ import cn.yue.base.common.utils.Utils
 class SPUtils(spName: String) {
 
     private val sp: SharedPreferences = Utils.getContext().getSharedPreferences(spName, Context.MODE_PRIVATE)
-    private val editor: SharedPreferences.Editor
-
+    private val editor: SharedPreferences.Editor = sp.edit()
+    
     init {
-        editor = sp.edit()
         editor.apply()
     }
 

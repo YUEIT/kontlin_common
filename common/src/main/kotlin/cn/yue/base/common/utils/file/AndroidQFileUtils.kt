@@ -8,11 +8,14 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.text.TextUtils
 import androidx.annotation.WorkerThread
+import androidx.core.content.FileProvider
+import cn.yue.base.common.Constant
 import cn.yue.base.common.photo.data.MimeType
 import cn.yue.base.common.photo.data.MimeType.Companion.isImage
 import cn.yue.base.common.photo.data.MimeType.Companion.isVideo
@@ -31,6 +34,15 @@ object AndroidQFileUtils {
     private const val AUDIO_PATH = "DCIM/audio/"
     private const val FILE_PATH = "Documents/file/"
 
+    fun getUriForFile(tempFile: File): Uri {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            FileProvider.getUriForFile(getContext(), Constant.FILE_PROVIDER_AUTHORITY, tempFile)
+        } else {
+            //7.0以下
+            Uri.fromFile(tempFile)
+        }
+    }
+    
     /**
      * 判断文件是否存在
      *
@@ -268,25 +280,31 @@ object AndroidQFileUtils {
         return resultUri
     }
     
-    fun createNewFile(context: Context, uri: Uri): File {
-        val file = BitmapFileUtils.createRandomFile()
+    fun createNewFile(context: Context, uri: Uri, type: String?): File {
+        val storePath = Constant.cachePath
+        val appDir = File(storePath)
+        if (!appDir.exists()) {
+            appDir.mkdirs()
+        }
+        val uuid = UUID.randomUUID().toString()
+        val tempFile = File(Constant.cachePath, "${uuid}.${type}")
         try {
             //根据uri获取输入字节流
             val inputStream = context.contentResolver.openInputStream(uri)
             //把输入流写进file里
-            val fileOutputStream = FileOutputStream(file)
+            val fileOutputStream = FileOutputStream(tempFile)
             val buffer = ByteArray(1024)
             var byteRead = 0
             while (-1 != (inputStream!!.read(buffer).also { byteRead = it })){
                 fileOutputStream.write(buffer,0,byteRead)
             }
             fileOutputStream.flush();
-            inputStream.close();
+            inputStream.close()
             fileOutputStream.close();
         } catch (e : Exception) {
             e.printStackTrace();
         }
-        return file
+        return tempFile
     }
 
     /**

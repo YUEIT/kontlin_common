@@ -18,46 +18,34 @@ import cn.yue.base.common.utils.code.getString
  */
 
 object RunTimePermissionUtil {
-    const val requestCode = 100
-
-    fun requestPermissions(context: Context,
-                           success: () -> Unit,
-                           failed: (permission: List<String>) -> Unit,
-                           vararg permissions: String) {
-        if (context is BaseFragmentActivity) {
-            requestPermissions(context, requestCode, success, failed, *permissions)
+    
+    fun Context.requestPermissions(success: () -> Unit,
+                                  failed: (permission: List<String>) -> Unit,
+                                  vararg permissions: String) {
+        if (this is BaseFragmentActivity) {
+            if (this.shouldShowRequestPermissionRationale(*permissions)) {
+                this.showFailDialog()
+            }
+            if (this.checkPermissions(*permissions)) {
+                success.invoke()
+            } else {
+                this.launchPermissions(success, failed, *permissions)
+            }
         }
     }
-
-    fun requestPermissions(context: BaseFragmentActivity,
-                           requestCode: Int,
-                           success: () -> Unit,
-                           failed: (permission: List<String>) -> Unit,
-                           vararg permissions: String) {
-        //检查权限是否授权
-        context.setPermissionCallBack(success, failed)
-        if (shouldShowRequestPermissionRationale(context, *permissions)) {
-            context.showFailDialog()
-        }
-        if (checkPermissions(context, *permissions)) {
-            success.invoke()
-        } else {
-            ActivityCompat.requestPermissions(context, getNeedRequestPermissions(context, *permissions), requestCode)
-        }
-    }
-
+    
     /**
      * 检测所有的权限是否都已授权
      *
      * @param permissions
      * @return
      */
-    fun checkPermissions(context: Activity, vararg permissions: String): Boolean {
+    fun Context.checkPermissions(vararg permissions: String): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true
         }
         for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
                 return false
             }
         }
@@ -70,10 +58,10 @@ object RunTimePermissionUtil {
      * @param permissions
      * @return
      */
-    fun shouldShowRequestPermissionRationale(context: Activity, vararg permissions: String): Boolean {
+    fun Activity.shouldShowRequestPermissionRationale(vararg permissions: String): Boolean {
         var flag = false
         for (p in permissions) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(context, p)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, p)) {
                 flag = true
                 break
             }

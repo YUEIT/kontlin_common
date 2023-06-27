@@ -59,7 +59,11 @@ class SelectPhotoActivity : BaseFragmentActivity() {
     private fun initTopBar() {
         getTopBar().setLeftImage(R.drawable.app_icon_back)
             .setLeftClickListener{ finish() }
-            .setRightTextStr(if (photoList.isEmpty()) R.string.app_cancel.getString() else "${R.string.app_confirm.getString()}(" + photoList.size + "/" + maxNum + ")")
+            .setRightTextStr(if (photoList.isEmpty()) {
+                R.string.app_cancel.getString()
+            } else {
+                "${R.string.app_confirm.getString()}(" + photoList.size + "/" + maxNum + ")"
+            })
             .setRightClickListener{
                 if (photoList.isEmpty()) {
                     finish()

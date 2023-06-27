@@ -7,13 +7,23 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tv_select_photo"
+        android:id="@+id/tv_select_album"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:gravity="center"
         android:textSize="20sp"
         android:textColor="#ff0000"
-        android:text="select photo"/>
+        android:text="select album"/>
 
+
+    <TextView
+        android:id="@+id/tv_select_system_album"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textColor="#ff0000"
+        android:text="select system album"/>
 </LinearLayout>

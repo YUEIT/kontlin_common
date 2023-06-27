@@ -27,5 +27,7 @@ object Constant {
     val audioPath = getExternalStorage() + File.separator + "audio" + File.separator
 
     val cachePath = getExternalStorage() + File.separator + "cache" + File.separator
+    
+    const val FILE_PROVIDER_AUTHORITY = "cn.yue.base.kotlin.test.fileprovider"
 }
 

@@ -48,7 +48,7 @@ class DownloadWorker(context: Context, workerParameters: WorkerParameters) : Wor
         var outputStream: OutputStream? = null
         try {
             // 改成自己需要的存储位置
-            var fileName = inputData.getString("fileName") ?: "temp" + System.currentTimeMillis()
+            val fileName = inputData.getString("fileName") ?: ("temp" + System.currentTimeMillis())
             val file = File(Constant.cachePath + File.separator.toString() + fileName)
             if (file.exists()) {
                 file.delete()

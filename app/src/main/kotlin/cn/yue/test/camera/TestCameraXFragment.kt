@@ -15,8 +15,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import cn.yue.base.common.Constant
-import cn.yue.base.common.utils.app.RunTimePermissionUtil
-import cn.yue.base.common.utils.debug.ToastUtils
+import cn.yue.base.common.utils.app.RunTimePermissionUtil.requestPermissions
 import cn.yue.base.middle.mvp.components.BaseHintFragment
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestCameraxBinding
@@ -55,15 +54,12 @@ class TestCameraXFragment : BaseHintFragment(){
         binding.tv.setOnClickListener {
             takePicture()
         }
-        if (RunTimePermissionUtil.checkPermissions(mActivity, Manifest.permission.CAMERA)) {
-            mActivity.requestPermission(arrayOf(Manifest.permission.CAMERA), {
-                openCamera()
-            }, {
-                ToastUtils.showLongToast("授权失败")
-            })
-        } else {
+        mActivity.requestPermissions({
             openCamera()
-        }
+        }, {}, Manifest.permission.CAMERA)
+       binding.tv.setOnClickListener {
+           takePicture()
+       }
     }
 
 

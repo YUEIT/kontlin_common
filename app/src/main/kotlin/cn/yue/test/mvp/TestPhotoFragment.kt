@@ -33,7 +33,10 @@ class TestPhotoFragment: BaseHintFragment(), IPhotoView {
 	override fun initView(savedInstanceState: Bundle?) {
 		super.initView(savedInstanceState)
 		photoHelper = PhotoHelper(mActivity, this)
-		binding.tvSelectPhoto.setOnClickListener {
+		binding.tvSelectAlbum.setOnClickListener {
+			photoHelper?.openAlbum()
+		}
+		binding.tvSelectSystemAlbum.setOnClickListener {
 			photoHelper?.openSystemAlbum()
 		}
 	}

@@ -48,6 +48,9 @@ class TestHintFragment : BaseHintFragment() {
                 e.printStackTrace()
             }
         }
+        val array = arrayOf("1")
+        array.asList()
+
     }
 
     fun loadHook(str: String): String {

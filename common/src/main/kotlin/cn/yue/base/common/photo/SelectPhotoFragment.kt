@@ -12,12 +12,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.R
 import cn.yue.base.common.activity.BaseFragment
-import cn.yue.base.common.image.ImageLoader
+import cn.yue.base.common.image.ImageLoader.Companion.loadImage
 import cn.yue.base.common.photo.data.MediaData
 import cn.yue.base.common.photo.data.MediaType
 import cn.yue.base.common.photo.data.MimeType
 import cn.yue.base.common.photo.preview.ViewMediaActivity
-import cn.yue.base.common.utils.app.RunTimePermissionUtil
+import cn.yue.base.common.utils.app.RunTimePermissionUtil.requestPermissions
 import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.LogUtils
 import cn.yue.base.common.utils.variable.TimeUtils
@@ -55,7 +55,7 @@ class SelectPhotoFragment : BaseFragment() {
                 val checkIV = holder.getView<ImageView>(R.id.checkIV)
                 val timeTV = holder.getView<TextView>(R.id.timeTV)
                 photoIV?.setBackgroundColor(Color.parseColor("#ffffff"))
-                ImageLoader.getLoader().loadImage(photoIV, mediaData.uri)
+                photoIV?.loadImage(mediaData.uri)
                 if (MimeType.isVideo(mediaData.mimeType)) {
                     timeTV?.visibility = View.VISIBLE
                     timeTV?.text = TimeUtils.formatDuration(mediaData.duration)
@@ -160,13 +160,13 @@ class SelectPhotoFragment : BaseFragment() {
             })
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            RunTimePermissionUtil.requestPermissions(mActivity, {
+            mActivity.requestPermissions({
                 searchBlock.invoke()
             }, {}, Manifest.permission.READ_MEDIA_IMAGES,
                 Manifest.permission.READ_MEDIA_AUDIO,
                 Manifest.permission.READ_MEDIA_VIDEO)
         } else {
-            RunTimePermissionUtil.requestPermissions(mActivity, {
+            mActivity.requestPermissions({
                 searchBlock.invoke()
             }, {}, Manifest.permission.READ_EXTERNAL_STORAGE)
         }

@@ -1,5 +1,6 @@
 package cn.yue.base.common.image
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
@@ -17,6 +18,7 @@ import com.bumptech.glide.load.resource.bitmap.TransformationUtils
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import java.lang.ref.WeakReference
 import java.security.MessageDigest
 
 /**
@@ -24,64 +26,85 @@ import java.security.MessageDigest
  * Created by yue on 2018/11/15
  */
 class GlideImageLoader : ImageLoader.Loader {
-
-    override fun loadImage(imageView: ImageView?, url: String?) {
-        if (imageView == null) {
-            return
+    
+    inner class GlideImageLoaderBuilder: ImageLoader.Builder {
+    
+        private var weakImageView: WeakReference<ImageView>? = null
+        private var fitCenter: Boolean = false
+        private var url: String? = null
+        private var uri: Uri? = null
+        private var drawable: Drawable? = null
+        private var resId: Int = 0
+        private var radius: Int = 0
+        private var placeholderResId: Int = 0
+        private var skipMemoryCache: Boolean = false
+        
+        fun setImageView(imageView: ImageView): ImageLoader.Builder {
+            weakImageView = WeakReference(imageView)
+            return this
         }
-        loadImage(imageView, url, false)
-    }
-
-    override fun loadImage(imageView: ImageView?, url: String?, fitCenter: Boolean) {
-        if (imageView == null) {
-            return
+        override fun setFitCenter(fitCenter: Boolean): ImageLoader.Builder {
+            this.fitCenter = fitCenter
+            return this
         }
-        realLoadImage(imageView, url, 0, null, null, fitCenter)
-    }
-
-    override fun loadImage(imageView: ImageView?, resId: Int) {
-        if (imageView == null) {
-            return
+        
+        override fun setUrl(url: String?): ImageLoader.Builder {
+            this.url = url
+            return this
         }
-        loadImage(imageView, resId, false)
-    }
-
-    override fun loadImage(imageView: ImageView?, resId: Int, fitCenter: Boolean) {
-        if (imageView == null) {
-            return
+        
+        override fun setUri(uri: Uri?): ImageLoader.Builder {
+            this.uri = uri
+            return this
         }
-        realLoadImage(imageView, null, resId, null, null, fitCenter)
-    }
-
-    override fun loadImage(imageView: ImageView?, drawable: Drawable?) {
-        if (imageView == null) {
-            return
+        
+        override fun setDrawable(drawable: Drawable?): ImageLoader.Builder {
+            this.drawable = drawable
+            return this
         }
-        loadImage(imageView, drawable, false)
-    }
-
-    override fun loadImage(imageView: ImageView?, drawable: Drawable?, fitCenter: Boolean) {
-        if (imageView == null) {
-            return
+        
+        override fun setResId(resId: Int): ImageLoader.Builder {
+            this.resId = resId
+            return this
         }
-        realLoadImage(imageView, null, 0, drawable, null, fitCenter)
-    }
-
-    override fun loadImage(imageView: ImageView?, uri: Uri?) {
-        if (imageView == null) {
-            return
+        
+        override fun setRadius(radius: Int): ImageLoader.Builder {
+            this.radius = radius
+            return this
         }
-        loadImage(imageView, uri, false)
-    }
-
-    override fun loadImage(imageView: ImageView?, uri: Uri?, fitCenter: Boolean) {
-        if (imageView == null) {
-            return
+        
+        override fun setPlaceholderResId(placeholderResId: Int): ImageLoader.Builder {
+            this.placeholderResId = placeholderResId
+            return this
         }
-        realLoadImage(imageView, null, 0, null, uri, false)
+        
+        override fun setSkipMemoryCache(skipMemoryCache: Boolean): ImageLoader.Builder {
+            this.skipMemoryCache = skipMemoryCache
+            return this
+        }
+        
+        override fun loadImage() {
+            val imageView = weakImageView?.get() ?: return
+            realLoadImage(imageView, placeholderResId, url, resId, drawable, uri,
+                fitCenter, skipMemoryCache, radius)
+        }
     }
-
-    private fun realLoadImage(imageView: ImageView?, url: String?, resId: Int, drawable: Drawable?, uri: Uri?, fitCenter: Boolean) {
+    
+    override fun with(imageView: ImageView): ImageLoader.Builder {
+        return GlideImageLoaderBuilder().setImageView(imageView)
+    }
+    
+    @SuppressLint("CheckResult")
+    private fun realLoadImage(imageView: ImageView?,
+                              placeholderResId: Int,
+                              url: String?,
+                              resId: Int,
+                              drawable: Drawable?,
+                              uri: Uri?,
+                              fitCenter: Boolean,
+                              skipMemoryCache: Boolean,
+                              radius: Int
+    ) {
         if (imageView == null) {
             return
         }
@@ -105,7 +128,28 @@ class GlideImageLoader : ImageLoader.Loader {
         if (requestBuilder == null) {
             return
         }
-        val requestOptions = if (fitCenter) getRequestOptions().fitCenter() else getRequestOptions().centerCrop()
+        val requestOptions = RequestOptions()
+        if (placeholderResId != 0) {
+            requestOptions.placeholder(placeholderResId)
+                .error(placeholderResId)
+        } else {
+            requestOptions.placeholder(R.drawable.drawable_default)
+                .error(R.drawable.drawable_default)
+        }
+        if (fitCenter) {
+            requestOptions.fitCenter()
+        } else {
+            requestOptions.centerCrop()
+        }
+        if (skipMemoryCache) {
+            requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE)
+        } else {
+            requestOptions.diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+        }
+        if (radius > 0) {
+            requestOptions.transform(GlideRoundTransform(radius))
+                .dontAnimate()
+        }
         requestBuilder.apply(requestOptions).into(imageView)
     }
 
@@ -115,66 +159,15 @@ class GlideImageLoader : ImageLoader.Loader {
         }
         return false
     }
-
-    private var placeholderResId: Int = 0
-
-    override fun setPlaceholder(resId: Int): ImageLoader.Loader {
-        placeholderResId = resId
-        return this
-    }
-
-    private fun getRequestOptions() : RequestOptions {
-        return RequestOptions()
-                .placeholder(placeholderResId)
-                .error(placeholderResId)
-//                .optionalTransform(FrameDrawable::class.java,  FrameDrawableTransformation())
-    }
-
-    override fun loadGif(imageView: ImageView?, url: String?) {
+    
+    private fun loadGif(imageView: ImageView?, url: String?) {
         if (imageView == null) {
             return
         }
         Glide.with(imageView.context)
-                .asGif()
-                .load(url)
-                .into(imageView)
-    }
-
-    override fun loadRoundImage(imageView: ImageView?, url: String?, radius: Int) {
-        if (imageView == null) {
-            return
-        }
-        Glide.with(imageView.context)
-                .load(url)
-                .apply(getRequestOptions()
-                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                        .transform(GlideRoundTransform(radius))
-                        .dontAnimate())
-                .into(imageView)
-
-    }
-
-    override fun loadCircleImage(imageView: ImageView?, url: String?) {
-        if (imageView == null) {
-            return
-        }
-        Glide.with(imageView.context)
-                .load(url)
-                .apply(getRequestOptions()
-                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                        .transform(GlideCircleTransform())
-                        .dontAnimate())
-                .into(imageView)
-    }
-
-    override fun loadGif(imageView: ImageView?, resId: Int) {
-        if (imageView == null) {
-            return
-        }
-        Glide.with(imageView.context)
-                .asGif()
-                .load(resId)
-                .into(imageView)
+            .asGif()
+            .load(url)
+            .into(imageView)
     }
 
     override fun loadAsBitmap(context: Context, url: String?, onLoaded: (bitmap: Bitmap) -> Unit, noFound: (() -> Unit)?) {
@@ -196,36 +189,6 @@ class GlideImageLoader : ImageLoader.Loader {
 
                     }
                 })
-    }
-
-    override fun loadImageNoCache(imageView: ImageView?, url: String?) {
-        if (imageView == null) {
-            return
-        }
-        Glide.with(imageView.context)
-                .load(url)
-                .apply(getRequestOptions()
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .dontAnimate())
-                .into(imageView)
-    }
-
-    override fun loadImageNoCache(imageView: ImageView?, uri: Uri?) {
-        if (imageView == null) {
-            return
-        }
-        Glide.with(imageView.context)
-                .load(uri)
-                .apply(getRequestOptions()
-                        .skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .dontAnimate())
-                .into(imageView)
-    }
-
-    override fun clearCache() {
-        placeholderResId = R.drawable.drawable_default
     }
 
     class GlideRoundTransform(var dp: Int) : BitmapTransformation() {

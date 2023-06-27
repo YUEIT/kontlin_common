@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.common.R
 import cn.yue.base.common.activity.BaseFragment
-import cn.yue.base.common.image.ImageLoader
+import cn.yue.base.common.image.ImageLoader.Companion.loadImage
 import cn.yue.base.common.photo.data.MediaData
 import cn.yue.base.common.photo.data.MediaFolderVO
 import cn.yue.base.common.photo.data.MediaType
@@ -41,7 +41,7 @@ class SelectPhotoFolderFragment : BaseFragment() {
 
             override fun bindData(holder: CommonViewHolder, position: Int, mediaFolderVO: MediaFolderVO) {
                 holder.setText(R.id.folderTV, mediaFolderVO.name + "(" + mediaFolderVO.count + ")")
-                ImageLoader.getLoader().loadImage(holder.getView(R.id.folderIV) as ImageView?, mediaFolderVO.coverUri)
+                holder.getView<ImageView>(R.id.folderIV)?.loadImage(mediaFolderVO.coverUri)
                 holder.setOnItemClickListener{
                     (mActivity as SelectPhotoActivity).changeToSelectPhotoFragment(mediaFolderVO.id, mediaFolderVO.name)
                 }

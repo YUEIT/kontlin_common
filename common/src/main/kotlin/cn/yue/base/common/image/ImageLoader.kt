@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.widget.ImageView
-import androidx.annotation.DrawableRes
 
 /**
  * Description :
@@ -22,46 +21,54 @@ class ImageLoader {
             if (mLoader == null) {
                 mLoader = GlideImageLoader()
             }
-            mLoader?.clearCache()
             return mLoader as Loader
+        }
+        
+        fun ImageView.with() {
+            getLoader().with(this)
+        }
+        
+        fun ImageView.loadImage(url: String?) {
+            getLoader().with(this).setUrl(url).loadImage()
+        }
+        
+        fun ImageView.loadImage(uri: Uri?) {
+            getLoader().with(this).setUri(uri).loadImage()
+        }
+        
+        fun ImageView.loadImage(resId: Int) {
+            getLoader().with(this).setResId(resId).loadImage()
+        }
+        
+        fun ImageView.loadImage(drawable: Drawable?) {
+            getLoader().with(this).setDrawable(drawable).loadImage()
         }
     }
 
     interface Loader {
-
-        fun loadImage(imageView: ImageView?, url: String?)
-
-        fun loadImage(imageView: ImageView?, url: String?, fitCenter: Boolean)
-
-        fun loadImage(imageView: ImageView?, @DrawableRes resId: Int)
-
-        fun loadImage(imageView: ImageView?, @DrawableRes resId: Int, fitCenter: Boolean)
-
-        fun loadImage(imageView: ImageView?, drawable: Drawable?)
-
-        fun loadImage(imageView: ImageView?, drawable: Drawable?, fitCenter: Boolean)
-
-        fun loadImage(imageView: ImageView?, uri: Uri?)
-
-        fun loadImage(imageView: ImageView?, uri: Uri?, fitCenter: Boolean)
-
-        fun loadGif(imageView: ImageView?, url: String?)
-
-        fun loadGif(imageView: ImageView?, @DrawableRes resId: Int)
-
-        fun loadRoundImage(imageView: ImageView?, url: String?, radius: Int)
-
-        fun loadCircleImage(imageView: ImageView?, url: String?)
+        fun with(imageView: ImageView): Builder
 
         fun loadAsBitmap(context: Context, url: String?, onLoaded: (bitmap: Bitmap) -> Unit, noFound: (() -> Unit)? = null)
 
-        fun setPlaceholder(@DrawableRes resId: Int): Loader
-
-        fun loadImageNoCache(imageView: ImageView?, url: String?)
-
-        fun loadImageNoCache(imageView: ImageView?, uri: Uri?)
-
-        fun clearCache()
-
+    }
+    
+    interface Builder {
+        fun setFitCenter(fitCenter: Boolean): Builder
+        
+        fun setUrl(url: String?): Builder
+        
+        fun setUri(uri: Uri?): Builder
+        
+        fun setDrawable(drawable: Drawable?): Builder
+        
+        fun setResId(resId: Int): Builder
+        
+        fun setRadius(radius: Int): Builder
+        
+        fun setPlaceholderResId(placeholderResId: Int): Builder
+        
+        fun setSkipMemoryCache(skipMemoryCache: Boolean): Builder
+        
+        fun loadImage()
     }
 }

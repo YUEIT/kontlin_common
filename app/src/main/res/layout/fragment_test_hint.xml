@@ -26,6 +26,18 @@
         android:textColor="#ff0000"
         tools:text="12344"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:visibility="gone">
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:visibility="invisible"/>
+    </LinearLayout>
+
     <TextView
         android:id="@+id/tv_change"
         android:layout_width="match_parent"

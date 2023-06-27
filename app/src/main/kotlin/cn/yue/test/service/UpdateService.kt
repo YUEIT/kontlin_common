@@ -12,6 +12,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
+import cn.yue.base.common.Constant
 import cn.yue.base.middle.init.NotificationConfig
 import cn.yue.base.middle.net.download.DownloadUtils
 import java.io.File
@@ -22,7 +23,7 @@ import java.io.File
  */
 class UpdateService : Service() {
 
-    override fun onBind(intent: Intent?): IBinder? {
+    override fun onBind(intent: Intent?): IBinder {
         return downInfo
     }
 
@@ -66,8 +67,12 @@ class UpdateService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(10, NotificationConfig.getNotification("应用下载", "准备下载", null).build())
-        workInfoLiveData = DownloadUtils.downFileByLiveData("https://downpack.baidu.com/litebaiduboxapp_AndroidPhone_1020164i.apk", "hehe.apk")
+        startForeground(10,
+            NotificationConfig.getNotification("应用下载", "准备下载", null)
+            .build())
+        workInfoLiveData = DownloadUtils.downFileByLiveData(
+            "https://downpack.baidu.com/litebaiduboxapp_AndroidPhone_1020164i.apk",
+            "hehe.apk")
         workInfoLiveData?.observeForever(observer.value)
         return super.onStartCommand(intent, flags, startId)
     }
@@ -91,7 +96,7 @@ class UpdateService : Service() {
         val file = File(downloadApk!!)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             //适配Android Q,注意mFilePath是通过ContentResolver得到的，上述有相关代码
-            val contentUri = FileProvider.getUriForFile(context, "cn.yue.base.kotlin.test.fileprovider", file)
+            val contentUri = FileProvider.getUriForFile(context, Constant.FILE_PROVIDER_AUTHORITY, file)
             intent.setDataAndType(contentUri, "application/vnd.android.package-archive")
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         } else { //7.0以下

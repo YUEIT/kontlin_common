@@ -40,3 +40,19 @@ fun View.setOnSingleClickListener(block: (() -> Unit)?) {
         this.setOnClickListener(null)
     }
 }
+
+fun View.setOnSingleClickListener(intervalTime: Long, block: (() -> Unit)?) {
+    if (block != null) {
+        this.setOnClickListener(object : OnSingleClickListener() {
+            override fun onSingleClick(v: View?) {
+                block.invoke()
+            }
+    
+            override fun getIntervalClickTime(): Long {
+                return intervalTime
+            }
+        })
+    } else {
+        this.setOnClickListener(null)
+    }
+}

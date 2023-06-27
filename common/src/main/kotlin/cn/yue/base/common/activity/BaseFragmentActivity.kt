@@ -2,7 +2,6 @@ package cn.yue.base.common.activity
 
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -11,6 +10,7 @@ import android.text.TextUtils
 import android.view.View
 import android.view.Window
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorInt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -21,7 +21,6 @@ import cn.yue.base.common.activity.rx.ILifecycleProvider
 import cn.yue.base.common.activity.rx.RxLifecycleProvider
 import cn.yue.base.common.utils.app.BarUtils
 import cn.yue.base.common.utils.app.RunTimePermissionUtil
-import cn.yue.base.common.utils.app.RunTimePermissionUtil.requestPermissions
 import cn.yue.base.common.utils.code.getString
 import cn.yue.base.common.utils.debug.ToastUtils
 import cn.yue.base.common.widget.TopBar
@@ -211,25 +210,34 @@ abstract class BaseFragmentActivity : FragmentActivity() {
             }
         }
     }
-
-    /**
-     * 权限请求
-     * @param permissions
-     */
-    fun requestPermission(permissions: Array<String>,
-                          success: () -> Unit,
-                          failed: (permission: List<String>) -> Unit) {
-        requestPermissions(this, success, failed, *permissions)
+    
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()) {
+        val noPermission = arrayListOf<String>()
+        it.forEach { entry ->
+            if (!entry.value) {
+                ToastUtils.showShortToast(R.string.app_permission_request_fail.getString()
+                    .replace("%d", RunTimePermissionUtil.getPermissionName(entry.key)))
+                noPermission.add(entry.key)
+            }
+        }
+        if (noPermission.isEmpty()) {
+            permissionSuccess?.invoke()
+        } else {
+            permissionFailed?.invoke(noPermission)
+        }
     }
 
+    fun launchPermissions(success: () -> Unit,
+                          failed: (permission: List<String>) -> Unit,
+                          vararg permissions: String) {
+        permissionSuccess = success
+        permissionFailed = failed
+        permissionLauncher.launch(permissions as Array<String>)
+    }
+  
     private var permissionSuccess: (() -> Unit)? = null
     private var permissionFailed: ((permission: List<String>) -> Unit)? = null
-
-    fun setPermissionCallBack(success: () -> Unit,
-                              failed: (permission: List<String>) -> Unit) {
-        this.permissionSuccess = success
-        this.permissionFailed = failed
-    }
 
     private var failDialog: HintDialog? = null
     fun showFailDialog() {
@@ -243,34 +251,6 @@ abstract class BaseFragmentActivity : FragmentActivity() {
                 .build()
         }
         failDialog!!.show()
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == RunTimePermissionUtil.requestCode) {
-            val noPermission = arrayListOf<String>()
-            for (i in grantResults.indices) {
-                if (!verificationPermissions(grantResults)) {
-                    ToastUtils.showShortToast(R.string.app_permission_request_fail.getString().replace("%d",
-                        RunTimePermissionUtil.getPermissionName(permissions[i])))
-                    noPermission.add(permissions[i])
-                }
-            }
-            if (noPermission.isEmpty()) {
-                permissionSuccess?.invoke()
-            } else {
-                permissionFailed?.invoke(noPermission)
-            }
-        }
-    }
-
-    private fun verificationPermissions(results: IntArray): Boolean {
-        for (result: Int in results) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                return false
-            }
-        }
-        return true
     }
 
     private fun startSettings() {

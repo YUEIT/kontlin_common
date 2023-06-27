@@ -16,6 +16,7 @@ import android.view.Surface
 import android.view.TextureView
 import android.view.View
 import androidx.core.app.ActivityCompat
+import cn.yue.base.common.utils.app.RunTimePermissionUtil.requestPermissions
 import cn.yue.base.common.utils.debug.ToastUtils
 import cn.yue.base.middle.mvp.components.BaseHintFragment
 import cn.yue.test.R
@@ -98,11 +99,11 @@ class TestCamera2Fragment : BaseHintFragment() {
                 != PackageManager.PERMISSION_GRANTED) {
                 val perms = arrayOf(Manifest.permission.CAMERA)
                 ActivityCompat.requestPermissions(mActivity, perms, 100)
-                mActivity.requestPermission(arrayOf(Manifest.permission.CAMERA), {
+                mActivity.requestPermissions({
                     cameraManager.openCamera(cameraId, stateCallback, null)
                 }, {
                     ToastUtils.showLongToast("授权失败")
-                })
+                }, Manifest.permission.CAMERA)
             } else {
                 cameraManager.openCamera(cameraId, stateCallback, null)
             }
