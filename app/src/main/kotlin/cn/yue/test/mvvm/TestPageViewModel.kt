@@ -1,11 +1,11 @@
 package cn.yue.test.mvvm
 
 import android.app.Application
-import cn.yue.base.middle.mvvm.ListViewModel
-import cn.yue.base.middle.net.ResultException
-import cn.yue.base.middle.net.observer.BaseNetObserver
-import cn.yue.base.middle.net.wrapper.BaseListBean
-import cn.yue.base.middle.net.wrapper.DataListBean
+import cn.yue.base.mvvm.ListViewModel
+import cn.yue.base.net.ResultException
+import cn.yue.base.net.observer.BaseNetObserver
+import cn.yue.base.net.wrapper.BaseListBean
+import cn.yue.base.net.wrapper.DataListBean
 import cn.yue.test.mode.ItemBean
 import io.reactivex.rxjava3.core.Single
 

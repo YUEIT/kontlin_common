@@ -1,7 +1,7 @@
 package cn.yue.test.utils
 
-import cn.yue.base.common.utils.code.MMKVUtils
-import cn.yue.base.middle.init.UrlEnvironment
+import cn.yue.base.utils.code.MMKVUtils
+import cn.yue.base.init.UrlEnvironment
 
 /**
  * Description :

@@ -2,11 +2,11 @@ package cn.yue.test.mvvm.ui_vm
 
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import cn.yue.base.common.widget.TopBar
-import cn.yue.base.common.widget.recyclerview.CommonViewHolder
-import cn.yue.base.common.widget.recyclerview.DiffRefreshAdapter
-import cn.yue.base.middle.mvvm.ItemViewModel
-import cn.yue.base.middle.mvvm.components.BaseListVMFragment
+import cn.yue.base.widget.TopBar
+import cn.yue.base.widget.recyclerview.CommonViewHolder
+import cn.yue.base.widget.recyclerview.DiffRefreshAdapter
+import cn.yue.base.mvvm.ItemViewModel
+import cn.yue.base.mvvm.components.BaseListVMFragment
 import cn.yue.test.BR
 import cn.yue.test.R
 import com.alibaba.android.arouter.facade.annotation.Route

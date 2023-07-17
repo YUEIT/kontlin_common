@@ -2,8 +2,8 @@ package cn.yue.test
 
 import android.app.Application
 import android.content.Context
-import cn.yue.base.middle.init.AutoSizeInitUtils
-import cn.yue.base.middle.module.IAppModule
+import cn.yue.base.init.AutoSizeInitUtils
+import cn.yue.base.module.IAppModule
 
 /**
  * Description :

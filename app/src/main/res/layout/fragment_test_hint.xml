@@ -48,4 +48,13 @@
         android:textSize="20sp"
         android:textColor="#333333"
         android:text="转换"/>
+
+
+    <cn.yue.base.widget.image.RoundImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/live_banner_rank_img_w"
+        app:view_type="round"/>
 </LinearLayout>

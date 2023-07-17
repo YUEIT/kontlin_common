@@ -6,7 +6,7 @@
 
 </FrameLayout>
 
-<!--<cn.yue.base.common.photo.preview.PhotoView-->
+<!--<cn.yue.base.PhotoView-->
 <!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
 <!--    android:id="@+id/photoView"-->
 <!--    android:layout_width="match_parent"-->

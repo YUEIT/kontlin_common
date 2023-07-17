@@ -1,8 +1,8 @@
 package cn.yue.test.mvp
 
 import android.os.Bundle
-import cn.yue.base.common.activity.BaseDialogFragment
-import cn.yue.base.common.activity.TransitionAnimation
+import cn.yue.base.activity.BaseDialogFragment
+import cn.yue.base.activity.TransitionAnimation
 import cn.yue.test.R
 import com.alibaba.android.arouter.facade.annotation.Route
 

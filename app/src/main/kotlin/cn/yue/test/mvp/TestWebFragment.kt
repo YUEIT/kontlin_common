@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.View
 import android.webkit.*
 import android.widget.EditText
-import cn.yue.base.common.utils.device.KeyboardUtils
-import cn.yue.base.common.widget.TopBar
-import cn.yue.base.common.widget.dialog.HintDialog
-import cn.yue.base.middle.mvp.components.BaseHintFragment
+import cn.yue.base.utils.device.KeyboardUtils
+import cn.yue.base.widget.TopBar
+import cn.yue.base.widget.dialog.HintDialog
+import cn.yue.base.mvp.components.BaseHintFragment
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestWebviewBinding
 import com.alibaba.android.arouter.facade.annotation.Route

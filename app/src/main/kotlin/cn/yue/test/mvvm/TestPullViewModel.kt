@@ -2,10 +2,10 @@ package cn.yue.test.mvvm
 
 import android.app.Application
 import androidx.lifecycle.viewModelScope
-import cn.yue.base.middle.mvvm.PullViewModel
-import cn.yue.base.middle.mvvm.data.MutableListLiveData
-import cn.yue.base.middle.net.coroutine.request
-import cn.yue.base.middle.net.observer.BasePullObserver
+import cn.yue.base.mvvm.PullViewModel
+import cn.yue.base.mvvm.data.MutableListLiveData
+import cn.yue.base.net.coroutine.request
+import cn.yue.base.net.observer.BasePullObserver
 import cn.yue.test.mode.ApiManager
 import cn.yue.test.mode.ItemBean
 

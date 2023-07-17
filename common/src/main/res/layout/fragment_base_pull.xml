@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.yue.base.view.refresh.CSwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/refreshL"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <cn.yue.base.view.PageStateView
+        android:id="@+id/stateView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ViewStub
+            android:id="@+id/baseVS"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </cn.yue.base.view.PageStateView>
+
+</cn.yue.base.view.refresh.CSwipeRefreshLayout>
+
+
+

@@ -4,9 +4,9 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import cn.yue.base.common.utils.variable.TimeUtils
-import cn.yue.base.common.widget.TopBar
-import cn.yue.base.middle.mvp.components.BaseHintFragment
+import cn.yue.base.mvp.components.BaseHintFragment
+import cn.yue.base.utils.variable.TimeUtils
+import cn.yue.base.widget.TopBar
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestHintBinding
 import com.alibaba.android.arouter.facade.annotation.Route

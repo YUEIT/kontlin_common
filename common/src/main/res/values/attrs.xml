@@ -46,8 +46,11 @@
         <attr name="border_radius" format="dimension" />
         <attr name="border_color" format="color" />
         <attr name="border_width" format="dimension" />
-        <attr name="view_type" format="integer" />
         <attr name="foreground" format="reference|color" />
+        <attr name="view_type" format="enum">
+            <enum name="round" value="0" />
+            <enum name="circle" value="1" />
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="FormattedEditText">
@@ -87,16 +90,17 @@
     </declare-styleable>
 
     <declare-styleable name="ShapeBackground">
-        <attr name="bg_radius" format="dimension"/>
-        <attr name="bg_radius_tl" format="dimension"/>
-        <attr name="bg_radius_tr" format="dimension"/>
-        <attr name="bg_radius_bl" format="dimension"/>
-        <attr name="bg_radius_br" format="dimension"/>
-        <attr name="bg_color" format="color"/>
-        <attr name="bg_start_color" format="color"/>
-        <attr name="bg_end_color" format="color" />
-        <attr name="bg_stroke_width" format="dimension"/>
-        <attr name="bg_stroke_color" format="color" />
-
+        <attr name="shape_radius" format="dimension"/>
+        <attr name="shape_radius_tl" format="dimension"/>
+        <attr name="shape_radius_tr" format="dimension"/>
+        <attr name="shape_radius_bl" format="dimension"/>
+        <attr name="shape_radius_br" format="dimension"/>
+        <attr name="shape_color" format="color"/>
+        <attr name="shape_start_color" format="color"/>
+        <attr name="shape_center_color" format="color"/>
+        <attr name="shape_end_color" format="color" />
+        <attr name="shape_stroke_width" format="dimension"/>
+        <attr name="shape_stroke_color" format="color" />
+        <attr name="shape_angle" format="float" />
     </declare-styleable>
 </resources>

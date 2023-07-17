@@ -3,10 +3,10 @@ package cn.yue.test.mvp
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import cn.yue.base.common.photo.data.MediaData
-import cn.yue.base.middle.mvp.components.BaseHintFragment
-import cn.yue.base.middle.mvp.photo.IPhotoView
-import cn.yue.base.middle.mvp.photo.PhotoHelper
+import cn.yue.base.photo.data.MediaData
+import cn.yue.base.mvp.components.BaseHintFragment
+import cn.yue.base.mvp.photo.IPhotoView
+import cn.yue.base.mvp.photo.PhotoHelper
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestPhotoBinding
 import com.alibaba.android.arouter.facade.annotation.Route

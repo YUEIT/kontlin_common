@@ -5,10 +5,10 @@ import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import cn.yue.base.common.widget.TopBar
-import cn.yue.base.common.widget.recyclerview.CommonAdapter
-import cn.yue.base.common.widget.recyclerview.CommonViewHolder
-import cn.yue.base.middle.mvvm.components.BasePullVMFragment
+import cn.yue.base.widget.TopBar
+import cn.yue.base.widget.recyclerview.CommonAdapter
+import cn.yue.base.widget.recyclerview.CommonViewHolder
+import cn.yue.base.mvvm.components.BasePullVMFragment
 import cn.yue.test.BR
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestPullVmBinding

@@ -1,11 +1,11 @@
 package cn.yue.test.mvp
 
 import androidx.recyclerview.widget.RecyclerView
-import cn.yue.base.common.widget.TopBar
-import cn.yue.base.common.widget.recyclerview.CommonAdapter
-import cn.yue.base.common.widget.recyclerview.CommonViewHolder
-import cn.yue.base.common.widget.recyclerview.SwipeLayoutManager
-import cn.yue.base.middle.mvp.components.BaseListFragment
+import cn.yue.base.widget.TopBar
+import cn.yue.base.widget.recyclerview.CommonAdapter
+import cn.yue.base.widget.recyclerview.CommonViewHolder
+import cn.yue.base.widget.recyclerview.SwipeLayoutManager
+import cn.yue.base.mvp.components.BaseListFragment
 import cn.yue.test.R
 import cn.yue.test.mode.ItemBean
 import com.alibaba.android.arouter.facade.annotation.Route

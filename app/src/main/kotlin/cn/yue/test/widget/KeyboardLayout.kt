@@ -3,10 +3,10 @@ package cn.yue.test.widget
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.TextView
-import cn.yue.base.common.widget.emoji.EmojiEmotion
-import cn.yue.base.common.widget.emoji.EmojiEmotionEditText
-import cn.yue.base.common.widget.keyboard.BaseKeyboardLayout
-import cn.yue.base.common.widget.keyboard.EmotionLayout
+import cn.yue.base.widget.emoji.EmojiEmotion
+import cn.yue.base.widget.emoji.EmojiEmotionEditText
+import cn.yue.base.widget.keyboard.BaseKeyboardLayout
+import cn.yue.base.widget.keyboard.EmotionLayout
 import cn.yue.test.R
 
 class KeyboardLayout(context: Context, attrs: AttributeSet?)

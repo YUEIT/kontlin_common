@@ -12,11 +12,11 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <cn.yue.base.common.widget.shape.ShapeFrameLayout
+        <cn.yue.base.widget.shape.ShapeFrameLayout
             android:layout_width="match_parent"
             android:layout_height="800dp"
-            app:bg_end_color="#36a577"
-            app:bg_start_color="#a9fe62" />
+            app:shape_end_color="#36a577"
+            app:shape_start_color="#a9fe62" />
 
         <TextView
             android:layout_width="match_parent"

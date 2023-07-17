@@ -1,8 +1,8 @@
 package cn.yue.test.event
 
 import android.app.Application
-import cn.yue.base.common.utils.event.NoStickyLiveData
-import cn.yue.base.middle.mvvm.BaseViewModel
+import cn.yue.base.utils.event.NoStickyLiveData
+import cn.yue.base.mvvm.BaseViewModel
 
 
 /**

@@ -1,8 +1,8 @@
 package cn.yue.test.mvp
 
-import cn.yue.base.middle.mvp.IListPresenter
-import cn.yue.base.middle.mvp.IListView
-import cn.yue.base.middle.net.wrapper.BaseListBean
+import cn.yue.base.mvp.IListPresenter
+import cn.yue.base.mvp.IListView
+import cn.yue.base.net.wrapper.BaseListBean
 import cn.yue.test.mode.ItemBean
 import io.reactivex.rxjava3.core.Single
 

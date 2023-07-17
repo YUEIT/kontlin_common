@@ -6,7 +6,7 @@ import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
 import android.widget.TextView
-import cn.yue.base.middle.mvp.components.BaseHintFragment
+import cn.yue.base.mvp.components.BaseHintFragment
 import cn.yue.test.R
 import cn.yue.test.service.UpdateService
 import com.alibaba.android.arouter.facade.annotation.Route

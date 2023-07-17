@@ -2,11 +2,11 @@ package cn.yue.test.mvvm.ui_vm
 
 import android.app.Application
 import androidx.lifecycle.viewModelScope
-import cn.yue.base.middle.mvvm.ItemViewModel
-import cn.yue.base.middle.mvvm.ListViewModel
-import cn.yue.base.middle.mvvm.data.UiViewModels
-import cn.yue.base.middle.net.coroutine.request
-import cn.yue.base.middle.net.wrapper.DataListBean
+import cn.yue.base.mvvm.ItemViewModel
+import cn.yue.base.mvvm.ListViewModel
+import cn.yue.base.mvvm.data.UiViewModels
+import cn.yue.base.net.coroutine.request
+import cn.yue.base.net.wrapper.DataListBean
 import cn.yue.test.mode.ItemBean
 import io.reactivex.rxjava3.core.Single
 

@@ -93,7 +93,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation project(":middle")
+    implementation project(":common")
     //aRouter
     implementation rootProject.ext.dependencies["arouter-api"]
     kapt rootProject.ext.dependencies["arouter-compiler"]
@@ -114,7 +114,5 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.5.1'
     implementation "com.google.accompanist:accompanist-appcompat-theme:0.25.1"
     implementation 'androidx.compose.material:material:1.2.1'
-
-    implementation 'com.github.yhaolpz:FloatWindow:1.0.9'
 }
 

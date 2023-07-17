@@ -14,9 +14,9 @@ import androidx.camera.core.ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import cn.yue.base.common.Constant
-import cn.yue.base.common.utils.app.RunTimePermissionUtil.requestPermissions
-import cn.yue.base.middle.mvp.components.BaseHintFragment
+import cn.yue.base.Constant
+import cn.yue.base.utils.app.RunTimePermissionUtil.requestPermissions
+import cn.yue.base.mvp.components.BaseHintFragment
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestCameraxBinding
 import com.alibaba.android.arouter.facade.annotation.Route

@@ -2,7 +2,7 @@ package cn.yue.test.nested
 
 import android.os.Bundle
 import android.view.View
-import cn.yue.base.middle.mvp.components.BaseHintFragment
+import cn.yue.base.mvp.components.BaseHintFragment
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestNestBinding
 import com.alibaba.android.arouter.facade.annotation.Route

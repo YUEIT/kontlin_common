@@ -12,9 +12,9 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
-import cn.yue.base.common.Constant
-import cn.yue.base.middle.init.NotificationConfig
-import cn.yue.base.middle.net.download.DownloadUtils
+import cn.yue.base.Constant
+import cn.yue.base.init.NotificationConfig
+import cn.yue.base.net.download.DownloadUtils
 import java.io.File
 
 /**

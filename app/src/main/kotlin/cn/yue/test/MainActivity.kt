@@ -6,11 +6,11 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import cn.yue.base.common.activity.BaseFragmentActivity
-import cn.yue.base.common.photo.data.MediaData
-import cn.yue.base.common.widget.recyclerview.CommonAdapter
-import cn.yue.base.common.widget.recyclerview.CommonViewHolder
-import cn.yue.base.middle.router.FRouter
+import cn.yue.base.activity.BaseFragmentActivity
+import cn.yue.base.photo.data.MediaData
+import cn.yue.base.router.FRouter
+import cn.yue.base.widget.recyclerview.CommonAdapter
+import cn.yue.base.widget.recyclerview.CommonViewHolder
 import com.alibaba.android.arouter.facade.annotation.Route
 
 

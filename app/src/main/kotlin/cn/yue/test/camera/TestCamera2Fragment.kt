@@ -16,9 +16,9 @@ import android.view.Surface
 import android.view.TextureView
 import android.view.View
 import androidx.core.app.ActivityCompat
-import cn.yue.base.common.utils.app.RunTimePermissionUtil.requestPermissions
-import cn.yue.base.common.utils.debug.ToastUtils
-import cn.yue.base.middle.mvp.components.BaseHintFragment
+import cn.yue.base.utils.app.RunTimePermissionUtil.requestPermissions
+import cn.yue.base.utils.debug.ToastUtils
+import cn.yue.base.mvp.components.BaseHintFragment
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestCamera2Binding
 import com.alibaba.android.arouter.facade.annotation.Route

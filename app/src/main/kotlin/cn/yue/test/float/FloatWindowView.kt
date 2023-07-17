@@ -13,7 +13,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.TextView
-import cn.yue.base.common.utils.app.DisplayUtils
+import cn.yue.base.utils.app.DisplayUtils
 import cn.yue.test.R
 
 class FloatWindowView(context: Context, attributeSet: AttributeSet? = null) : FrameLayout(context, attributeSet) {

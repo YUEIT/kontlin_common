@@ -1,7 +1,7 @@
 package cn.yue.test.event
 
-import cn.yue.base.common.utils.Utils
-import cn.yue.base.middle.init.MiddleApplication
+import cn.yue.base.utils.Utils
+import cn.yue.base.init.CommonApplication
 
 
 /**
@@ -12,7 +12,7 @@ import cn.yue.base.middle.init.MiddleApplication
 object AppViewModes {
 
     fun getNotifyViewModel(): NotifyViewModel {
-        val application = Utils.getContext() as MiddleApplication
+        val application = Utils.getContext() as CommonApplication
         return application.createViewModel(NotifyViewModel::class.java)
     }
 }

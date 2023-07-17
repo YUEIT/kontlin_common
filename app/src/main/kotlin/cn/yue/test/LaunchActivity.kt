@@ -7,9 +7,9 @@ import android.os.Handler
 import android.os.Looper
 import android.view.Window
 import android.view.WindowManager
-import cn.yue.base.common.activity.BaseFragmentActivity
-import cn.yue.base.common.utils.Utils
-import cn.yue.base.middle.module.manager.ModuleManager
+import cn.yue.base.activity.BaseFragmentActivity
+import cn.yue.base.utils.Utils
+import cn.yue.base.module.manager.ModuleManager
 import cn.yue.test.utils.LocalStorage
 
 class LaunchActivity : BaseFragmentActivity() {

@@ -22,7 +22,7 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/topBar"/>
 
-    <cn.yue.base.common.widget.viewpager.PagerSlidingTabStrip
+    <cn.yue.base.widget.viewpager.PagerSlidingTabStrip
         android:id="@+id/tabs"
         android:layout_width="wrap_content"
         android:layout_height="40dp"

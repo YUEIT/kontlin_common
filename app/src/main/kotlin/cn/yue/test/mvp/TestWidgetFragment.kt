@@ -1,7 +1,7 @@
 package cn.yue.test.mvp
 
 import android.os.Bundle
-import cn.yue.base.common.activity.BaseFragment
+import cn.yue.base.activity.BaseFragment
 import cn.yue.test.R
 import com.alibaba.android.arouter.facade.annotation.Route
 

@@ -2,8 +2,8 @@ package cn.yue.test
 
 import android.os.Bundle
 import android.widget.TextView
-import cn.yue.base.common.activity.BaseDialogFragment
-import cn.yue.base.common.activity.TransitionAnimation.TRANSITION_CENTER
+import cn.yue.base.activity.BaseDialogFragment
+import cn.yue.base.activity.TransitionAnimation.TRANSITION_CENTER
 
 
 /**

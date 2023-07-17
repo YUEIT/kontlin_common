@@ -1,8 +1,0 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cn.yue.base.middle" >
-    <application>
-        <activity android:name=".activity.CommonActivity"
-            android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
-    </application>
-</manifest>
