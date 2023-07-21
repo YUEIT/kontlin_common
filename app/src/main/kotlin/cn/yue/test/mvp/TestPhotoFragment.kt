@@ -2,11 +2,13 @@ package cn.yue.test.mvp
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import cn.yue.base.photo.data.MediaData
 import cn.yue.base.mvp.components.BaseHintFragment
 import cn.yue.base.mvp.photo.IPhotoView
 import cn.yue.base.mvp.photo.PhotoHelper
+import cn.yue.base.photo.data.MediaData
+import cn.yue.base.router.FRouter
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestPhotoBinding
 import com.alibaba.android.arouter.facade.annotation.Route
@@ -46,7 +48,10 @@ class TestPhotoFragment: BaseHintFragment(), IPhotoView {
 	}
 	
 	override fun cropImageResult(image: Uri?) {
-	
+		Log.d("luo", "cropImageResult: $image")
+		FRouter.instance.build("/common/viewPhoto")
+			.withParcelableArrayList("uris", arrayListOf(image))
+			.navigation(mActivity)
 	}
 	
 	override fun uploadImageResult(serverList: List<String>?) {

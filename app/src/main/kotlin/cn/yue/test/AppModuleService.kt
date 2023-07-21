@@ -14,8 +14,5 @@ class AppModuleService : IAppModule {
     override fun init(context: Context) {
         AutoSizeInitUtils.init(context as Application)
     }
-
-    override fun loginInvalid() {
-
-    }
+    
 }

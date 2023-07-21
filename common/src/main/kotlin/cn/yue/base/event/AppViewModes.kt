@@ -1,7 +1,7 @@
-package cn.yue.test.event
+package cn.yue.base.event
 
-import cn.yue.base.utils.Utils
 import cn.yue.base.init.CommonApplication
+import cn.yue.base.utils.Utils
 
 
 /**

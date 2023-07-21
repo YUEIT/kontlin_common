@@ -1,13 +1,11 @@
 package cn.yue.test
 
-import android.app.Activity
-import android.content.Intent
 import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.activity.BaseFragmentActivity
-import cn.yue.base.photo.data.MediaData
+import cn.yue.base.activity.launch
 import cn.yue.base.router.FRouter
 import cn.yue.base.widget.recyclerview.CommonAdapter
 import cn.yue.base.widget.recyclerview.CommonViewHolder
@@ -45,67 +43,57 @@ class MainActivity : BaseFragmentActivity() {
             }
         }
     }
+    
+    private val launcher = registerResultLauncher {
+    
+    }
 
     private fun initItem(): MutableList<ItemAction> {
         val list = ArrayList<ItemAction>()
-        list.add(ItemAction("test camera") {
+        list.add("Test Camera" to {
             FRouter.instance.build("/app/testCamera").navigation(this)
         })
-        list.add(ItemAction("Hint") {
-            FRouter.instance.build("/app/testHint").navigation(this)
+        list.add("Hint" to {
+            launcher.launch("/app/testHint")
         })
-        list.add(ItemAction("Pull") {
+        list.add("Pull" to {
             FRouter.instance.build("/app/testPull").withString("test", "hehe").navigation(this)
         })
-        list.add(ItemAction("Page") {
+        list.add("Page" to {
             FRouter.instance.build("/app/testPage").navigation(this)
         })
-        list.add(ItemAction("Pull ViewModel") {
+        list.add("Pull ViewModel" to {
             FRouter.instance.build("/app/testPullVM").navigation(this)
         })
-        list.add(ItemAction("Page ViewModel") {
+        list.add("Page ViewModel" to {
             FRouter.instance.build("/app/testPageVM").navigation(this)
         })
-        list.add(ItemAction("Select Photo") {
-//            FRouter.instance.build("/common/selectPhoto")
-//                .withBoolean("isPreview", true)
-//                .navigation(this, 1)
+        list.add("Select Photo" to {
             FRouter.instance.build("/app/testPhoto")
                 .navigation(this)
         })
-        list.add(ItemAction("View Photo") {
+        list.add("View Photo" to {
             FRouter.instance.build("/common/viewPhoto")
                     .withStringArrayList("urls", arrayListOf("http://daidaigoucn.oss-cn-shanghai.aliyuncs.com/static/images/shop/sd1.png"))
                     .navigation(this)
         })
-        list.add(ItemAction("Download") {
+        list.add("Download" to {
             FRouter.instance.build("/app/testDownload").navigation(this)
         })
-        list.add(ItemAction("widget") {
+        list.add("widget" to {
             FRouter.instance.build("/app/testWidget").navigation(this)
         })
-        list.add(ItemAction("web") {
+        list.add("web" to {
             FRouter.instance.build("/app/testWeb").navigation(this)
         })
-        list.add(ItemAction("nested") {
+        list.add("nested" to {
             FRouter.instance.build("/app/testNested").navigation(this)
         })
         return list
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            val photos = data?.getParcelableArrayListExtra<MediaData>("medias")
-            FRouter.instance.build("/app/testVideo")
-                    .withParcelable("uri", photos?.get(0)?.uri)
-                    .navigation(this)
-        }
-    }
-
-    class ItemAction (
-            var name: String,
-            var block: () -> Unit
-    )
+    class ItemAction (val name: String, val block: () -> Unit)
+    
+    private infix fun String.to(block: () -> Unit): ItemAction = ItemAction(this, block)
 }
 

@@ -26,7 +26,7 @@ abstract class BaseUploadObserver : DisposableSingleObserver<ImageResultListData
     override fun onError(e: Throwable) {
         when (e) {
             is ResultException -> onException(e)
-            is CancellationException ->  onCancel(ResultException(ResponseCode.ERROR_CANCEL, e.message!!))
+            is CancellationException ->  onException(ResultException(ResponseCode.ERROR_CANCEL, e.message!!))
             else -> onException(ResultException(ResponseCode.ERROR_OPERATION, e.message!!))
         }
     }
@@ -34,6 +34,5 @@ abstract class BaseUploadObserver : DisposableSingleObserver<ImageResultListData
     abstract fun onException(e: ResultException)
 
     abstract fun onSuccess(imageList: List<ImageResult>)
-
-    open fun onCancel(e: ResultException) {}
+    
 }

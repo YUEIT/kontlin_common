@@ -10,11 +10,14 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import cn.yue.base.common.R
 import cn.yue.base.activity.rx.ILifecycleProvider
 import cn.yue.base.activity.rx.RxLifecycleProvider
+import cn.yue.base.common.R
 import cn.yue.base.widget.TopBar
 
 
@@ -166,6 +169,12 @@ abstract class BaseFragment : Fragment(), View.OnTouchListener {
                 fragment.onActivityResult(requestCode, resultCode, data)
             }
         }
+    }
+    
+    fun registerResultLauncher(callback: ActivityResultCallback<ActivityResult>): WrapperResultLauncher {
+        return WrapperResultLauncher(this,
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)
+        )
     }
 
     //--------------------------------------------------------------------------------------------------------------

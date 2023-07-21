@@ -4,5 +4,4 @@ import cn.yue.base.module.manager.IModuleService
 
 interface IAppModule : IModuleService {
 
-    fun loginInvalid()
 }

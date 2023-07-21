@@ -1,8 +1,8 @@
-package cn.yue.test.event
+package cn.yue.base.event
 
 import android.app.Application
-import cn.yue.base.utils.event.NoStickyLiveData
 import cn.yue.base.mvvm.BaseViewModel
+import cn.yue.base.utils.event.NoStickyLiveData
 
 
 /**
@@ -12,5 +12,5 @@ import cn.yue.base.mvvm.BaseViewModel
 
 class NotifyViewModel(application: Application): BaseViewModel(application) {
 
-    val eventLiveData = NoStickyLiveData<Int>()
+    val loginStatusLiveData = NoStickyLiveData<Int>()
 }

@@ -9,18 +9,13 @@ import cn.yue.base.utils.debug.ToastUtils
  * Created by yue on 2019/6/18
  */
 abstract class BaseWaitObserver<T>(
-        private val iWaitView: IWaitView
+        private val iWaitView: IWaitView,
+        private val title: String? = ""
     ) : BaseNetObserver<T>() {
-
-    private var title: String = ""
-
-    constructor(iWaitView: IWaitView, title: String): this(iWaitView) {
-        this.title = title
-    }
 
     override fun onStart() {
         super.onStart()
-        iWaitView.showWaitDialog(title)
+        iWaitView.showWaitDialog(title ?: "")
     }
 
     override fun onException(e: ResultException) {
@@ -30,13 +25,5 @@ abstract class BaseWaitObserver<T>(
 
     override fun onSuccess(t: T) {
         iWaitView.dismissWaitDialog()
-        onNext(t)
     }
-
-    override fun onCancel(e: ResultException) {
-        super.onCancel(e)
-        iWaitView.dismissWaitDialog()
-    }
-
-    abstract fun onNext(t: T)
 }

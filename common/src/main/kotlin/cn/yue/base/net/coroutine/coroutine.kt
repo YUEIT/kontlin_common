@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import cn.yue.base.init.InitConstant
-import cn.yue.base.net.observer.BaseNetObserver
+import cn.yue.base.net.observer.WrapperObserver
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.*
@@ -18,7 +18,7 @@ import kotlin.coroutines.CoroutineContext
 
 object CoroutineManager {
 
-    fun <T> request(scope: CoroutineScope, block:  () -> T, observable: BaseNetObserver<T>) {
+    fun <T> request(scope: CoroutineScope, block:  () -> T, observable: WrapperObserver<T>) {
         val handler = CoroutineExceptionHandler { _, exception ->
             if (InitConstant.isDebug()) {
                 exception.printStackTrace()
@@ -41,7 +41,7 @@ object CoroutineManager {
         }
     }
 
-    fun request(scope: CoroutineScope, block: List<suspend () -> Any>, observable: BaseNetObserver<ArrayList<*>>) {
+    fun request(scope: CoroutineScope, block: List<suspend () -> Any>, observable: WrapperObserver<ArrayList<*>>) {
         val handler = CoroutineExceptionHandler { _, exception ->
             observable.onError(exception)
         }
@@ -64,7 +64,7 @@ object CoroutineManager {
 
 }
 
-fun <T> CoroutineScope.request(block: suspend () -> T, observable: BaseNetObserver<T>) {
+fun <T> CoroutineScope.request(block: suspend () -> T, observable: WrapperObserver<T>) {
     val handler = CoroutineExceptionHandler { _, exception ->
         if (InitConstant.isDebug()) {
             exception.printStackTrace()
@@ -87,7 +87,7 @@ fun <T> CoroutineScope.request(block: suspend () -> T, observable: BaseNetObserv
     }
 }
 
-fun CoroutineScope.request(block: List<suspend () -> Any>, observable: BaseNetObserver<ArrayList<*>>) {
+fun CoroutineScope.request(block: List<suspend () -> Any>, observable: WrapperObserver<ArrayList<*>>) {
     val handler = CoroutineExceptionHandler { _, exception ->
         observable.onError(exception)
     }

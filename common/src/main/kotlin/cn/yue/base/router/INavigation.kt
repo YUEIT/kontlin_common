@@ -9,7 +9,7 @@ open class INavigation {
     open fun bindRouterCard(routerCard: RouterCard): INavigation? {
         return null
     }
-
+    
     @JvmOverloads
     open fun navigation(context: Any, requestCode: Int = 0, toActivity: String? = null) {
 

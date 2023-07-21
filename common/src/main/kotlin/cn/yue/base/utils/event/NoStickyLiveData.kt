@@ -12,7 +12,7 @@ import androidx.lifecycle.Observer
 
 class NoStickyLiveData<T> : MutableLiveData<T>(){
 
-    private var version = -1
+    private var version = -1L
 
     override fun setValue(value: T) {
         version++
@@ -28,7 +28,7 @@ class NoStickyLiveData<T> : MutableLiveData<T>(){
     }
 
     inner class WrapperObserver(
-        private val bindVersion: Int,
+        private val bindVersion: Long,
         private val observer: Observer<in T>
     ) : Observer<T> {
 

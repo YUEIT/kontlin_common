@@ -17,7 +17,7 @@ object Constant {
             Environment.getExternalStorageDirectory().toString() + File.separator + COMMON_NAME
         } else {
             val filesDir = getContext().getExternalFilesDir("")
-                    ?: return (getContext().filesDir.toString() + File.separator + COMMON_NAME)
+                    ?: return (getContext().filesDir.toString())
             filesDir.path + File.separator + COMMON_NAME
         }
     }

@@ -1,12 +1,12 @@
 package cn.yue.base.mvp
 
 import android.text.TextUtils
-import cn.yue.base.utils.debug.ToastUtils
 import cn.yue.base.mvp.components.data.Loader
 import cn.yue.base.net.ResponseCode
 import cn.yue.base.net.ResultException
 import cn.yue.base.net.observer.BaseNetObserver
 import cn.yue.base.net.wrapper.IListModel
+import cn.yue.base.utils.debug.ToastUtils
 import cn.yue.base.view.load.LoadStatus
 import cn.yue.base.view.load.PageStatus
 import io.reactivex.rxjava3.core.Single
@@ -90,11 +90,6 @@ abstract class IListPresenter<P : IListModel<S>, S>(private val iView: IListView
             if (isLoadingRefresh) {
                 onRefreshComplete(null, e)
             }
-        }
-
-        override fun onCancel(e: ResultException) {
-            super.onCancel(e)
-            loadFailed(e)
         }
 
         fun loadSuccess(p: P) {
@@ -209,10 +204,6 @@ abstract class IListPresenter<P : IListModel<S>, S>(private val iView: IListView
             super.onError(e)
             pageObserver.onError(e)
             observer?.onError(e)
-        }
-
-        override fun onCancel(e: ResultException) {
-            super.onCancel(e)
         }
 
         override fun onException(e: ResultException) {}

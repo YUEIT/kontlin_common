@@ -36,7 +36,7 @@ class TestHintFragment : BaseHintFragment() {
         super.initTopBar(topBar)
         topBar.setBackgroundColor(Color.RED)
     }
-
+    
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
         binding.tvChange.setOnClickListener {

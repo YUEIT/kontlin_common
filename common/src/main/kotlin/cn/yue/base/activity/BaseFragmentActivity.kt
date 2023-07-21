@@ -10,15 +10,17 @@ import android.text.TextUtils
 import android.view.View
 import android.view.Window
 import android.widget.FrameLayout
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorInt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
-import cn.yue.base.common.R
 import cn.yue.base.activity.rx.ILifecycleProvider
 import cn.yue.base.activity.rx.RxLifecycleProvider
+import cn.yue.base.common.R
 import cn.yue.base.utils.app.BarUtils
 import cn.yue.base.utils.app.RunTimePermissionUtil
 import cn.yue.base.utils.code.getString
@@ -263,4 +265,11 @@ abstract class BaseFragmentActivity : FragmentActivity() {
             startActivity(intent)
         }
     }
+    
+    fun registerResultLauncher(callback: ActivityResultCallback<ActivityResult>): WrapperResultLauncher {
+        return WrapperResultLauncher(this,
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)
+        )
+    }
+    
 }

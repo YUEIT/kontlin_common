@@ -43,6 +43,10 @@ object AndroidQFileUtils {
         }
     }
     
+    fun grantPermissionUri(uri: Uri): Uri {
+        return getUriForFile(File(getPathFromUri(getContext(), uri)))
+    }
+    
     /**
      * 判断文件是否存在
      *

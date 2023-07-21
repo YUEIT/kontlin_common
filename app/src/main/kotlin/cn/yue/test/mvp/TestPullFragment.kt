@@ -3,12 +3,12 @@ package cn.yue.test.mvp
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import cn.yue.base.mvp.components.BasePullFragment
+import cn.yue.base.net.observer.BasePullObserver
 import cn.yue.base.utils.debug.ToastUtils
 import cn.yue.base.widget.TopBar
 import cn.yue.base.widget.recyclerview.CommonAdapter
 import cn.yue.base.widget.recyclerview.CommonViewHolder
-import cn.yue.base.mvp.components.BasePullFragment
-import cn.yue.base.net.observer.BasePullObserver
 import cn.yue.test.R
 import cn.yue.test.mode.ItemBean
 import com.alibaba.android.arouter.facade.annotation.Route
@@ -58,8 +58,8 @@ class TestPullFragment : BasePullFragment() {
         ))
                 .compose(getLifecycleProvider().toBindLifecycle())
                 .subscribe(object : BasePullObserver<List<ItemBean>>(this) {
-                    override fun onNext(t: List<ItemBean>) {
-                        super.onNext(t)
+                    override fun onSuccess(t: List<ItemBean>) {
+                        super.onSuccess(t)
                         adapter.setList(t)
                     }
                 })

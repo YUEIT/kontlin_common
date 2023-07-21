@@ -14,8 +14,9 @@ import com.alibaba.android.arouter.launcher.ARouter
  * Created by yue on 2019/3/11
  */
 open class CommonActivity : BaseFragmentActivity() {
+    
     private var transition = 0 //入场动画
-
+    
     override fun getFragment(): Fragment? {
         val routerCard = intent?.extras?.getParcelable<RouterCard>(RouterCard.TAG)?: return null
         transition = routerCard.getTransition()

@@ -7,11 +7,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import cn.yue.base.mvvm.data.MutableListLiveData
+import cn.yue.base.net.ResponseCode
 import cn.yue.base.net.ResultException
 import cn.yue.base.net.observer.BaseNetObserver
+import cn.yue.base.net.observer.WrapperObserver
 import cn.yue.base.net.wrapper.IListModel
 import cn.yue.base.utils.debug.ToastUtils.showShortToast
-import cn.yue.base.net.ResponseCode
 import cn.yue.base.view.load.LoadStatus
 import cn.yue.base.view.load.PageStatus
 import io.reactivex.rxjava3.core.Single
@@ -73,8 +74,8 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
         }
     }
 
-    inner class PageDelegateObserver(val observer: BaseNetObserver<P>? = null)
-        : BaseNetObserver<P>() {
+    inner class PageDelegateObserver(val observer: WrapperObserver<P>? = null)
+        : WrapperObserver<P>() {
 
         private val pageObserver = getPageObserver()
 
@@ -84,18 +85,12 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
             observer?.onStart()
         }
 
-        override fun onCancel(e: ResultException) {
-            super.onCancel(e)
-        }
-
         override fun onError(e: Throwable) {
             super.onError(e)
             pageObserver.onError(e)
             observer?.onError(e)
         }
-
-        override fun onException(e: ResultException) {}
-
+        
         override fun onSuccess(t: P) {
             pageObserver.onSuccess(t)
             observer?.onSuccess(t)
@@ -138,11 +133,6 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
             if (isLoadingRefresh) {
                 onRefreshComplete(null, e)
             }
-        }
-
-        override fun onCancel(e: ResultException) {
-            super.onCancel(e)
-            loadFailed(e)
         }
 
         open fun loadSuccess(p: P) {

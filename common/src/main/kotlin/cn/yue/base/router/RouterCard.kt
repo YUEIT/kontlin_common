@@ -345,7 +345,7 @@ class RouterCard() : INavigation(), Parcelable {
             navigation(context, requestCode, toActivity)
         }
     }
-
+    
     constructor(source: Parcel) : this() {
         uri = source.readParcelable(Uri::class.java.classLoader)
         extras = source.readBundle()?: Bundle()
