@@ -83,8 +83,11 @@ object NotificationConfig {
             builder.setContentText(content)
         }
         if (intent != null) {
-            val pendingIntent = PendingIntent.getActivities(getContext(),
-                    0, arrayOf(intent), PendingIntent.FLAG_UPDATE_CURRENT)
+            val pendingIntent = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+            } else {
+                PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            }
             builder.setContentIntent(pendingIntent)
         }
         //设置点击信息后自动清除通知

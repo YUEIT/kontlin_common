@@ -25,6 +25,11 @@ android {
         }
         flavorDimensions "versionCode"
     }
+//    externalNativeBuild {
+//        cmake {
+//            path file('src/main/cpp/CMakeLists.txt')
+//        }
+//    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -88,6 +93,12 @@ android {
     lint {
         baseline = file("lint-baseline.xml")
     }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '3.22.1'
+        }
+    }
 }
 
 dependencies {
@@ -114,5 +125,6 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.5.1'
     implementation "com.google.accompanist:accompanist-appcompat-theme:0.25.1"
     implementation 'androidx.compose.material:material:1.2.1'
+    implementation 'com.tencent.tbs:tbssdk:44286'
 }
 

@@ -28,7 +28,7 @@ class TopBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = 
     init {
         val layoutParams = binding.statusBarSpace.layoutParams as LinearLayout.LayoutParams
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            layoutParams.height = Math.max(BarUtils.getStatusBarHeight(), dip2px(30f))
+            layoutParams.height = Math.max(BarUtils.getStatusBarHeight(), dip2px(30))
         }
         defaultStyle()
     }

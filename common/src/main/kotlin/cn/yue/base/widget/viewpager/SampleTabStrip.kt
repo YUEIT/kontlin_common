@@ -6,7 +6,6 @@ import android.database.DataSetObserver
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
@@ -26,22 +25,18 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
     interface LayoutTabProvider {
         /**
          * 创建一个 tab item
-         * @param position
-         * @return
          */
         fun createTabView(position: Int): View
 
         /**
          * viewPager切换时，回调所有的item
-         * @param v
-         * @param isSelect
          */
-        fun changeTabStyle(v: View?, isSelect: Boolean)
+        fun changeTabStyle(v: View?, position: Int, currentPosition: Int)
     }
 
     private val defaultTabLayoutParams: LinearLayout.LayoutParams
     private val expandedTabLayoutParams: LinearLayout.LayoutParams
-    private val pageListener: PageListener? = PageListener()
+    private val pageListener = PageListener()
     var delegatePageListener: ViewPager.OnPageChangeListener? = null
     private var mAdapterChangeListener: AdapterChangeListener? = null
     private val tabsContainer: LinearLayout
@@ -93,22 +88,20 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
     fun setViewPager(pager: ViewPager) {
         this.pager = pager
         checkNotNull(pager.adapter) { "ViewPager does not have adapter instance." }
-        pager.addOnPageChangeListener(pageListener!!)
+        pager.addOnPageChangeListener(pageListener)
         notifyDataSetChanged()
     }
 
     fun setViewPagerAutoRefresh(viewPager: ViewPager?) {
         if (pager != null) {
-            if (pageListener != null) {
-                pager!!.removeOnPageChangeListener(pageListener)
-            }
+            pager!!.removeOnPageChangeListener(pageListener)
             if (mAdapterChangeListener != null) {
                 pager!!.removeOnAdapterChangeListener(mAdapterChangeListener!!)
             }
         }
         if (viewPager != null) {
             pager = viewPager
-            pager!!.addOnPageChangeListener(pageListener!!)
+            pager!!.addOnPageChangeListener(pageListener)
             val adapter = viewPager.adapter
             if (adapter != null) {
                 // Now we'll populate ourselves from the pager adapter, adding an observer if
@@ -125,7 +118,7 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
         }
     }
 
-    fun setPagerAdapter(adapter: PagerAdapter?, addObserver: Boolean) {
+    private fun setPagerAdapter(adapter: PagerAdapter?, addObserver: Boolean) {
         if (mPagerAdapter != null && mPagerAdapterObserver != null) {
             // If we already have a PagerAdapter, unregister our observer
             mPagerAdapter!!.unregisterDataSetObserver(mPagerAdapterObserver!!)
@@ -145,23 +138,20 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
 
     fun populateFromPagerAdapter() {
         tabsContainer.removeAllViews()
-        if (mPagerAdapter != null) {
-            val adapterCount = mPagerAdapter!!.count
+        val adapter = pager!!.adapter
+        if (adapter != null) {
+            val adapterCount = adapter.count
             tabCount = adapterCount
             for (i in 0 until adapterCount) {
-                if (pager!!.adapter is LayoutTabProvider) {
-                    addTab(i, (pager!!.adapter as LayoutTabProvider?)!!.createTabView(i))
+                if (adapter is LayoutTabProvider) {
+                    addTab(i, (adapter as LayoutTabProvider).createTabView(i))
                 }
             }
             updateTabStyles()
             viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
-                @SuppressLint("NewApi")
+                
                 override fun onGlobalLayout() {
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                        viewTreeObserver.removeGlobalOnLayoutListener(this)
-                    } else {
-                        viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    }
+                    viewTreeObserver.removeOnGlobalLayoutListener(this)
                     currentPosition = pager!!.currentItem
                     scrollToChild(currentPosition, 0)
                 }
@@ -175,21 +165,18 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
 
     fun notifyDataSetChanged() {
         tabsContainer.removeAllViews()
-        tabCount = pager!!.adapter!!.count
+        val adapter = pager!!.adapter
+        tabCount = adapter!!.count
         for (i in 0 until tabCount) {
-            if (pager!!.adapter is LayoutTabProvider) {
-                addTab(i, (pager!!.adapter as LayoutTabProvider?)!!.createTabView(i))
+            if (adapter is LayoutTabProvider) {
+                addTab(i, adapter.createTabView(i))
             }
         }
         updateTabStyles()
         viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
             @SuppressLint("NewApi")
             override fun onGlobalLayout() {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                    viewTreeObserver.removeGlobalOnLayoutListener(this)
-                } else {
-                    viewTreeObserver.removeOnGlobalLayoutListener(this)
-                }
+                viewTreeObserver.removeOnGlobalLayoutListener(this)
                 currentPosition = pager!!.currentItem
                 scrollToChild(currentPosition, 0)
             }
@@ -200,7 +187,8 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
         tab.isFocusable = true
         tab.setOnClickListener { pager!!.currentItem = position }
         tab.setPadding(tabPadding, 0, tabPadding, 0)
-        tabsContainer.addView(tab, position, if (shouldExpand) expandedTabLayoutParams else defaultTabLayoutParams)
+        val params = if (shouldExpand) expandedTabLayoutParams else defaultTabLayoutParams
+        tabsContainer.addView(tab, position, params)
     }
 
     fun getTab(position: Int): View {
@@ -212,7 +200,7 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
             val v = tabsContainer.getChildAt(i)
             v.setBackgroundResource(tabBackground)
             if (pager!!.adapter is LayoutTabProvider) {
-                (pager!!.adapter as LayoutTabProvider?)!!.changeTabStyle(v, i == currentPosition)
+                (pager!!.adapter as LayoutTabProvider).changeTabStyle(v, i,  currentPosition)
             }
         }
     }
@@ -267,7 +255,7 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
         }
     }
 
-    private inner class PagerAdapterObserver internal constructor() : DataSetObserver() {
+    private inner class PagerAdapterObserver() : DataSetObserver() {
         override fun onChanged() {
             populateFromPagerAdapter()
         }
@@ -277,7 +265,7 @@ class SampleTabStrip @JvmOverloads constructor(context: Context, attrs: Attribut
         }
     }
 
-    private inner class AdapterChangeListener internal constructor() : OnAdapterChangeListener {
+    private inner class AdapterChangeListener() : OnAdapterChangeListener {
         private var mAutoRefresh = false
         override fun onAdapterChanged(viewPager: ViewPager,
                                       oldAdapter: PagerAdapter?, newAdapter: PagerAdapter?) {

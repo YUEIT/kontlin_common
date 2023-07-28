@@ -1,11 +1,11 @@
 package cn.yue.test.mvp
 
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import cn.yue.base.mvp.components.BaseListFragment
 import cn.yue.base.widget.TopBar
 import cn.yue.base.widget.recyclerview.CommonAdapter
 import cn.yue.base.widget.recyclerview.CommonViewHolder
-import cn.yue.base.widget.recyclerview.SwipeLayoutManager
-import cn.yue.base.mvp.components.BaseListFragment
 import cn.yue.test.R
 import cn.yue.test.mode.ItemBean
 import com.alibaba.android.arouter.facade.annotation.Route
@@ -23,7 +23,7 @@ class TestPageFragment : BaseListFragment<ItemBean>() {
     }
 
     override fun getLayoutManager(): RecyclerView.LayoutManager {
-        return SwipeLayoutManager()
+        return LinearLayoutManager(mActivity)
     }
 
     override fun getLayoutId(): Int {

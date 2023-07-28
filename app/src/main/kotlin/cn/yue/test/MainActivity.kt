@@ -25,6 +25,7 @@ class MainActivity : BaseFragmentActivity() {
 
     override fun initView() {
         super.initView()
+//        XposedNative.auth()
         getTopBar().setContentVisibility(View.GONE)
         val rv = findViewById<RecyclerView>(R.id.rv)
         rv.layoutManager = LinearLayoutManager(this)
@@ -88,6 +89,9 @@ class MainActivity : BaseFragmentActivity() {
         })
         list.add("nested" to {
             FRouter.instance.build("/app/testNested").navigation(this)
+        })
+        list.add("tab layout" to {
+            FRouter.instance.build("/app/testTab").navigation(this)
         })
         return list
     }

@@ -74,7 +74,7 @@ object MMKVUtils {
         return MMKV.defaultMMKV().decodeBytes(key)
     }
 
-    fun <T : Parcelable> getParcelable(key: String, clazz: Class<T>): Parcelable? {
+    fun <T : Parcelable> getParcelable(key: String, clazz: Class<T>): T? {
         return MMKV.defaultMMKV().decodeParcelable(key, clazz)
     }
 

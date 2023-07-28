@@ -40,16 +40,19 @@ class RetrofitManager private constructor() {
                 .addInterceptor(ResponseInterceptor())
         builder.retryOnConnectionFailure(true)
         defaultClient = builder.build()
-
+        
         val baseBuilder = OkHttpClient.Builder()
         baseBuilder.connectTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
         baseBuilder.readTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
         baseBuilder.writeTimeout(DEFAULT_TIMEOUT.toLong(), TimeUnit.SECONDS)
-        if (InitConstant.isDebug()) {
-            val logging = HttpLoggingInterceptor()
-            logging.level = HttpLoggingInterceptor.Level.BODY
-            baseBuilder.addInterceptor(logging)
-        }
+        val sslParams = SslHttpsUtils.getSslSocketFactory()
+        baseBuilder.sslSocketFactory(sslParams.sSLSocketFactory!!, sslParams.trustManager!!)
+//        if (InitConstant.isDebug()) {
+//            val logging = HttpLoggingInterceptor()
+//            logging.level = HttpLoggingInterceptor.Level.BODY
+//            baseBuilder.addInterceptor(logging)
+//        }
+        baseBuilder.eventListenerFactory { HttpEventListener() }
         baseBuilder.addInterceptor(NoNetInterceptor())
         baseBuilder.retryOnConnectionFailure(true)
         okHttpClient = baseBuilder.build()

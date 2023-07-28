@@ -1,16 +1,24 @@
 package cn.yue.test.mvp
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.View
-import android.webkit.*
+import android.webkit.WebSettings
 import android.widget.EditText
+import cn.yue.base.mvp.components.BaseHintFragment
+import cn.yue.base.net.download.DownloadUtils
+import cn.yue.base.utils.code.UrlUtils
+import cn.yue.base.utils.debug.ToastUtils
 import cn.yue.base.utils.device.KeyboardUtils
 import cn.yue.base.widget.TopBar
 import cn.yue.base.widget.dialog.HintDialog
-import cn.yue.base.mvp.components.BaseHintFragment
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestWebviewBinding
+import cn.yue.test.web.*
 import com.alibaba.android.arouter.facade.annotation.Route
+import java.util.*
 
 
 /**
@@ -49,9 +57,9 @@ class TestWebFragment : BaseHintFragment() {
             .setOnLeftClickListener {
                 val textStr = searchET.text
                 if (textStr.startsWith("http://") || textStr.startsWith("https://")) {
-                    binding.webView.loadUrl(textStr.toString())
+                    webView?.loadUrl(textStr.toString())
                 } else {
-                    binding.webView.loadUrl("http://$textStr")
+                    webView?.loadUrl("http://$textStr")
                 }
             }
             .build()
@@ -60,33 +68,106 @@ class TestWebFragment : BaseHintFragment() {
             KeyboardUtils.showSoftInput(searchET)
         }, 500)
     }
+    
+    private var webView: ProxyWebView? = null
 
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
-        binding.webView.loadUrl("https://www.baidu.com")
-        val setting = binding.webView.settings
-        setting.javaScriptEnabled = true
-        setting.setSupportZoom(true)
-        setting.cacheMode = WebSettings.LOAD_NO_CACHE
-        binding.webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(
-                view: WebView?,
-                request: WebResourceRequest?
-            ): Boolean {
-                return super.shouldOverrideUrlLoading(view, request)
+        initWebView()
+    }
+    
+    private fun initWebView() {
+        webView = ProxyWebView(mActivity)
+        webView?.initView(false)
+        binding.webContainer.addView(webView)
+        webView?.apply {
+            getSettings()?.apply {
+                setJavaScriptEnabled(true)
+                setDomStorageEnabled(true)
+                setAppCacheEnabled(true)
+                setCacheMode(WebSettings.LOAD_DEFAULT)
+                setAppCacheMaxSize(40 * 1024 * 1024)
+                setMediaPlaybackRequiresUserGesture(false)
+                setTextZoom(100)
+//                val ua = getUserAgentString()
+//                setUserAgentString("$ua Android/${InitConstant.getVersionName()}")
+//                setUseWideViewPort(true)
+                setLoadWithOverviewMode(true)
             }
-        }
-        binding.webView.webChromeClient = object : WebChromeClient() {
-            override fun onReceivedTitle(view: WebView?, title: String?) {
-                super.onReceivedTitle(view, title)
-                topBar.setCenterTextStr(title)
-            }
+            setScrollBarEnabled(false)
+            setWebViewClient(object : CustomWebViewClient() {
+                override fun shouldOverrideUrlLoading(
+                    view: IWebView?,
+                    request: CustomWebResourceRequest?
+                ): Boolean {
+                    val url = request?.getUrl()?.path ?: ""
+                    if (url.contains(".apk")) {
+                        DownloadUtils.downloadApk(url, "${UUID.randomUUID()}.apk")
+                        return true
+                    }
+                    try {
+                        if (url.startsWith("weixin://") || url.startsWith("alipays://")) {
+                            val intent = Intent()
+                            intent.action = Intent.ACTION_VIEW
+                            intent.data = Uri.parse(url)
+                            startActivity(intent)
+                            return true
+                        }
+                    } catch (e: Exception) {
+                        if (url.startsWith("weixin://")) {
+                            ToastUtils.showShortToast("请安装最新版微信")
+                        } else if (url.startsWith("alipays://")) {
+                            ToastUtils.showShortToast("请安装最新版支付宝")
+                        }
+                        return true
+                    }
+                    if (url.contains("https://wx.tenpay.com")) {
+                        var redirectUrl: String =
+                            UrlUtils.getParamsFromUrl(url).getParameter("redirect_url")
+                        if (TextUtils.isEmpty(redirectUrl)) {
+                            redirectUrl = ""
+                        }
+                        val extraHeaders = HashMap<String, String>()
+                        extraHeaders["Referer"] = redirectUrl
+                        view!!.loadUrl(url, extraHeaders)
+                        return true
+                    }
+                    return super.shouldOverrideUrlLoading(view, request)
+                }
+    
+                override fun onReceivedSslError(
+                    view: IWebView?,
+                    handler: CustomSslErrorHandler?,
+                    error: Any?
+                ) {
+                    handler?.proceed()
+                }
+            })
+            
+            setWebChromeClient(object : CustomWebChromeClient() {
+    
+                override fun onProgressChanged(view: IWebView?, newProgress: Int) {
+                    super.onProgressChanged(view, newProgress)
+                    
+                }
+    
+                override fun onReceivedTitle(view: IWebView?, title: String?) {
+                    super.onReceivedTitle(view, title)
+                    topBar.setCenterTextStr(title)
+                }
+            })
+            loadUrl("http://www.baidu.com")
         }
     }
-
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.webContainer.removeView(webView)
+    }
+    
     override fun onFragmentBackPressed(): Boolean {
-        if (binding.webView.canGoBack()) {
-            binding.webView.goBack()
+        if (webView?.canGoBack() == true) {
+            webView?.goBack()
             return true
         }
         return super.onFragmentBackPressed()

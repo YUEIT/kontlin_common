@@ -54,6 +54,7 @@ dependencies {
     api rootProject.ext.androidx["lifecycle-common"]
     api rootProject.ext.androidx["collection"]
     api rootProject.ext.androidx["collection-ktx"]
+    api rootProject.ext.androidx["swiperefreshlayout"]
 
     api rootProject.ext.kotlin["stdlib"]
     api rootProject.ext.kotlin["coroutine"]

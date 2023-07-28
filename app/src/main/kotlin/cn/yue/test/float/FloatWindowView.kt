@@ -43,7 +43,7 @@ class FloatWindowView(context: Context, attributeSet: AttributeSet? = null) : Fr
 			WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
 		
 		layoutY = getScreenHeight() / 2
-		layoutX = getScreenWidth() - DisplayUtils.dip2px(150f)
+		layoutX = getScreenWidth() - DisplayUtils.dip2px(150)
 		mLayoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT
 		mLayoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT
 		mLayoutParams.x = layoutX

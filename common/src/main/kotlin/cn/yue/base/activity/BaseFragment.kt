@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
@@ -21,7 +20,7 @@ import cn.yue.base.common.R
 import cn.yue.base.widget.TopBar
 
 
-abstract class BaseFragment : Fragment(), View.OnTouchListener {
+abstract class BaseFragment : Fragment() {
 
     private lateinit var lifecycleProvider: ILifecycleProvider<Lifecycle.Event>
     private var cacheView: View? = null
@@ -55,7 +54,8 @@ abstract class BaseFragment : Fragment(), View.OnTouchListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.setOnTouchListener(this)
+        view.isClickable = true
+        view.isFocusable = true
         if (!hasCache) {
             initView(savedInstanceState)
         }
@@ -117,10 +117,6 @@ abstract class BaseFragment : Fragment(), View.OnTouchListener {
 
     fun hideTopBar() {
         mActivity.getTopBar().visibility = View.GONE
-    }
-
-    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        return true
     }
 
     override fun onDetach() {

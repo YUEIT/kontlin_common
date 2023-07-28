@@ -92,7 +92,7 @@ object ViewAdapter {
             if (textSizeArray != null) {
                 try {
                     val textSize = textSizeArray[i].toInt()
-                    val sizeSpan = AbsoluteSizeSpan(DisplayUtils.sp2dp(textSize.toFloat()), true)
+                    val sizeSpan = AbsoluteSizeSpan(DisplayUtils.sp2dp(textSize), true)
                     spannable.setSpan(sizeSpan, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
                 } catch (e: Exception) {
                     e.printStackTrace()

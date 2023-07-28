@@ -39,17 +39,17 @@ object ImageUtils {
             }
             if (topLeftRadius != 0f || topRightRadius != 0f || bottomLeftRadius != 0f || bottomRightRadius != 0f) {
                 drawable.cornerRadii = floatArrayOf(
-                        DisplayUtils.dip2px(topLeftRadius).toFloat(), DisplayUtils.dip2px(topLeftRadius).toFloat(),
-                        DisplayUtils.dip2px(topRightRadius).toFloat(), DisplayUtils.dip2px(topRightRadius).toFloat(),
-                        DisplayUtils.dip2px(bottomRightRadius).toFloat(), DisplayUtils.dip2px(bottomRightRadius).toFloat(),
-                        DisplayUtils.dip2px(bottomLeftRadius).toFloat(), DisplayUtils.dip2px(bottomLeftRadius).toFloat()
+                        DisplayUtils.dip2px(topLeftRadius), DisplayUtils.dip2px(topLeftRadius),
+                        DisplayUtils.dip2px(topRightRadius), DisplayUtils.dip2px(topRightRadius),
+                        DisplayUtils.dip2px(bottomRightRadius), DisplayUtils.dip2px(bottomRightRadius),
+                        DisplayUtils.dip2px(bottomLeftRadius), DisplayUtils.dip2px(bottomLeftRadius)
                 )
             }
             if (radius > 0) {
-                drawable.cornerRadius = DisplayUtils.dip2px(radius).toFloat()
+                drawable.cornerRadius = DisplayUtils.dip2px(radius)
             }
             if (strokeWidth > 0) {
-                drawable.setStroke(DisplayUtils.dip2px(strokeWidth), strokeColor)
+                drawable.setStroke(DisplayUtils.dip2px(strokeWidth.toInt()), strokeColor)
             }
         } catch (e: Exception) {
             e.printStackTrace()
