@@ -48,10 +48,10 @@ class SampleTabStrip2(context: Context, attrs: AttributeSet? = null)
 	init {
 		setWillNotDraw(false)
 		val a = context.obtainStyledAttributes(attrs, R.styleable.SampleTabStrip2)
-		shouldExpand = a.getBoolean(R.styleable.SampleTabStrip2_stsShouldExpand, shouldExpand)
-		indicatorWidth = a.getDimensionPixelSize(R.styleable.SampleTabStrip2_stsIndicatorWidth, indicatorWidth.toInt()).toFloat()
-		indicatorHeight = a.getDimensionPixelOffset(R.styleable.SampleTabStrip2_stsIndicatorHeight, indicatorHeight.toInt()).toFloat()
-		indicatorMarginBottom = a.getDimensionPixelOffset(R.styleable.SampleTabStrip2_stsIndicatorMarginBottom, indicatorMarginBottom.toInt()).toFloat()
+		shouldExpand = a.getBoolean(R.styleable.SampleTabStrip2_sts2ShouldExpand, shouldExpand)
+		indicatorWidth = a.getDimensionPixelSize(R.styleable.SampleTabStrip2_sts2IndicatorWidth, indicatorWidth.toInt()).toFloat()
+		indicatorHeight = a.getDimensionPixelOffset(R.styleable.SampleTabStrip2_sts2IndicatorHeight, indicatorHeight.toInt()).toFloat()
+		indicatorMarginBottom = a.getDimensionPixelOffset(R.styleable.SampleTabStrip2_sts2IndicatorMarginBottom, indicatorMarginBottom.toInt()).toFloat()
 		indicatorPaint = Paint()
 		indicatorPaint.isAntiAlias = true
 		indicatorPaint.style = Paint.Style.FILL

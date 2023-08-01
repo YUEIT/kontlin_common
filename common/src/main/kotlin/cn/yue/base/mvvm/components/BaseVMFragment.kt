@@ -2,10 +2,7 @@ package cn.yue.base.mvvm.components
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import cn.yue.base.activity.BaseFragment
 import cn.yue.base.activity.rx.ILifecycleProvider
 import cn.yue.base.mvvm.BaseViewModel
@@ -54,19 +51,19 @@ abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment() {
 
     override fun initObserver() {
         super.initObserver()
-        viewModel.waitEvent.observe(this, Observer { s ->
+        viewModel.waitEvent observe { s ->
             if (null == s) {
                 dismissWaitDialog()
             } else {
                 showWaitDialog(s)
             }
-        })
-        viewModel.routerEvent.observe(this, Observer { (routerCard, requestCode, toActivity) ->
+        }
+        viewModel.routerEvent observe { (routerCard, requestCode, toActivity) ->
             FRouter.instance
                     .bindRouterCard(routerCard)
                     .navigation(mActivity, requestCode, toActivity)
-        })
-        viewModel.finishEvent.observe(this, Observer { (resultCode, bundle) ->
+        }
+        viewModel.finishEvent observe { (resultCode, bundle) ->
             if (resultCode == 0) {
                 finishAll()
             } else {
@@ -76,7 +73,7 @@ abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment() {
                 }
                 finishAllWithResult(resultCode, intent)
             }
-        })
+        }
     }
 
     private var waitDialog: WaitDialog? = null
@@ -90,6 +87,14 @@ abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment() {
     private fun dismissWaitDialog() {
         if (waitDialog != null && waitDialog!!.isShowing()) {
             waitDialog?.cancel()
+        }
+    }
+    
+    infix fun <T> LiveData<T>.observe(observer: Observer<T>) {
+        try {
+            this.observe(this@BaseVMFragment, observer)
+        } catch (e : IllegalArgumentException) {
+            e.printStackTrace()
         }
     }
 

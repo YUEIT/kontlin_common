@@ -181,7 +181,7 @@ abstract class BaseFragmentActivity : FragmentActivity() {
             }
             setResult(resultCode, data)
         }
-        super.onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
         setExitAnim()
     }
 

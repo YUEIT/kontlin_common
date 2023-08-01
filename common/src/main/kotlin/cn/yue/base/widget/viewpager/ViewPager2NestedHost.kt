@@ -1,4 +1,4 @@
-package cn.yue.test.widget
+package cn.yue.base.widget.viewpager
 
 import android.content.Context
 import android.util.AttributeSet

@@ -2,8 +2,9 @@ package cn.yue.base.video
 
 import android.net.Uri
 import android.os.Bundle
-import cn.yue.base.common.R
 import cn.yue.base.activity.BaseFragment
+import cn.yue.base.common.R
+import cn.yue.base.utils.code.getParcelableArrayListExt
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -21,7 +22,7 @@ class ViewVideoFragment: BaseFragment() {
     override fun initView(savedInstanceState: Bundle?) {
         val playerView = findViewById<PlayerView>(R.id.playerView)
         simpleExoPlayer = SimpleExoPlayer.Builder(mActivity).build()
-        val uris = arguments?.getParcelableArrayList<Uri>("uris")
+        val uris = arguments?.getParcelableArrayListExt("uris", Uri::class)
         uris?.let {
             playerView.player = simpleExoPlayer
             for (uri in uris) {

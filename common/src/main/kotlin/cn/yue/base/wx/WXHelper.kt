@@ -1,18 +1,14 @@
 package cn.yue.base.wx
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.TextUtils
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.lifecycle.MutableLiveData
 import cn.yue.base.utils.Utils
 import com.tencent.mm.opensdk.modelmsg.*
 import com.tencent.mm.opensdk.openapi.IWXAPI
@@ -25,7 +21,7 @@ import java.io.File
  * Description :
  * Created by yue on 2020/12/13
  */
-class WXHelper: LifecycleObserver {
+class WXHelper: DefaultLifecycleObserver {
 
     companion object {
         const val WX_AUTH_RECEIVER_ACTION = "wx_auth_receiver_action"
@@ -41,12 +37,32 @@ class WXHelper: LifecycleObserver {
     private var appSecret: String = ""
     private var api: IWXAPI = WXAPIFactory.createWXAPI(Utils.getContext(), appId, true)
     private var loginCallback: LoginCallback? = null
-    private var wxAuthReceiver: BroadcastReceiver? = null
+    private val loginResult = MutableLiveData<ResultParams>()
     private var shareCallback: ShareCallback? = null
-    private var wxShareReceiver: BroadcastReceiver? = null
+    private val shareResult = MutableLiveData<ResultParams>()
 
     init {
         api.registerApp(appId)
+        loginResult.observeForever {
+            loginCallback?.apply {
+                if (it.resultCode == 0) {
+                    if (it.code != null) {
+                        WXApi.getAccessToken(appId, appSecret, it.code, this)
+                    }
+                } else {
+                    failure("授权失败")
+                }
+            }
+        }
+        shareResult.observeForever {
+            shareCallback?.apply {
+                if (it.resultCode == 0) {
+                    success()
+                } else {
+                    failure("分享失败")
+                }
+            }
+        }
     }
 
     fun login(context: Context, loginCallback: LoginCallback) {
@@ -56,25 +72,6 @@ class WXHelper: LifecycleObserver {
         }
         if (context is LifecycleOwner) {
             (context as LifecycleOwner).lifecycle.addObserver(this)
-        }
-        if (wxAuthReceiver == null) {
-            wxAuthReceiver = object : BroadcastReceiver() {
-                override fun onReceive(context: Context?, intent: Intent?) {
-                    val code = intent?.getStringExtra(KEY_WX_AUTH_CODE)
-                    if (code.equals(KEY_WX_AUTH_CANCEL_CODE)) {
-                        if (context != null) {
-                            loginCallback.failure("已取消")
-                        }
-                        return
-                    }
-                    if (code != null) {
-	                    WXApi.getAccessToken(appId, appSecret, code, loginCallback)
-                    }
-                }
-            }
-            LocalBroadcastManager.getInstance(context).registerReceiver(wxAuthReceiver!!, IntentFilter(
-	            WX_AUTH_RECEIVER_ACTION
-            ))
         }
         val req = SendAuth.Req()
         req.scope = "snsapi_userinfo"
@@ -103,21 +100,6 @@ class WXHelper: LifecycleObserver {
         if (isSharePYQ && api.wxAppSupportAPI < 0x21020001) {
             shareCallback.failure("微信4.2以上才支持分享朋友圈，请升级微信")
             return
-        }
-        if (wxShareReceiver == null) {
-            wxShareReceiver = object : BroadcastReceiver() {
-                override fun onReceive(context: Context?, intent: Intent?) {
-                    val shareSuccess = intent?.getBooleanExtra(KEY_WX_SHARE_CALL_BACK, false)?: false
-                    if (shareSuccess) {
-                        shareCallback.success()
-                    } else {
-                        shareCallback.failure("分享失败")
-                    }
-                }
-            }
-            LocalBroadcastManager.getInstance(context).registerReceiver(wxShareReceiver!!, IntentFilter(
-	            WX_SHARE_RECEIVER_ACTION
-            ))
         }
         val req = SendMessageToWX.Req()
         req.message = createMessage(req, shareInfo.params)
@@ -217,8 +199,7 @@ class WXHelper: LifecycleObserver {
             msg.description = params.getString(WXShareEntity.KEY_WX_SUMMARY)
         }
         if (params.containsKey(WXShareEntity.KEY_WX_IMG_LOCAL) || params.containsKey(WXShareEntity.KEY_WX_IMG_RES)) {
-            val bitmap: Bitmap
-            bitmap = if (params.containsKey(WXShareEntity.KEY_WX_IMG_LOCAL)) { //分为本地文件和应用内资源图片
+            val bitmap = if (params.containsKey(WXShareEntity.KEY_WX_IMG_LOCAL)) { //分为本地文件和应用内资源图片
                 val imgUrl = params.getString(WXShareEntity.KEY_WX_IMG_LOCAL, "")
                 if (notFoundFile(imgUrl)) {
                     return true
@@ -252,7 +233,11 @@ class WXHelper: LifecycleObserver {
     }
 
     private fun buildTransaction(type: String?): String? {
-        return if (type == null) System.currentTimeMillis().toString() else type + System.currentTimeMillis()
+        return if (type == null) {
+            System.currentTimeMillis().toString()
+        } else {
+            type + System.currentTimeMillis()
+        }
     }
 
     private fun bmpToByteArray(bmp: Bitmap, needThumb: Boolean): ByteArray? {
@@ -301,36 +286,28 @@ class WXHelper: LifecycleObserver {
     /**
      * 微信登录，在微信回调到WXEntryActivity的onResp方法中调用
      */
-    fun sendAuthBackBroadcast(context: Context?, mCode: String?) {
-        var code = mCode
-        val intent = Intent(WX_AUTH_RECEIVER_ACTION)
-        if (TextUtils.isEmpty(code)) {
-            code = KEY_WX_AUTH_CANCEL_CODE
-        }
-        intent.putExtra(KEY_WX_AUTH_CODE, code)
-        LocalBroadcastManager.getInstance(context!!).sendBroadcast(intent)
+    fun sendAuthResult(resultCode: Int, mCode: String?) {
+        loginResult.value = ResultParams(resultCode, mCode)
     }
 
     /**
      * 微信分享，在微信回调到WXEntryActivity的onResp方法中调用
      */
-    fun sendShareBackBroadcast(context: Context?, success: Boolean) {
-        val intent = Intent(WX_SHARE_RECEIVER_ACTION)
-        intent.putExtra(KEY_WX_SHARE_CALL_BACK, success)
-        LocalBroadcastManager.getInstance(context!!).sendBroadcast(intent)
+    fun sendShareResult(resultCode: Int, result: String?) {
+        shareResult.value = ResultParams(resultCode, result)
     }
 
     fun handleIntent(intent: Intent?, handler: IWXAPIEventHandler) {
         api.handleIntent(intent, handler)
     }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun unregisterReceiver() {
-        if (wxShareReceiver != null) {
-            LocalBroadcastManager.getInstance(Utils.getContext()).unregisterReceiver(wxShareReceiver!!)
-        }
-        if (wxAuthReceiver != null) {
-            LocalBroadcastManager.getInstance(Utils.getContext()).unregisterReceiver(wxAuthReceiver!!)
-        }
+    
+    override fun onDestroy(owner: LifecycleOwner) {
+        super.onDestroy(owner)
+        loginCallback = null
+        shareCallback = null
     }
+    
+    data class ResultParams(
+        val resultCode: Int,
+        val code: String?)
 }

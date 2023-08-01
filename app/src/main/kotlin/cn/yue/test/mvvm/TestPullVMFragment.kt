@@ -3,12 +3,11 @@ package cn.yue.test.mvvm
 import android.os.Bundle
 import android.view.View
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import cn.yue.base.mvvm.components.BasePullVMFragment
 import cn.yue.base.widget.TopBar
 import cn.yue.base.widget.recyclerview.CommonAdapter
 import cn.yue.base.widget.recyclerview.CommonViewHolder
-import cn.yue.base.mvvm.components.BasePullVMFragment
 import cn.yue.test.BR
 import cn.yue.test.R
 import cn.yue.test.databinding.FragmentTestPullVmBinding
@@ -54,9 +53,9 @@ class TestPullVMFragment : BasePullVMFragment<TestPullViewModel>() {
 
     override fun initObserver() {
         super.initObserver()
-        viewModel.userLiveData.observe(this, Observer {
+        viewModel.userLiveData observe  {
             adapter.setList(it)
-        })
+        }
     }
 
 }

@@ -43,11 +43,11 @@
     </declare-styleable>
 
     <declare-styleable name="SampleTabStrip2">
-        <attr name="stsShouldExpand" format="boolean"/>
-        <attr name="stsIndicatorHeight" format="dimension"/>
-        <attr name="stsIndicatorWidth" format="dimension"/>
-        <attr name="stsIndicatorMarginBottom" format="dimension"/>
-        <attr name="stsIndicatorColor" format="color"/>
+        <attr name="sts2ShouldExpand" format="boolean"/>
+        <attr name="sts2IndicatorHeight" format="dimension"/>
+        <attr name="sts2IndicatorWidth" format="dimension"/>
+        <attr name="sts2IndicatorMarginBottom" format="dimension"/>
+        <attr name="sts2IndicatorColor" format="color"/>
     </declare-styleable>
 
     <declare-styleable name="RoundImageView">

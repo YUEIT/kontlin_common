@@ -31,16 +31,12 @@ open class WXHelperActivity: AppCompatActivity(), IWXAPIEventHandler {
         if (p0.type == ConstantsAPI.COMMAND_SENDAUTH) {
             if (p0.errCode == BaseResp.ErrCode.ERR_OK) {
                 val code = (p0 as SendAuth.Resp).code
-                WXHelper.instance.sendAuthBackBroadcast(this, code)
+                WXHelper.instance.sendAuthResult(p0.errCode, code)
             } else {
-                WXHelper.instance.sendAuthBackBroadcast(this, null)
+                WXHelper.instance.sendAuthResult(p0.errCode, null)
             }
         } else if (p0.type == ConstantsAPI.COMMAND_SENDMESSAGE_TO_WX) {
-            if (p0.errCode == BaseResp.ErrCode.ERR_OK) {
-                WXHelper.instance.sendShareBackBroadcast(this, true)
-            } else {
-                WXHelper.instance.sendShareBackBroadcast(this, false)
-            }
+            WXHelper.instance.sendShareResult(p0.errCode, null)
         }
         onBackPressedDispatcher.onBackPressed()
     }
