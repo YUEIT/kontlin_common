@@ -11,7 +11,7 @@ import android.view.ViewConfiguration
 import android.widget.LinearLayout
 import android.widget.Scroller
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.widget.viewpager.HeaderScrollHelper.ScrollableContainer
 
 class  HeaderScrollView(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {

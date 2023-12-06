@@ -41,6 +41,21 @@ object KeyboardUtils {
      * @param view    视图
      */
     @JvmStatic
+    fun hideSoftInput(view: View?) {
+        if (view == null) {
+            return
+        }
+        val imm = Utils.getContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    /**
+     * 动态隐藏软键盘
+     *
+     * @param context 上下文
+     * @param view    视图
+     */
+    @JvmStatic
     fun hideSoftInput(context: Context, view: View) {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 ?: return

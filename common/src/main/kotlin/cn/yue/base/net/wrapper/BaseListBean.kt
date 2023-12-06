@@ -23,10 +23,6 @@ open class BaseListBean<T> : BaseUnityListBean<T>(), IListModel<T> {
         return getRealPageSize()
     }
 
-    override fun getPageNt() : String? {
-        return getRealPageNt()
-    }
-
     override fun getCurrentPageTotal() : Int {
         return getList()?.size ?: 0
     }

@@ -3,7 +3,7 @@ package cn.yue.base.video
 import android.net.Uri
 import android.os.Bundle
 import cn.yue.base.activity.BaseFragment
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.utils.code.getParcelableArrayListExt
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.google.android.exoplayer2.MediaItem

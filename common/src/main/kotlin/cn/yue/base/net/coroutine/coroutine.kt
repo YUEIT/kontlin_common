@@ -6,6 +6,7 @@ import android.os.Looper
 import cn.yue.base.init.InitConstant
 import cn.yue.base.net.observer.WrapperObserver
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.*
 import kotlin.concurrent.thread
@@ -27,7 +28,7 @@ object CoroutineManager {
         }
         scope.launch(handler) {
             try {
-                observable.onStart()
+                observable.onSubscribe(CompositeDisposable())
                 val deferred = withContext(Dispatchers.IO) {
                     block.invoke()
                 }
@@ -46,7 +47,7 @@ object CoroutineManager {
             observable.onError(exception)
         }
         scope.launch(handler) {
-            observable.onStart()
+            observable.onSubscribe(CompositeDisposable())
             val deferredArray = ArrayList<Deferred<*>>()
             block.forEach {
                 val data = async(Dispatchers.IO) {
@@ -73,7 +74,7 @@ fun <T> CoroutineScope.request(block: suspend () -> T, observable: WrapperObserv
     }
     this.launch(handler) {
         try {
-            observable.onStart()
+            observable.onSubscribe(CompositeDisposable())
             val deferred = withContext(Dispatchers.IO) {
                 block.invoke()
             }
@@ -92,7 +93,7 @@ fun CoroutineScope.request(block: List<suspend () -> Any>, observable: WrapperOb
         observable.onError(exception)
     }
     this.launch(handler) {
-        observable.onStart()
+        observable.onSubscribe(CompositeDisposable())
         val deferredArray = ArrayList<Deferred<*>>()
         block.forEach {
             val data = async(Dispatchers.IO) {

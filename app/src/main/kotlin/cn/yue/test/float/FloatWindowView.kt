@@ -1,7 +1,9 @@
 package cn.yue.test.float
 
 import android.animation.ValueAnimator
+import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.PixelFormat
 import android.os.Build
 import android.util.AttributeSet
@@ -11,10 +13,12 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.view.WindowManager.LayoutParams.TYPE_APPLICATION_MEDIA
 import android.widget.FrameLayout
 import android.widget.TextView
 import cn.yue.base.utils.app.DisplayUtils
 import cn.yue.test.R
+
 
 class FloatWindowView(context: Context, attributeSet: AttributeSet? = null) : FrameLayout(context, attributeSet) {
 	

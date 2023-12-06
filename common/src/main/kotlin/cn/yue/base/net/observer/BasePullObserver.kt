@@ -12,22 +12,16 @@ import cn.yue.base.view.load.PageStatus
  * Created by yue on 2019/4/1
  */
 abstract class BasePullObserver<T>(private val iStatusView: IStatusView?) : BaseNetObserver<T>() {
-    
+
     override fun onSuccess(t: T) {
         iStatusView?.changePageStatus(PageStatus.NORMAL)
+        iStatusView?.changeLoadStatus(LoadStatus.NORMAL)
     }
 
     override fun onException(e: ResultException) {
         when(e.code) {
             ResponseCode.ERROR_NO_NET -> {
                 iStatusView?.changePageStatus(PageStatus.NO_NET)
-            }
-            ResponseCode.ERROR_NO_DATA -> {
-                iStatusView?.changePageStatus(PageStatus.NO_DATA)
-            }
-            ResponseCode.ERROR_OPERATION -> {
-                iStatusView?.changePageStatus(PageStatus.ERROR)
-                showShortToast(e.message)
             }
             ResponseCode.ERROR_CANCEL -> {
                 iStatusView?.changeLoadStatus(LoadStatus.NORMAL)
@@ -37,6 +31,7 @@ abstract class BasePullObserver<T>(private val iStatusView: IStatusView?) : Base
                 showShortToast(e.message)
             }
         }
+        iStatusView?.changeLoadStatus(LoadStatus.NORMAL)
     }
 
 }

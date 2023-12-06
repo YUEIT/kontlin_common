@@ -17,7 +17,7 @@ import android.view.ViewConfiguration
 import androidx.annotation.CallSuper
 import androidx.annotation.IntDef
 import androidx.appcompat.widget.AppCompatEditText
-import cn.yue.base.common.R
+import cn.yue.base.R
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 import java.util.*

@@ -8,7 +8,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.text.TextUtils
 import android.widget.ImageView
-import cn.yue.base.common.R
+import cn.yue.base.R
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.load.engine.DiskCacheStrategy

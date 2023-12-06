@@ -8,7 +8,7 @@ import android.text.TextUtils
 import cn.yue.base.activity.BaseFragment
 import cn.yue.base.activity.CommonActivity
 import cn.yue.base.activity.WrapperResultLauncher
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.mvvm.BaseViewModel
 import cn.yue.base.mvvm.data.RouterModel
 import cn.yue.base.utils.code.getString

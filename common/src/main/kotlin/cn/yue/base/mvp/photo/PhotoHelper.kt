@@ -12,7 +12,7 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContracts
 import cn.yue.base.activity.BaseFragmentActivity
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.net.observer.WrapperObserver
 import cn.yue.base.photo.SelectPhotoActivity
 import cn.yue.base.photo.data.MediaData

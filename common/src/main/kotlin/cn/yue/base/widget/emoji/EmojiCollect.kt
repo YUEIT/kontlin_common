@@ -1,6 +1,6 @@
 package cn.yue.base.widget.emoji
 
-import cn.yue.base.common.R
+import cn.yue.base.R
 
 object EmojiCollect {
 

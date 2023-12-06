@@ -22,7 +22,8 @@
             android:launchMode="standard"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/LaunchTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -37,6 +38,7 @@
 
         </activity>
 
+
         <activity android:name=".ComposeActivity"/>
 
         <service android:name="cn.yue.test.service.UpdateService"/>
@@ -47,6 +49,17 @@
                 <action android:name="cn.yue.test.FloatWindow"/>
             </intent-filter>
         </service>
+
+        <receiver
+            android:name=".broadcast.WinkFirebaseMessageBroadcast"
+            android:exported="true">
+            <intent-filter>
+                <!-- category 为必须设置项 设置为 android.intent.category.DEFAULT 即可-->
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="com.wink.live.support.notification.WinkFirebaseMessageBroadcast" />
+            </intent-filter>
+        </receiver>
 
         <!--适配android 7.0以及以上更新APK路径-->
         <provider

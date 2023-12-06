@@ -11,9 +11,7 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
-import androidx.databinding.DataBindingUtil
-import cn.yue.base.common.R
-import cn.yue.base.common.databinding.LayoutTopBarBinding
+import cn.yue.base.databinding.LayoutTopBarBinding
 import cn.yue.base.utils.app.BarUtils
 import cn.yue.base.utils.app.DisplayUtils.dip2px
 
@@ -23,13 +21,11 @@ import cn.yue.base.utils.app.DisplayUtils.dip2px
  */
 class TopBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : RelativeLayout(context, attrs) {
 
-    var binding: LayoutTopBarBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.layout_top_bar, this, true)
+    var binding = LayoutTopBarBinding.inflate(LayoutInflater.from(context), this, true)
 
     init {
         val layoutParams = binding.statusBarSpace.layoutParams as LinearLayout.LayoutParams
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            layoutParams.height = Math.max(BarUtils.getStatusBarHeight(), dip2px(30))
-        }
+        layoutParams.height = BarUtils.getFixStatusBarHeight()
         defaultStyle()
     }
 

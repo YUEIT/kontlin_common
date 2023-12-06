@@ -2,21 +2,16 @@ package cn.yue.base.utils.debug
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-import cn.yue.base.common.R
 import cn.yue.base.utils.Utils
 import cn.yue.base.utils.app.DisplayUtils
 import java.lang.ref.WeakReference
@@ -24,15 +19,9 @@ import java.lang.reflect.Field
 
 object ToastUtils {
 
-    private const val DEFAULT_COLOR = Color.BLACK
     private var gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
     private var xOffset = 0
     private var yOffset = DisplayUtils.dip2px(100)
-    private var bgResource = R.drawable.shape_bg_white_radius_10
-    private var bgResourceOneTime = -1
-    private var messageColor = DEFAULT_COLOR
-    private var messageColorOneTime = DEFAULT_COLOR
-
     private var sViewWeakReference: WeakReference<View>? = null
     private var sToast: Toast? = null
     private val sHandler = Handler(Looper.getMainLooper())
@@ -171,8 +160,11 @@ object ToastUtils {
      * @param duration 显示时长
      */
     private fun showToast(text: CharSequence, duration: Int) {
+        if (Looper.getMainLooper() != Looper.myLooper()) {
+            sHandler.post { showToast(text, duration) }
+            return
+        }
         cancelToast()
-        var custom = false
         // android 11 setView方法失效
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
             sViewWeakReference?.apply {
@@ -180,26 +172,11 @@ object ToastUtils {
                 if (view != null) {
                     getToast().view = view
                     getToast().duration = duration
-                    custom = true
                 }
             }
         }
-        if (!custom) {
-            val spannableString = SpannableString(text)
-            val currentMessageColor = if (messageColorOneTime != DEFAULT_COLOR) messageColorOneTime else messageColor
-            val colorSpan = ForegroundColorSpan(currentMessageColor)
-            spannableString.setSpan(colorSpan, 0, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            sToast = Toast.makeText(Utils.getContext(), spannableString, duration)
-            messageColorOneTime = DEFAULT_COLOR
-        }
+        sToast = Toast.makeText(Utils.getContext(), text, duration)
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-            val view = getToast().view ?: return
-            if (bgResourceOneTime != -1) {
-                view.setBackgroundResource(bgResourceOneTime)
-                bgResourceOneTime = -1
-            } else {
-                view.setBackgroundResource(bgResource)
-            }
             getToast().setGravity(gravity, xOffset, yOffset)
             if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1) {
                 hook(getToast())

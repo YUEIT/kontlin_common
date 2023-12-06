@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.KeyEvent
 import androidx.appcompat.widget.AppCompatEditText
-import cn.yue.base.common.R
+import cn.yue.base.R
 
 
 class EmojiEmotionEditText : AppCompatEditText {

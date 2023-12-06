@@ -14,7 +14,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import cn.yue.base.activity.BaseFragment
 import cn.yue.base.activity.BaseFragmentActivity
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.photo.data.MediaData
 import cn.yue.base.photo.data.MediaType
 import cn.yue.base.utils.code.getParcelableArrayListExt

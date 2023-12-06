@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.utils.app.DisplayUtils
 import cn.yue.base.widget.recyclerview.CommonAdapter
 import cn.yue.base.widget.recyclerview.CommonViewHolder

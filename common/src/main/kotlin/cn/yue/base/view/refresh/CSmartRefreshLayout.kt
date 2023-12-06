@@ -14,13 +14,15 @@ class CSmartRefreshLayout(context: Context, attributeSet: AttributeSet) :
 
     init {
         setRefreshHeader(CustomClassicsHeader(context))
+        setEnableOverScrollBounce(true)
+        setEnableOverScrollDrag(true)
     }
 
     override fun setTargetView(targetView: View) {
 
     }
 
-    override fun setEnabledRefresh(enable: Boolean) {
+    override fun setRefreshEnable(enable: Boolean) {
         super.setEnableRefresh(enable)
     }
 
@@ -28,7 +30,7 @@ class CSmartRefreshLayout(context: Context, attributeSet: AttributeSet) :
         autoRefresh()
     }
 
-    override fun finishRefreshing() {
+    override fun finishRefreshingState() {
         super.finishRefresh()
     }
 
@@ -36,5 +38,9 @@ class CSmartRefreshLayout(context: Context, attributeSet: AttributeSet) :
         super.setOnRefreshListener {
             onRefresh()
         }
+    }
+
+    override fun showLoadMoreEnd(show: Boolean) {
+
     }
 }

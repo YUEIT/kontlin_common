@@ -2,6 +2,7 @@ package cn.yue.test.mvvm
 
 import android.app.Application
 import cn.yue.base.mvvm.ListViewModel
+import cn.yue.base.mvvm.PageViewModel
 import cn.yue.base.net.ResultException
 import cn.yue.base.net.observer.BaseNetObserver
 import cn.yue.base.net.wrapper.BaseListBean
@@ -9,12 +10,11 @@ import cn.yue.base.net.wrapper.DataListBean
 import cn.yue.test.mode.ItemBean
 import io.reactivex.rxjava3.core.Single
 
-class TestPageViewModel(application: Application)
-    : ListViewModel<DataListBean<ItemBean>, ItemBean>(application) {
+class TestPageViewModel : PageViewModel<ItemBean>() {
 
     var loadTemp = 0
 
-     fun getRequestScope(nt: String): DataListBean<ItemBean> {
+     fun getRequestScope(nt: Int): BaseListBean<ItemBean> {
         val listBean = BaseListBean<ItemBean>()
         listBean.mTotal = 22
 //        val list: MutableList<ItemBean> = ArrayList()
@@ -27,24 +27,16 @@ class TestPageViewModel(application: Application)
             list.add(testItemBean)
         }
         listBean.mList = list
-        return list
+        return listBean
     }
 
-    override fun doLoadData(nt: String) {
-//        viewModelScope.request({
+    override fun doLoadData(nt: Int) {
+        //        viewModelScope.request({
 //            getRequestScope(nt)
 //        }, PageDelegateObserver())
-        Single.create<DataListBean<ItemBean>> {
+        Single.create {
             it.onSuccess(getRequestScope(nt))
-        }.compose(PageTransformer())
-            .subscribe()
+        }.defaultSubscribe()
     }
 
-    override fun getPageObserver(): BaseNetObserver<DataListBean<ItemBean>> {
-        return object : PageObserver() {
-            override fun onRefreshComplete(p: DataListBean<ItemBean>?, e: ResultException?) {
-                super.onRefreshComplete(p, e)
-            }
-        }
-    }
 }

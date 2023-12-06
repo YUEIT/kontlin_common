@@ -18,7 +18,7 @@ import android.widget.*
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 
-import cn.yue.base.common.R
+import cn.yue.base.R
 
 class PagerSlidingTabStrip @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0)
     : HorizontalScrollView(context, attrs, defStyle) {

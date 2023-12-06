@@ -3,6 +3,7 @@ package cn.yue.base.net.observer
 import cn.yue.base.mvp.IWaitView
 import cn.yue.base.net.ResultException
 import cn.yue.base.utils.debug.ToastUtils
+import io.reactivex.rxjava3.disposables.Disposable
 
 /**
  * Description :
@@ -13,8 +14,7 @@ abstract class BaseWaitObserver<T>(
         private val title: String? = ""
     ) : BaseNetObserver<T>() {
 
-    override fun onStart() {
-        super.onStart()
+    override fun onSubscribe(d: Disposable) {
         iWaitView.showWaitDialog(title ?: "")
     }
 

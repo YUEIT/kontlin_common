@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.utils.app.DisplayUtils
 import cn.yue.base.utils.device.ScreenUtils
 

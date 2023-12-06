@@ -39,4 +39,9 @@ class LoaderLiveData {
         loadStatusLiveData.observe(lifecycleOwner, observer)
     }
 
+    fun isLoading(): Boolean {
+        return loadStatus == LoadStatus.LOAD_MORE
+                || loadStatus == LoadStatus.REFRESH
+                || pageStatus == PageStatus.REFRESH
+    }
 }

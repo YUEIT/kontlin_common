@@ -8,6 +8,10 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkInfo
 import androidx.work.WorkerParameters
 import cn.yue.base.init.NotificationConfig
+import cn.yue.base.init.NotificationConfig.notify
+import cn.yue.base.init.NotificationConfig.setIntent
+import cn.yue.base.init.NotificationConfig.setShowContent
+import cn.yue.base.init.NotificationConfig.setTitle
 import cn.yue.base.utils.Utils
 import cn.yue.base.utils.app.ActivityUtils
 
@@ -33,7 +37,11 @@ class DownloadApkWorker(context: Context, workerParameters: WorkerParameters)
 	}
 	
 	private fun notification(content: String, progress: Int?, intent: Intent?) {
-		NotificationConfig.notify(NOTIFICATION_ID, "应用下载", content, progress, intent)
+		NotificationConfig.getNotificationBuilder()
+			.setTitle("应用下载")
+			.setShowContent(content, progress)
+			.setIntent(intent)
+			.notify(NOTIFICATION_ID)
 	}
 	
 	override fun updateWorkState(state: WorkInfo.State, data: Data) {

@@ -9,7 +9,7 @@ import cn.yue.base.net.observer.WrapperPullObserver
 import cn.yue.test.mode.ApiManager
 import cn.yue.test.mode.ItemBean
 
-class TestPullViewModel(application: Application) : PullViewModel(application) {
+class TestPullViewModel : PullViewModel() {
 
     var userLiveData = MutableListLiveData<ItemBean>()
 

@@ -1,6 +1,7 @@
 package cn.yue.test.mvp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.mvp.components.BasePullFragment
@@ -30,6 +31,7 @@ class TestPullFragment : BasePullFragment() {
 
     override fun initView(savedInstanceState: Bundle?) {
         super.initView(savedInstanceState)
+        Log.d("luo", "initView: ${arguments?.getString("test")}")
         val recyclerView = findViewById<RecyclerView>(R.id.rv)
         recyclerView.layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false)
         adapter = object : CommonAdapter<ItemBean>() {

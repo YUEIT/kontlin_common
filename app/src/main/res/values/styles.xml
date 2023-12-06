@@ -9,4 +9,8 @@
         <item name="android:windowBackground">#ffffff</item>
     </style>
 
+    <style name="LaunchTheme" parent="@style/AppTheme">
+        <item name="colorPrimaryDark">#ffffff</item>
+        <item name="android:windowBackground">@drawable/ic_launcher_background</item>
+    </style>
 </resources>

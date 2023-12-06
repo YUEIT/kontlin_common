@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.activity.BaseFragment
 import cn.yue.base.widget.TopBar
 import com.alibaba.android.arouter.facade.annotation.Route

@@ -8,8 +8,7 @@ import cn.yue.base.mvvm.data.RouterModel
  * Description :
  * Created by yue on 2020/8/8
  */
-abstract class ItemViewModel(private val parentViewModel: BaseViewModel)
-    : BaseViewModel(parentViewModel.getApplication()) {
+abstract class ItemViewModel(private val parentViewModel: BaseViewModel) : BaseViewModel() {
 
     override fun <T> toBindLifecycle(): RxLifecycleTransformer<T> {
         return parentViewModel.toBindLifecycle()
@@ -19,7 +18,7 @@ abstract class ItemViewModel(private val parentViewModel: BaseViewModel)
         return parentViewModel.toBindLifecycle(e)
     }
 
-    override fun showWaitDialog(title: String) {
+    override fun showWaitDialog(title: String?) {
         parentViewModel.showWaitDialog(title)
     }
 

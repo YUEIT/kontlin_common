@@ -17,7 +17,7 @@ class TestDialogFragment : BaseDialogFragment() {
 
     }
 
-    override fun initEnterStyle() {
-        setEnterStyle(TransitionAnimation.TRANSITION_LEFT)
+    override fun getTransition(): Int {
+        return TransitionAnimation.TRANSITION_LEFT
     }
 }

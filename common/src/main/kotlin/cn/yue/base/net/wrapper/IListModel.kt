@@ -16,7 +16,5 @@ interface IListModel<T> {
 
     fun getPageSize(): Int
 
-    fun getPageNt() : String?
-
     fun getCurrentPageTotal() : Int
 }

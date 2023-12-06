@@ -1,6 +1,7 @@
 package cn.yue.base.net.observer
 
 import cn.yue.base.net.ResultException
+import io.reactivex.rxjava3.disposables.Disposable
 
 /**
  * Description :
@@ -16,6 +17,10 @@ class BaseEndObserver<T>(
 
     override fun onException(e: ResultException) {
         endBlock?.invoke(false, null, e)
+    }
+
+    override fun onSubscribe(d: Disposable) {
+        TODO("Not yet implemented")
     }
 
 }

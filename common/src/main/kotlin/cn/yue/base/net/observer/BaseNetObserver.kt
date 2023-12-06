@@ -1,12 +1,13 @@
 package cn.yue.base.net.observer
 
-import cn.yue.base.common.R
-import cn.yue.base.event.AppViewModes
+import cn.yue.base.R
+import cn.yue.base.event.NotifyViewModel
 import cn.yue.base.net.ResponseCode
 import cn.yue.base.net.ResultException
 import cn.yue.base.utils.code.getString
 import cn.yue.base.utils.debug.ToastUtils
-import io.reactivex.rxjava3.observers.DisposableSingleObserver
+import io.reactivex.rxjava3.core.SingleObserver
+import io.reactivex.rxjava3.disposables.Disposable
 import java.util.concurrent.CancellationException
 
 /**
@@ -14,10 +15,10 @@ import java.util.concurrent.CancellationException
  * Created by yue on 2018/7/26
  */
 
-abstract class BaseNetObserver<T> : DisposableSingleObserver<T>() {
-    
-    public override fun onStart() {
-        super.onStart()
+abstract class BaseNetObserver<T> : SingleObserver<T> {
+
+    override fun onSubscribe(d: Disposable) {
+
     }
 
     abstract fun onException(e: ResultException)
@@ -35,7 +36,7 @@ abstract class BaseNetObserver<T> : DisposableSingleObserver<T>() {
                 onException(resultException)
             }
             is CancellationException -> {
-                onException(ResultException(ResponseCode.ERROR_CANCEL, R.string.app_request_cancel.getString()))
+                onCancel()
             }
             else -> {
                 onException(ResultException(ResponseCode.ERROR_SERVER, e.message?:""))
@@ -43,9 +44,16 @@ abstract class BaseNetObserver<T> : DisposableSingleObserver<T>() {
         }
     }
 
+    /**
+     * 多数情况下，不需要额外处理，情况多数发生在绑定声明周期的页面销毁后的取消
+     */
+    open fun onCancel() {
+
+    }
+
     private fun onLoginInvalid() {
         ToastUtils.showShortToast(R.string.app_login_fail.getString())
-        AppViewModes.getNotifyViewModel().loginStatusLiveData.setValue(-1)
+        NotifyViewModel.getLoadStatus().setValue(-1)
     }
 
 }

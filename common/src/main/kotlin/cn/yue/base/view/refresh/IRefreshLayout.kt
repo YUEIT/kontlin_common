@@ -8,8 +8,10 @@ import android.view.View
  */
 interface IRefreshLayout {
     fun setTargetView(targetView: View)
-    fun setEnabledRefresh(enable: Boolean)
+    fun setRefreshEnable(enable: Boolean)
     fun startRefresh()
-    fun finishRefreshing()
+    fun finishRefreshingState()
     fun setOnRefreshListener(onRefresh: (() -> Unit))
+
+    fun showLoadMoreEnd(show: Boolean)
 }

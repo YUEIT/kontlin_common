@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData
 class MutableListLiveData<T> : MutableLiveData<ArrayList<T>>(ArrayList<T>()) {
 
     override fun postValue(value: ArrayList<T>) {
-        super.postValue(value)
+        super.postValue(ArrayList(value))
     }
 
     fun postValue(value: List<T>?) {
@@ -21,7 +21,7 @@ class MutableListLiveData<T> : MutableLiveData<ArrayList<T>>(ArrayList<T>()) {
     }
 
     override fun setValue(value: ArrayList<T>) {
-        super.setValue(value)
+        super.setValue(ArrayList(value))
     }
 
     fun setValue(value: List<T>?) {

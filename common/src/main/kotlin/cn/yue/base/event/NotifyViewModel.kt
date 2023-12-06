@@ -1,6 +1,5 @@
 package cn.yue.base.event
 
-import android.app.Application
 import cn.yue.base.mvvm.BaseViewModel
 import cn.yue.base.utils.event.NoStickyLiveData
 
@@ -10,7 +9,14 @@ import cn.yue.base.utils.event.NoStickyLiveData
  * Created by yue on 2022/1/24
  */
 
-class NotifyViewModel(application: Application): BaseViewModel(application) {
+class NotifyViewModel: BaseViewModel() {
+
+    companion object {
+
+        fun getLoadStatus(): NoStickyLiveData<Int> {
+            return BaseViewModes.getNotifyViewModel().loginStatusLiveData
+        }
+    }
 
     val loginStatusLiveData = NoStickyLiveData<Int>()
 }

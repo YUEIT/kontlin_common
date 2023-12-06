@@ -2,7 +2,7 @@ package cn.yue.base.widget.emoji
 
 import android.content.Context
 import android.text.Spannable
-import cn.yue.base.common.R
+import cn.yue.base.R
 
 object EmojiEmotionHandler {
 

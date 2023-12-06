@@ -11,7 +11,7 @@ import cn.yue.base.net.wrapper.IListModel
 
 class UiViewModels : ArrayList<ItemViewModel>(), IListModel<ItemViewModel> {
 
-    override fun getList(): MutableList<ItemViewModel>? {
+    override fun getList(): MutableList<ItemViewModel> {
         return this
     }
 
@@ -25,10 +25,6 @@ class UiViewModels : ArrayList<ItemViewModel>(), IListModel<ItemViewModel> {
 
     override fun getPageSize(): Int {
         return size
-    }
-
-    override fun getPageNt(): String? {
-        return null
     }
 
     override fun getCurrentPageTotal(): Int {

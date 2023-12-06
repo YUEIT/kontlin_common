@@ -1,7 +1,7 @@
 package cn.yue.base.net.intercept
 
 import android.text.TextUtils
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.init.InitConstant
 import cn.yue.base.net.CharsetConfig
 import cn.yue.base.net.ResponseCode

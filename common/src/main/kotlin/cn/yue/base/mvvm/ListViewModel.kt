@@ -1,11 +1,5 @@
 package cn.yue.base.mvvm
 
-import android.app.Application
-import android.text.TextUtils
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import cn.yue.base.mvvm.data.MutableListLiveData
 import cn.yue.base.net.ResponseCode
 import cn.yue.base.net.ResultException
@@ -18,17 +12,19 @@ import cn.yue.base.view.load.PageStatus
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleSource
 import io.reactivex.rxjava3.core.SingleTransformer
+import io.reactivex.rxjava3.disposables.Disposable
 
-abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : BaseViewModel(application) {
+abstract class ListViewModel<P : IListModel<S>, S> : BaseViewModel() {
 
-    private var pageNt: String = "1"
-    private var lastNt: String = "1"
-    var total = 0 //当接口返回总数时，为返回数量；接口未返回数量，为统计数量；
+    private var pageNt: Int = 1
+    private var lastNt: Int = 1
+    //当接口返回总数时，为返回数量；接口未返回数量，为统计数量；
+    var total = 0
     var dataLiveData = MutableListLiveData<S>()
-    private val dataList = ArrayList<S>()
+    protected val dataList = ArrayList<S>()
 
-    open fun initPageNt(): String {
-        return "1"
+    open fun initPageNt(): Int {
+        return 1
     }
 
     open fun initPageSize(): Int {
@@ -39,13 +35,11 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
      * 刷新
      */
     open fun refresh(isPageRefreshAnim: Boolean = loader.isFirstLoad) {
-        if (loader.loadStatus == LoadStatus.LOADING
-                || loader.loadStatus == LoadStatus.REFRESH
-                || loader.pageStatus == PageStatus.LOADING) {
+        if (loader.isLoading()) {
             return
         }
         if (isPageRefreshAnim) {
-            loader.pageStatus = PageStatus.LOADING
+            loader.pageStatus = PageStatus.REFRESH
         } else {
             loader.loadStatus = LoadStatus.REFRESH
         }
@@ -53,22 +47,45 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
         loadData()
     }
 
+    /**
+     * 上拉刷新时
+     */
     fun loadRefresh() {
-        refresh(false)
+        if (loader.isLoading()) {
+            return
+        }
+        loader.loadStatus = LoadStatus.REFRESH
+        pageNt = initPageNt()
+        loadData()
     }
 
-    fun loadData() {
+    /**
+     * 下拉加载时
+     */
+    fun loadMoreData() {
+        if (loader.pageStatus === PageStatus.NORMAL && loader.loadStatus === LoadStatus.NORMAL) {
+            loader.loadStatus = LoadStatus.LOAD_MORE
+            loadData()
+        }
+    }
+
+    private fun loadData() {
         doLoadData(pageNt)
     }
 
-    abstract fun doLoadData(nt: String)
+    abstract fun doLoadData(nt: Int)
+
+    fun Single<P>.defaultSubscribe() {
+        this.compose(PageTransformer())
+            .subscribe(WrapperObserver())
+    }
 
     inner class PageTransformer : SingleTransformer<P, P> {
         override fun apply(upstream: Single<P>): SingleSource<P> {
             val pageObserver = getPageObserver()
             return upstream
                 .compose(toBindLifecycle())
-                .doOnSubscribe { pageObserver.onStart() }
+                .doOnSubscribe { pageObserver.onSubscribe(it) }
                 .doOnSuccess { pageObserver.onSuccess(it) }
                 .doOnError { pageObserver.onError(it) }
         }
@@ -79,10 +96,10 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
 
         private val pageObserver = getPageObserver()
 
-        override fun onStart() {
-            super.onStart()
-            pageObserver.onStart()
-            observer?.onStart()
+        override fun onSubscribe(d: Disposable) {
+            super.onSubscribe(d)
+            pageObserver.onSubscribe(d)
+            observer?.onSubscribe(d)
         }
 
         override fun onError(e: Throwable) {
@@ -101,9 +118,8 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
 
         private var isLoadingRefresh = false
 
-        override fun onStart() {
-            super.onStart()
-            isLoadingRefresh = (loader.pageStatus == PageStatus.LOADING
+        override fun onSubscribe(d: Disposable) {
+            isLoadingRefresh = (loader.pageStatus == PageStatus.REFRESH
                     || loader.loadStatus == LoadStatus.REFRESH)
         }
 
@@ -118,7 +134,6 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
                 if (p.getCurrentPageTotal() < p.getPageSize()
                     || (p.getTotal() > 0 && p.getTotal() <= dataList.size)
                     || (p.getCurrentPageTotal() == 0)
-                    || (TextUtils.isEmpty(p.getPageNt()) && !initPageNt().matches(Regex("\\d+")))
                     || (p.getCurrentPageTotal() < initPageSize())) {
                     loadNoMore()
                 }
@@ -138,18 +153,14 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
         open fun loadSuccess(p: P) {
             loader.pageStatus = PageStatus.NORMAL
             loader.loadStatus = LoadStatus.NORMAL
-            if (TextUtils.isEmpty(p.getPageNt())) {
-                try {
-                    pageNt = if (p.getPageNo() == 0) {
-                        (pageNt.toInt() + 1).toString()
-                    } else {
-                        (p.getPageNo() + 1).toString()
-                    }
-                } catch (e: NumberFormatException) {
-                    e.printStackTrace()
+            try {
+                pageNt = if (p.getPageNo() == 0) {
+                    (pageNt + 1)
+                } else {
+                    (p.getPageNo() + 1)
                 }
-            } else {
-                pageNt = p.getPageNt() ?: ""
+            } catch (e: NumberFormatException) {
+                e.printStackTrace()
             }
             if (p.getTotal() > 0) {
                 total = p.getTotal()
@@ -158,7 +169,7 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
             }
             lastNt = pageNt
             dataList.addAll(p.getList() ?: ArrayList())
-            dataLiveData.postValue(dataList)
+            dataLiveData.setValue(dataList)
         }
 
         open fun loadFailed(e: ResultException) {
@@ -167,17 +178,6 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
                 when(e.code) {
                     ResponseCode.ERROR_NO_NET -> {
                         loader.pageStatus = PageStatus.NO_NET
-                    }
-                    ResponseCode.ERROR_NO_DATA -> {
-                        loader.pageStatus = PageStatus.NO_DATA
-                    }
-                    ResponseCode.ERROR_CANCEL -> {
-                        loader.pageStatus = PageStatus.NO_NET
-                        showShortToast(e.message)
-                    }
-                    ResponseCode.ERROR_OPERATION -> {
-                        loader.pageStatus = PageStatus.ERROR
-                        showShortToast(e.message)
                     }
                     else -> {
                         loader.pageStatus = PageStatus.ERROR
@@ -188,17 +188,6 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
                 when(e.code) {
                     ResponseCode.ERROR_NO_NET -> {
                         loader.loadStatus = LoadStatus.NO_NET
-                    }
-                    ResponseCode.ERROR_NO_DATA -> {
-                        loader.loadStatus = LoadStatus.NO_DATA
-                    }
-                    ResponseCode.ERROR_CANCEL -> {
-                        loader.loadStatus = LoadStatus.NORMAL
-                        showShortToast(e.message)
-                    }
-                    ResponseCode.ERROR_OPERATION -> {
-                        loader.loadStatus = LoadStatus.NORMAL
-                        showShortToast(e.message)
                     }
                     else -> {
                         loader.loadStatus = LoadStatus.NORMAL
@@ -213,9 +202,7 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
         }
 
         open fun loadEmpty() {
-            total = 0
-            dataList.clear()
-            dataLiveData.postValue(dataList)
+            resetNoData()
             if (showSuccessWithNoData()) {
                 loader.pageStatus = PageStatus.NORMAL
                 loader.loadStatus = LoadStatus.NO_DATA
@@ -229,6 +216,9 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
 
     }
 
+    /**
+     * 没有数据时，显示正常内容页面状态
+     */
     open fun showSuccessWithNoData(): Boolean {
         return false
     }
@@ -237,27 +227,18 @@ abstract class ListViewModel<P : IListModel<S>, S>(application: Application) : B
         return PageObserver()
     }
 
-    fun scrollToLoad(layoutManager: RecyclerView.LayoutManager?) {
+    fun resetNoData() {
+        total = 0
+        dataList.clear()
+        dataLiveData.setValue(dataList)
+    }
+
+    fun scrollToLoadMore(lastPosition: Int, spanCount: Int) {
         if (dataList.size <= 0) {
             return
         }
-        var isTheLast = false
-        if (layoutManager is GridLayoutManager) {
-            isTheLast = layoutManager.findLastVisibleItemPosition() >= dataList.size - layoutManager.spanCount - 1
-        } else if (layoutManager is StaggeredGridLayoutManager) {
-            val lastSpan = layoutManager.findLastVisibleItemPositions(null)
-            for (position in lastSpan) {
-                if (position >= dataList.size - layoutManager.spanCount - 1) {
-                    isTheLast = true
-                    break
-                }
-            }
-        } else if (layoutManager is LinearLayoutManager) {
-            isTheLast = layoutManager.findLastVisibleItemPosition() >= dataList.size - 1
-        }
-        if (isTheLast && loader.pageStatus === PageStatus.NORMAL && loader.loadStatus === LoadStatus.NORMAL) {
-            loader.loadStatus = LoadStatus.LOADING
-            loadData()
+        if (lastPosition >= dataList.size - spanCount - 1) {
+            loadMoreData()
         }
     }
 }

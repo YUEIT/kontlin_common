@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply from: '../_360jiagu/jiagu.gradle'
+apply plugin: 'com.google.protobuf'
 
 android {
     compileSdkVersion rootProject.ext.android.targetSdkVersion
@@ -77,7 +77,8 @@ android {
 //    }
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
-        main.assets.srcDirs += ['assets', 'src\\main\\assets']
+        main.assets.srcDirs += 'src/main/assets'
+        main.proto.srcDirs +='src/main/proto'
     }
     dataBinding {
         enabled true
@@ -100,6 +101,24 @@ android {
         }
     }
 }
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.6.1' // 也可以配置本地编译器路径
+    }
+
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                remove java
+            }
+            task.builtins {
+                java {}// 生产java源码
+            }
+        }
+    }
+}
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])

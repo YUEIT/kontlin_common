@@ -66,7 +66,7 @@ class PageStateView(context: Context, attributeSet: AttributeSet?): FrameLayout(
     fun show(status: PageStatus?) {
         when (status) {
             PageStatus.NORMAL -> showSuccess()
-            PageStatus.LOADING -> showLoading()
+            PageStatus.REFRESH -> showLoading()
             PageStatus.NO_NET -> showErrorNet()
             PageStatus.NO_DATA -> showErrorNoData()
             PageStatus.ERROR -> showErrorOperation()

@@ -1,10 +1,14 @@
 package cn.yue.base.mvvm
 
-import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.CheckResult
-import androidx.lifecycle.*
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import cn.yue.base.activity.rx.ILifecycleProvider
 import cn.yue.base.activity.rx.LifecycleTransformer
 import cn.yue.base.activity.rx.RxLifecycle.bindUntilEvent
@@ -21,11 +25,10 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
  * Description :
  * Created by yue on 2020/8/8
  */
-open class BaseViewModel(application: Application) : AndroidViewModel(application),
+open class BaseViewModel : ViewModel(),
 	ILifecycleProvider<Lifecycle.Event>, DefaultLifecycleObserver, IWaitView,
 	IRouterNavigation {
 
-    val coroutineScope by lazy { viewModelScope }
     var loader = LoaderLiveData()
     var waitEvent = MutableLiveData<String?>()
     var routerEvent = MutableLiveData<RouterModel>()
@@ -119,7 +122,7 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    override fun showWaitDialog(title: String) {
+    override fun showWaitDialog(title: String?) {
         waitEvent.postValue(title)
     }
 

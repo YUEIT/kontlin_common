@@ -5,6 +5,6 @@ package cn.yue.base.mvp
  * Created by yue on 2019/3/13
  */
 interface IWaitView {
-    fun showWaitDialog(title: String = "")
+    fun showWaitDialog(title: String? = "")
     fun dismissWaitDialog()
 }

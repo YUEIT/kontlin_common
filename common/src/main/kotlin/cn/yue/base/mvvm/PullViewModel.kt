@@ -1,6 +1,5 @@
 package cn.yue.base.mvvm
 
-import android.app.Application
 import cn.yue.base.mvp.IStatusView
 import cn.yue.base.view.load.LoadStatus
 import cn.yue.base.view.load.PageStatus
@@ -9,19 +8,18 @@ import cn.yue.base.view.load.PageStatus
  * Description :
  * Created by yue on 2020/8/8
  */
-abstract class PullViewModel(application: Application) : BaseViewModel(application), IStatusView {
+abstract class PullViewModel : BaseViewModel(), IStatusView {
 
     /**
      * 刷新
      */
     @JvmOverloads
     fun refresh(isPageRefreshAnim: Boolean = loader.isFirstLoad) {
-        if (loader.loadStatus === LoadStatus.REFRESH
-                || loader.pageStatus === PageStatus.LOADING) {
+        if (loader.isLoading()) {
             return
         }
         if (isPageRefreshAnim) {
-            loader.pageStatus = PageStatus.LOADING
+            loader.pageStatus = PageStatus.REFRESH
         } else {
             loader.loadStatus = LoadStatus.REFRESH
         }
@@ -32,10 +30,13 @@ abstract class PullViewModel(application: Application) : BaseViewModel(applicati
         refresh(false)
     }
 
-    protected abstract fun loadData()
+    abstract fun loadData()
 
-    private fun startRefresh() {
-        loader.loadStatus = LoadStatus.REFRESH
+    fun silenceLoadData() {
+        if (loader.isLoading()) {
+            return
+        }
+        loadData()
     }
 
     override fun changePageStatus(status: PageStatus) {

@@ -32,7 +32,7 @@ class TestDownloadFragment : BaseHintFragment() {
 //			mActivity.bindService(intent, connectionService, 0)
 //			mActivity.startService(intent)
 			DownloadUtils.downloadApk(
-				"https://downpack.baidu.com/baidusearch_AndroidPhone_1027757i.apk",
+				"https://downapp.baidu.com/baidusearch/AndroidPhone/13.43.5.10.1/1/1037068k/20231020160821/baidusearch_AndroidPhone_13-43-5-10-1_1037068k.apk",
 //            "https://kuxiu-1257191655.cos.ap-shanghai.myqcloud.com/apks/kx_v383_01.apk",
 				"hehe.apk").observe(this, Observer {
 				val progressTV = findViewById<TextView>(R.id.progressTV)

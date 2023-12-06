@@ -63,4 +63,7 @@
         <item name="android:windowExitAnimation">@anim/right_out</item>
     </style>
 
+    <style name="BaseDialogStyle" parent="android:Theme.Material.Dialog">
+        <item name="android:windowElevation">0dp</item>
+    </style>
 </resources>

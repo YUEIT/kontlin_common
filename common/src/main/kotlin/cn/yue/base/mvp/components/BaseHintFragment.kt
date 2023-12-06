@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewStub
 import cn.yue.base.activity.BaseFragment
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.mvp.IBaseView
 import cn.yue.base.mvp.components.data.Loader
 import cn.yue.base.utils.code.getString
@@ -80,11 +80,11 @@ abstract class BaseHintFragment : BaseFragment(), IBaseView {
     }
 
     private var waitDialog: WaitDialog? = null
-    override fun showWaitDialog(title: String) {
+    override fun showWaitDialog(title: String?) {
         if (waitDialog == null) {
             waitDialog = WaitDialog(mActivity)
         }
-        waitDialog?.show(title, true, null)
+        waitDialog?.show(title)
     }
 
     override fun dismissWaitDialog() {

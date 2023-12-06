@@ -2,7 +2,7 @@ package cn.yue.base.widget.keyboard
 
 import android.content.Context
 import android.widget.ImageView
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.image.ImageLoader.Companion.loadImage
 import cn.yue.base.widget.keyboard.mode.IEmotion
 import cn.yue.base.widget.recyclerview.CommonAdapter

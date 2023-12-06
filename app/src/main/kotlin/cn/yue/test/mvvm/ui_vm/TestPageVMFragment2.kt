@@ -2,6 +2,7 @@ package cn.yue.test.mvvm.ui_vm
 
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.recyclerview.widget.RecyclerView
 import cn.yue.base.widget.TopBar
 import cn.yue.base.widget.recyclerview.CommonViewHolder
 import cn.yue.base.widget.recyclerview.DiffRefreshAdapter
@@ -44,7 +45,11 @@ class TestPageVMFragment2 : BaseListVMFragment<TestUiViewModel, ItemViewModel>()
         }
     }
 
+    override fun getAdapter(): DiffRefreshAdapter<ItemViewModel> {
+        return super.getAdapter() as DiffRefreshAdapter<ItemViewModel>
+    }
+
     override fun setData(list: MutableList<ItemViewModel>) {
-        getAdapter()?.setList(list)
+        getAdapter().setList(list)
     }
 }

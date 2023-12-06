@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.image.ImageLoader.Companion.loadImage
 import cn.yue.base.utils.code.hasValue
 import cn.yue.base.widget.keyboard.mode.IEmotionSort

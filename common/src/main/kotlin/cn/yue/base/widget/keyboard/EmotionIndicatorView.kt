@@ -11,7 +11,7 @@ import android.view.Gravity
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
-import cn.yue.base.common.R
+import cn.yue.base.R
 import java.util.*
 
 class EmotionIndicatorView(protected var mContext: Context, attrs: AttributeSet) : LinearLayout(mContext, attrs) {

@@ -16,9 +16,9 @@ import io.reactivex.rxjava3.core.Single
  * Created by yue on 2022/2/21
  */
 
-class TestUiViewModel(application: Application): ListViewModel<UiViewModels, ItemViewModel>(application) {
+class TestUiViewModel: ListViewModel<UiViewModels, ItemViewModel>() {
 
-    private suspend fun requestSuspend(nt: String): DataListBean<ItemBean> {
+    private suspend fun requestSuspend(nt: Int): DataListBean<ItemBean> {
         val list = DataListBean<ItemBean>()
         for (i in 0..19) {
             list.add(ItemBean(i, "this is $i"))
@@ -26,7 +26,7 @@ class TestUiViewModel(application: Application): ListViewModel<UiViewModels, Ite
         return list
     }
 
-    private fun requestObservable(nt: String): Single<DataListBean<ItemBean>> {
+    private fun requestObservable(nt: Int): Single<DataListBean<ItemBean>> {
         return Single.create<DataListBean<ItemBean>> {
             val list = DataListBean<ItemBean>()
             for (i in 0..19) {
@@ -36,7 +36,7 @@ class TestUiViewModel(application: Application): ListViewModel<UiViewModels, Ite
         }
     }
 
-    override fun doLoadData(nt: String) {
+    override fun doLoadData(nt: Int) {
         viewModelScope.request({
             val list = requestSuspend(nt)
             val uiModels = UiViewModels()

@@ -10,7 +10,7 @@ import android.util.AttributeSet
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
-import cn.yue.base.common.R
+import cn.yue.base.R
 
 open class EmojiEmotionTextView : AppCompatTextView {
     private var mEmojiEmotionSize: Int = 0

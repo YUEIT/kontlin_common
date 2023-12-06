@@ -3,7 +3,7 @@ package cn.yue.base.mvp.components
 import android.os.Bundle
 import android.view.View
 import android.view.ViewStub
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.activity.BaseFragment
 import cn.yue.base.mvp.IBaseView
 import cn.yue.base.mvp.components.data.Loader
@@ -42,7 +42,7 @@ abstract class BasePullFragment : BaseFragment(), IBaseView {
         refreshL.setOnRefreshListener {
             refresh()
         }
-        refreshL.setEnabledRefresh(canPullDown())
+        refreshL.setRefreshEnable(canPullDown())
         if (canPullDown()) {
             stateView.setRefreshTarget(refreshL)
         }
@@ -78,12 +78,12 @@ abstract class BasePullFragment : BaseFragment(), IBaseView {
      */
     @JvmOverloads
     fun refresh(isPageRefreshAnim: Boolean = loader.isFirstLoad) {
-        if (loader.pageStatus === PageStatus.LOADING
+        if (loader.pageStatus === PageStatus.REFRESH
                 || loader.loadStatus === LoadStatus.REFRESH) {
             return
         }
         if (isPageRefreshAnim) {
-            changePageStatus(PageStatus.LOADING)
+            changePageStatus(PageStatus.REFRESH)
         } else {
             changeLoadStatus(LoadStatus.REFRESH)
         }
@@ -103,7 +103,7 @@ abstract class BasePullFragment : BaseFragment(), IBaseView {
 
     override fun changePageStatus(status: PageStatus) {
         showStatusView(loader.setPageStatus(status))
-        refreshL.finishRefreshing()
+        refreshL.finishRefreshingState()
     }
 
     override fun changeLoadStatus(status: LoadStatus) {
@@ -111,16 +111,16 @@ abstract class BasePullFragment : BaseFragment(), IBaseView {
         if (status === LoadStatus.REFRESH) {
             refreshL.startRefresh()
         } else {
-            refreshL.finishRefreshing()
+            refreshL.finishRefreshingState()
         }
     }
 
     private var waitDialog: WaitDialog? = null
-    override fun showWaitDialog(title: String) {
+    override fun showWaitDialog(title: String?) {
         if (waitDialog == null) {
             waitDialog = WaitDialog(mActivity)
         }
-        waitDialog?.show(title, true, null)
+        waitDialog?.show(title)
     }
 
     override fun dismissWaitDialog() {

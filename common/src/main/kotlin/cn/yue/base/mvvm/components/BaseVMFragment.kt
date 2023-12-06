@@ -2,12 +2,15 @@ package cn.yue.base.mvvm.components
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import cn.yue.base.activity.BaseFragment
 import cn.yue.base.activity.rx.ILifecycleProvider
 import cn.yue.base.mvvm.BaseViewModel
 import cn.yue.base.router.FRouter
-import cn.yue.base.widget.dialog.WaitDialog
 import java.lang.reflect.ParameterizedType
 /**
  * Description :
@@ -46,7 +49,7 @@ abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment() {
     }
 
     open fun createViewModel(cls: Class<VM>): VM {
-        return ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(mActivity.application))[cls]
+        return ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())[cls]
     }
 
     override fun initObserver() {
@@ -73,20 +76,6 @@ abstract class BaseVMFragment<VM : BaseViewModel> : BaseFragment() {
                 }
                 finishAllWithResult(resultCode, intent)
             }
-        }
-    }
-
-    private var waitDialog: WaitDialog? = null
-    private fun showWaitDialog(title: String) {
-        if (waitDialog == null) {
-            waitDialog = WaitDialog(mActivity)
-        }
-        waitDialog?.show(title, true, null)
-    }
-
-    private fun dismissWaitDialog() {
-        if (waitDialog != null && waitDialog!!.isShowing()) {
-            waitDialog?.cancel()
         }
     }
     

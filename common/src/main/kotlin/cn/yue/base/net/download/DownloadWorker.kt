@@ -3,7 +3,7 @@ package cn.yue.base.net.download
 import android.content.Context
 import androidx.work.*
 import cn.yue.base.Constant
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.net.RetrofitManager
 import cn.yue.base.utils.code.getString
 import okhttp3.Request

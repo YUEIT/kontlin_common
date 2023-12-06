@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <cn.yue.base.view.refresh.CSwipeRefreshLayout
+    <cn.yue.base.view.refresh.CSmartRefreshLayout
         android:id="@+id/refreshL"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -21,6 +21,6 @@
 
         </cn.yue.base.view.PageStateView>
 
-    </cn.yue.base.view.refresh.CSwipeRefreshLayout>
+    </cn.yue.base.view.refresh.CSmartRefreshLayout>
 </FrameLayout>
 

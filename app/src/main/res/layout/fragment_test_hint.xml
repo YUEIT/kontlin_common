@@ -6,55 +6,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/et_number"
+    <cn.yue.test.widget.ComboGiftQueueLayout
+        android:id="@+id/v_combo_gift"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="50dp"
-        android:textSize="15sp"
-        android:textColor="#333333"
-        android:hint="123445"
-        android:inputType="number"/>
+        android:layout_height="110dp"
+        android:layout_marginTop="160dp"
+        android:orientation="vertical"
+        android:clipChildren="false"/>
 
-    <TextView
-        android:id="@+id/tv_number"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:gravity="center"
-        android:textSize="20sp"
-        android:textColor="#ff0000"
-        tools:text="12344"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/btn_combo"
+        android:layout_width="200dp"
         android:layout_height="100dp"
-        android:visibility="gone">
-
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:visibility="invisible"/>
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/tv_change"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
         android:layout_marginTop="100dp"
-        android:background="#ff00ff"
-        android:gravity="center"
-        android:textSize="20sp"
-        android:textColor="#333333"
-        android:text="转换"/>
-
-
-    <cn.yue.base.widget.image.RoundImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/live_banner_rank_img_w"
-        app:view_type="round"/>
+        android:background="#999999"
+        android:text="combo"/>
 </LinearLayout>

@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.PagerAdapter
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.utils.code.realSize
 import cn.yue.base.widget.keyboard.mode.IEmotion
 import cn.yue.base.widget.keyboard.mode.IEmotionPage

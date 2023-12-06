@@ -23,11 +23,7 @@ class DataListBean<T> : ArrayList<T>(), IListModel<T> {
     override fun getPageSize(): Int {
         return size
     }
-
-    override fun getPageNt(): String? {
-        return null
-    }
-
+    
     override fun getCurrentPageTotal(): Int {
         return size
     }

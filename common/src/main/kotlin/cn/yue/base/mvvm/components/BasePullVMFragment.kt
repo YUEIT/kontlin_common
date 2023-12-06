@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewStub
 import androidx.lifecycle.Observer
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.mvvm.PullViewModel
 import cn.yue.base.utils.code.getString
 import cn.yue.base.utils.debug.ToastUtils.showShortToast
@@ -39,7 +39,7 @@ abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>() {
         refreshL.setOnRefreshListener {
             viewModel.refresh()
         }
-        refreshL.setEnabledRefresh(canPullDown())
+        refreshL.setRefreshEnable(canPullDown())
         if (canPullDown()) {
             stateView.setRefreshTarget(refreshL)
         }
@@ -71,7 +71,7 @@ abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>() {
             if (loadStatus === LoadStatus.REFRESH) {
                 refreshL.startRefresh()
             } else {
-                refreshL.finishRefreshing()
+                refreshL.finishRefreshingState()
             }
         })
     }
@@ -90,7 +90,12 @@ abstract class BasePullVMFragment<VM : PullViewModel> : BaseVMFragment<VM>() {
         if (viewModel.loader.isFirstLoad) {
             stateView.show(status)
         } else {
-            stateView.show(PageStatus.NORMAL)
+            if (status == PageStatus.NO_DATA) {
+                stateView.show(status)
+                viewModel.loader.isFirstLoad = true
+            } else {
+                stateView.show(PageStatus.NORMAL)
+            }
         }
         if (status == PageStatus.NORMAL) {
             viewModel.loader.isFirstLoad = false

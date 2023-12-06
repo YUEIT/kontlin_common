@@ -19,7 +19,7 @@ import android.view.animation.Interpolator
 import android.widget.OverScroller
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.ViewCompat
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.photo.data.MimeType
 import cn.yue.base.utils.device.ScreenUtils
 import cn.yue.base.utils.file.AndroidQFileUtils.getMediaUriFromName

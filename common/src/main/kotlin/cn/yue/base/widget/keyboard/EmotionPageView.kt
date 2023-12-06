@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.widget.LinearLayout
 import androidx.viewpager.widget.ViewPager
 
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.widget.keyboard.mode.IEmotion
 import cn.yue.base.widget.keyboard.mode.IEmotionPage
 

@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import cn.yue.base.common.R
+import cn.yue.base.R
 
 /**
  * Description :
@@ -28,7 +28,7 @@ class CSwipeRefreshLayout(context: Context, attributeSet: AttributeSet): SwipeRe
 
     }
 
-    override fun setEnabledRefresh(enable: Boolean) {
+    override fun setRefreshEnable(enable: Boolean) {
         super.setEnabled(enable)
     }
 
@@ -36,7 +36,7 @@ class CSwipeRefreshLayout(context: Context, attributeSet: AttributeSet): SwipeRe
         isRefreshing = true
     }
 
-    override fun finishRefreshing() {
+    override fun finishRefreshingState() {
         if (isRefreshing) {
             isRefreshing = false
         }
@@ -46,6 +46,10 @@ class CSwipeRefreshLayout(context: Context, attributeSet: AttributeSet): SwipeRe
         super.setOnRefreshListener{
             onRefresh.invoke()
         }
+    }
+
+    override fun showLoadMoreEnd(show: Boolean) {
+
     }
 
 }

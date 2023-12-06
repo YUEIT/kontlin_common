@@ -25,8 +25,8 @@ class UserAuthDialog : BaseDialogFragment(){
         }
     }
 
-    override fun initEnterStyle() {
-        setEnterStyle(TRANSITION_CENTER)
+    override fun getTransition(): Int {
+        return TRANSITION_CENTER
     }
 
     private var confirmBlock: (()->Unit)? = null

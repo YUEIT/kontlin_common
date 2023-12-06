@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewStub
 import androidx.lifecycle.Observer
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.mvvm.BaseViewModel
 import cn.yue.base.utils.code.getString
 import cn.yue.base.utils.debug.ToastUtils.showShortToast
@@ -66,6 +66,13 @@ abstract class BaseHintVMFragment<VM : BaseViewModel> : BaseVMFragment<VM>() {
     private fun showStatusView(status: PageStatus?) {
         if (viewModel.loader.isFirstLoad) {
             stateView.show(status)
+        } else {
+            if (status == PageStatus.NO_DATA) {
+                stateView.show(status)
+                viewModel.loader.isFirstLoad = true
+            } else {
+                stateView.show(PageStatus.NORMAL)
+            }
         }
         if (status == PageStatus.NORMAL) {
             viewModel.loader.isFirstLoad = false

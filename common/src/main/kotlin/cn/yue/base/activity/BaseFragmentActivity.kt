@@ -3,10 +3,9 @@ package cn.yue.base.activity
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.text.TextUtils
+import android.view.MotionEvent
 import android.view.View
 import android.view.Window
 import android.widget.FrameLayout
@@ -14,20 +13,17 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorInt
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
+import cn.yue.base.R
 import cn.yue.base.activity.rx.ILifecycleProvider
 import cn.yue.base.activity.rx.RxLifecycleProvider
-import cn.yue.base.common.R
 import cn.yue.base.utils.app.BarUtils
-import cn.yue.base.utils.app.RunTimePermissionUtil
-import cn.yue.base.utils.code.getString
-import cn.yue.base.utils.debug.ToastUtils
 import cn.yue.base.widget.TopBar
-import cn.yue.base.widget.dialog.HintDialog
-import java.util.*
+import java.util.UUID
 
 /**
  * Description :
@@ -55,7 +51,7 @@ abstract class BaseFragmentActivity : FragmentActivity() {
         lifecycle.addObserver(lifecycleProvider)
     }
 
-    fun getLifecycleProvider(): ILifecycleProvider<Lifecycle.Event>? {
+    fun getLifecycleProvider(): ILifecycleProvider<Lifecycle.Event> {
         return lifecycleProvider
     }
 
@@ -68,7 +64,9 @@ abstract class BaseFragmentActivity : FragmentActivity() {
         setStatusBar()
         setContentView(getContentViewLayoutId())
         topFL = findViewById(R.id.topBar)
-        topFL?.addView(TopBar(this).also { topBar = it })
+        if ((topFL?.childCount ?: 0) <= 0) {
+            topFL?.addView(TopBar(this).also { topBar = it })
+        }
         content = findViewById(R.id.content)
         content?.setBackgroundColor(Color.WHITE)
         supportFragmentManager.addOnBackStackChangedListener(FragmentManager.OnBackStackChangedListener {
@@ -101,6 +99,14 @@ abstract class BaseFragmentActivity : FragmentActivity() {
 
     fun removeTopBar() {
         topFL?.removeView(topBar)
+    }
+
+    fun immersiveTopBar() {
+        val layoutParams = content?.layoutParams
+        if (layoutParams is ConstraintLayout.LayoutParams) {
+            layoutParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+            content?.layoutParams = layoutParams
+        }
     }
 
     fun setContentBackground(@ColorInt color: Int) {
@@ -192,13 +198,13 @@ abstract class BaseFragmentActivity : FragmentActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        if (intent == null || intent.extras == null) {
+        if (intent == null) {
             return
         }
         val fragments: List<Fragment> = supportFragmentManager.fragments
         for (fragment: Fragment in fragments) {
             if (fragment.isAdded && fragment is BaseFragment && fragment.isVisible) {
-                fragment.onNewIntent(intent.extras!!)
+                fragment.onNewIntent(intent)
             }
         }
     }
@@ -212,14 +218,12 @@ abstract class BaseFragmentActivity : FragmentActivity() {
             }
         }
     }
-    
+
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()) {
         val noPermission = arrayListOf<String>()
         it.forEach { entry ->
             if (!entry.value) {
-                ToastUtils.showShortToast(R.string.app_permission_request_fail.getString()
-                    .replace("%d", RunTimePermissionUtil.getPermissionName(entry.key)))
                 noPermission.add(entry.key)
             }
         }
@@ -237,39 +241,32 @@ abstract class BaseFragmentActivity : FragmentActivity() {
         permissionFailed = failed
         permissionLauncher.launch(permissions as Array<String>)
     }
-  
+
     private var permissionSuccess: (() -> Unit)? = null
     private var permissionFailed: ((permission: List<String>) -> Unit)? = null
 
-    private var failDialog: HintDialog? = null
-    fun showFailDialog() {
-        if (failDialog == null) {
-            failDialog = HintDialog.Builder(this)
-                .setTitleStr(R.string.app_message.getString())
-                .setContentStr(R.string.app_permission_no_granted_and_to_request.getString())
-                .setLeftClickStr(R.string.app_cancel.getString())
-                .setRightClickStr(R.string.app_confirm.getString())
-                .setOnRightClickListener { startSettings() }
-                .build()
-        }
-        failDialog!!.show()
-    }
-
-    private fun startSettings() {
-        try {
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            intent.data = Uri.parse("package:$packageName")
-            startActivity(intent)
-        } catch (e : Exception) {
-            val intent = Intent(Settings.ACTION_SETTINGS)
-            startActivity(intent)
-        }
-    }
-    
     fun registerResultLauncher(callback: ActivityResultCallback<ActivityResult>): WrapperResultLauncher {
         return WrapperResultLauncher(this,
             registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)
         )
     }
-    
+
+    private val dispatchTouchListeners = arrayListOf<OnDispatchTouchListener>()
+
+    fun addOnDispatchTouchListener(listener: OnDispatchTouchListener) {
+        dispatchTouchListeners.add(listener)
+    }
+
+    fun removeOnDispatchTouchListener(listener: OnDispatchTouchListener) {
+        dispatchTouchListeners.remove(listener)
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (ev != null) {
+            dispatchTouchListeners.forEach {
+                it.dispatchTouchEvent(ev)
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
 }

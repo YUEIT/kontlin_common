@@ -5,7 +5,8 @@ import android.graphics.Color
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import cn.yue.base.common.R
+import cn.yue.base.R
+import cn.yue.base.view.load.IFooter
 import cn.yue.base.view.load.LoadStatus
 import cn.yue.base.widget.dialog.AppProgressBar
 
@@ -13,7 +14,7 @@ import cn.yue.base.widget.dialog.AppProgressBar
  * Description :
  * Created by yue on 2019/3/7
  */
-class BaseFooter(context: Context?) : RelativeLayout(context) {
+class BaseFooter(context: Context?) : RelativeLayout(context), IFooter {
     private var loadStatus: LoadStatus? = null
     private val progressBar: AppProgressBar?
     private val loadingLL: LinearLayout
@@ -36,11 +37,11 @@ class BaseFooter(context: Context?) : RelativeLayout(context) {
         showNormal()
     }
 
-    fun showStatusView(loadStatus: LoadStatus?) {
+    override fun showStatusView(loadStatus: LoadStatus?) {
         this.loadStatus = loadStatus
         when (loadStatus) {
             LoadStatus.NORMAL -> showNormal()
-            LoadStatus.LOADING -> showLoading()
+            LoadStatus.REFRESH -> showLoading()
             LoadStatus.END -> showEnd()
             LoadStatus.NO_DATA -> showNoData()
             LoadStatus.NO_NET -> showNoNet()

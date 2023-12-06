@@ -5,7 +5,7 @@ import android.graphics.Color
 import android.util.AttributeSet
 import android.view.View
 import android.widget.RelativeLayout
-import cn.yue.base.common.R
+import cn.yue.base.R
 
 /**
  * Description :

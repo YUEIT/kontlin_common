@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.core.widget.NestedScrollView
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.view.load.PageStatus
 import cn.yue.base.view.refresh.IRefreshLayout
 
@@ -98,7 +98,7 @@ class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeS
     fun show(status: PageStatus?) {
         when (status) {
             PageStatus.NORMAL -> showSuccess()
-            PageStatus.LOADING -> showLoading()
+            PageStatus.REFRESH -> showLoading()
             PageStatus.NO_NET -> showErrorNet()
             PageStatus.NO_DATA -> showErrorNoData()
             PageStatus.ERROR -> showErrorOperation()
@@ -153,7 +153,7 @@ class PageHintView @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun setRefreshEnable(enable: Boolean) {
-        refreshLayout?.setEnabledRefresh(enable)
+        refreshLayout?.setRefreshEnable(enable)
     }
 
     override fun addView(child: View) {

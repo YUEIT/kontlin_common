@@ -33,13 +33,19 @@
 
     <declare-styleable name="SampleTabStrip">
         <attr name="stsTabPadding" format="dimension"/>
-        <attr name="stsScrollOffset" format="dimension"/>
+        <attr name="stsScrollOffsetStart" format="dimension"/>
+        <attr name="stsScrollOffsetEnd" format="dimension"/>
         <attr name="stsTabBackground" format="reference"/>
         <attr name="stsShouldExpand" format="boolean"/>
         <attr name="stsTextAllCaps" format="boolean"/>
         <attr name="stsIndicatorHeight" format="dimension"/>
         <attr name="stsIndicatorWidth" format="dimension"/>
         <attr name="stsIndicatorColor" format="color"/>
+        <attr name="stsIndicatorCap" format="enum">
+            <enum name="round" value="0" />
+            <enum name="rect" value="1" />
+        </attr>
+        <attr name="stsIndicatorSrc" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="SampleTabStrip2">
@@ -52,6 +58,10 @@
 
     <declare-styleable name="RoundImageView">
         <attr name="border_radius" format="dimension" />
+        <attr name="border_radius_tl" format="dimension" />
+        <attr name="border_radius_tr" format="dimension" />
+        <attr name="border_radius_bl" format="dimension" />
+        <attr name="border_radius_br" format="dimension" />
         <attr name="border_color" format="color" />
         <attr name="border_width" format="dimension" />
         <attr name="foreground" format="reference|color" />

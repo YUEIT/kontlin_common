@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 
-import cn.yue.base.common.R
+import cn.yue.base.R
 import cn.yue.base.utils.debug.LogUtils
 import cn.yue.base.utils.device.KeyboardUtils
 import cn.yue.base.widget.keyboard.mode.EmotionUtils

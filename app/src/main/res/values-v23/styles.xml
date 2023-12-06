@@ -13,4 +13,10 @@
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
+    <style name="LaunchTheme" parent="@style/AppTheme">
+        <item name="colorPrimaryDark">#ffffff</item>
+        <item name="android:windowBackground">@drawable/ic_launcher_background</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
 </resources>

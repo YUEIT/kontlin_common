@@ -1,0 +1,13 @@
+//指定proto的版本为proto3，不写的话默认为proto2.
+syntax = "proto3";
+//包名
+package proto;
+//引入包
+//import "";
+//指定生成类所在的Java包名
+option java_package = "cn.yue.base.net.wrapper";
+
+message BaseProtoData {
+  int32 code = 1;
+  string message = 2;
+}

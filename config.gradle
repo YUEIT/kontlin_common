@@ -74,7 +74,8 @@ ext {
             'autosize'                             : 'me.jessyan:autosize:1.2.1',
             'mmkv'                                 : 'com.tencent:mmkv-static:1.2.4',
             'wechat'                               : 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.6.5',
-            'exoplayer'                            : 'com.google.android.exoplayer:exoplayer:2.13.3'
+            'exoplayer'                            : 'com.google.android.exoplayer:exoplayer:2.13.3',
+            'vlayout'                              : 'com.alibaba.android:vlayout:1.2.8@aar'
     ]
 
     refresh = [

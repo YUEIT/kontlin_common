@@ -3,6 +3,7 @@ package cn.yue.test.mvvm
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import cn.yue.base.mvvm.components.BaseListVMFragment
+import cn.yue.base.mvvm.components.BasePageVMFragment
 import cn.yue.base.widget.TopBar
 import cn.yue.base.widget.recyclerview.CommonViewHolder
 import cn.yue.base.widget.recyclerview.DiffRefreshAdapter
@@ -12,7 +13,7 @@ import cn.yue.test.mode.ItemBean
 import com.alibaba.android.arouter.facade.annotation.Route
 
 @Route(path = "/app/testPageVM")
-class TestPageVMFragment : BaseListVMFragment<TestPageViewModel, ItemBean>() {
+class TestPageVMFragment : BasePageVMFragment<TestPageViewModel, ItemBean>() {
 
     override fun initTopBar(topBar: TopBar) {
         super.initTopBar(topBar)

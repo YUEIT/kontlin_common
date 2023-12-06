@@ -5,13 +5,14 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.widget.TextView
-import cn.yue.base.common.R
+import cn.yue.base.R
 
 /**
  * Description : 等待框
@@ -20,9 +21,8 @@ import cn.yue.base.common.R
 class WaitDialog(private val activity: Activity) {
 
     private var dialog: Dialog = Dialog(activity)
-    private var handler: Handler = Handler()
+    private var handler: Handler = Handler(Looper.getMainLooper())
     private var waitText: TextView
-//    private lateinit var waitImage: ImageView
 
     init {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -34,19 +34,10 @@ class WaitDialog(private val activity: Activity) {
         }
         val view = View.inflate(activity, R.layout.layout_wait_dialog, null)
         waitText = view.findViewById(R.id.waitText)
-//        waitImage = view.findViewById(R.id.waitImage)
-//        ImageLoader.getLoader().loadGif(waitImage, R.drawable.app_icon_wait)
         dialog.setContentView(view)
     }
 
-
-    /**
-     *
-     * @param title
-     * @param isProgress
-     * @param imgRes     显示滚动条的时候该值传递null
-     */
-    fun show(title: String?, isProgress: Boolean, imgRes: Int?) {
+    fun show() {
         if (activity.isFinishing) {
             return
         }
@@ -54,24 +45,27 @@ class WaitDialog(private val activity: Activity) {
             dialog.cancel()
         }
         dialog.show()
-        setDialog(title, isProgress, imgRes)
     }
 
-    private fun setDialog(title: String?, isProgress: Boolean, imgRes: Int?) {
+
+    fun show(title: String?) {
+        if (activity.isFinishing) {
+            return
+        }
+        if (dialog.isShowing) {
+            dialog.cancel()
+        }
+        dialog.show()
+        setDialog(title)
+    }
+
+    private fun setDialog(title: String?) {
         if (!TextUtils.isEmpty(title)) {
             waitText.text = title
             waitText.visibility = View.VISIBLE
         } else {
             waitText.visibility = View.GONE
         }
-//        if (isProgress) {
-//            waitImage.visibility = View.VISIBLE
-//        } else {
-//            waitImage.visibility = View.GONE
-//        }
-//        if (null != imgRes) {
-//            waitImage.background = activity.resources.getDrawable(imgRes)
-//        }
     }
 
     fun cancel() {

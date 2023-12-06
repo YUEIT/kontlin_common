@@ -6,22 +6,30 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
+import android.widget.EditText
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import cn.yue.base.R
 import cn.yue.base.activity.TransitionAnimation.TRANSITION_BOTTOM
 import cn.yue.base.activity.TransitionAnimation.TRANSITION_CENTER
 import cn.yue.base.activity.TransitionAnimation.TRANSITION_LEFT
 import cn.yue.base.activity.TransitionAnimation.TRANSITION_RIGHT
 import cn.yue.base.activity.TransitionAnimation.TRANSITION_TOP
-import cn.yue.base.activity.TransitionAnimation.getWindowEnterStyle
 import cn.yue.base.activity.rx.ILifecycleProvider
 import cn.yue.base.activity.rx.RxLifecycleProvider
+import cn.yue.base.utils.device.KeyboardUtils
 import cn.yue.base.widget.dialog.WaitDialog
 import java.lang.ref.WeakReference
 
@@ -31,8 +39,9 @@ import java.lang.ref.WeakReference
  */
 abstract class BaseDialogFragment : DialogFragment() {
     private lateinit var lifecycleProvider: ILifecycleProvider<Lifecycle.Event>
-    private var cacheView: View? = null
     lateinit var mActivity: FragmentActivity
+    var mHandler = Handler(Looper.getMainLooper())
+    private var transition: Int = TRANSITION_BOTTOM
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -43,11 +52,16 @@ abstract class BaseDialogFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         lifecycleProvider = initLifecycleProvider()
         lifecycle.addObserver(lifecycleProvider)
-        setStyle(STYLE_NO_TITLE, 0)
+        transition = getTransition()
+        setStyle(STYLE_NO_TITLE, R.style.BaseDialogStyle)
     }
 
     open fun initLifecycleProvider(): ILifecycleProvider<Lifecycle.Event> {
         return RxLifecycleProvider()
+    }
+
+    fun getLifecycleProvider(): ILifecycleProvider<Lifecycle.Event> {
+        return lifecycleProvider
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,10 +71,7 @@ abstract class BaseDialogFragment : DialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        if (cacheView == null) {
-            cacheView = inflater.inflate(getLayoutId(), container, false)
-        }
-        return cacheView
+        return inflater.inflate(getLayoutId(), container, false)
     }
 
     /**
@@ -73,27 +84,37 @@ abstract class BaseDialogFragment : DialogFragment() {
      */
     abstract fun initView(savedInstanceState: Bundle?)
 
+    abstract fun getTransition(): Int
+
     /**
      * 换场动画
      */
-    abstract fun initEnterStyle()
-
-    fun setEnterStyle(transition: Int) {
+    open fun initEnterStyle() {
         if (this.dialog == null) {
             return
         }
-        setStyle(STYLE_NO_TITLE, 0)
+//        setStyle(STYLE_NO_TITLE, 0)
         val window = this.dialog!!.window
         window!!.decorView.setPadding(0, 0, 0, 0)
         val lp = window.attributes
-        setWindowLayoutParams(transition, lp)
-        lp.gravity = getWindowGravity(transition)
-        lp.windowAnimations = getWindowEnterStyle(transition)
+        setWindowLayoutParams(lp)
+        lp.gravity = getWindowGravity()
+        lp.windowAnimations = getWindowAnimation()
         window.attributes = lp
         window.setBackgroundDrawable(ColorDrawable())
+        setWindowParams(window)
     }
 
-    fun getWindowGravity(transition: Int): Int {
+    open fun setWindowParams(window: Window) { }
+
+    fun setDelayDimBehind(window: Window) {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        mHandler.postDelayed({
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        }, 100)
+    }
+
+    open fun getWindowGravity(): Int {
         return when (transition) {
             TRANSITION_BOTTOM -> Gravity.BOTTOM
             TRANSITION_TOP -> Gravity.TOP
@@ -104,7 +125,11 @@ abstract class BaseDialogFragment : DialogFragment() {
         }
     }
 
-    fun setWindowLayoutParams(transition: Int, layoutParams: ViewGroup.LayoutParams) {
+    open fun getWindowAnimation(): Int {
+        return TransitionAnimation.getWindowEnterStyle(transition)
+    }
+
+    open fun setWindowLayoutParams(layoutParams: ViewGroup.LayoutParams) {
         when (transition) {
             TRANSITION_BOTTOM, TRANSITION_TOP -> {
                 layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
@@ -184,7 +209,7 @@ abstract class BaseDialogFragment : DialogFragment() {
         if (waitDialog == null) {
             waitDialog = WaitDialog(mActivity)
         }
-        waitDialog?.show(title!!, true, null)
+        waitDialog?.show(title)
     }
 
     fun dismissWaitDialog() {
@@ -207,7 +232,7 @@ abstract class BaseDialogFragment : DialogFragment() {
         val fragments = childFragmentManager.fragments
         for (fragment in fragments) {
             if (fragment != null && fragment.isAdded
-                    && fragment is BaseDialogFragment && fragment.isVisible()) {
+                && fragment is BaseDialogFragment && fragment.isVisible()) {
                 fragment.onNewIntent(bundle)
             }
         }
@@ -217,10 +242,15 @@ abstract class BaseDialogFragment : DialogFragment() {
         val fragments = childFragmentManager.fragments
         for (fragment in fragments) {
             if (fragment != null && fragment.isAdded
-                    && fragment.isVisible && fragment.userVisibleHint) {
+                && fragment.isVisible && fragment.userVisibleHint) {
                 fragment.onActivityResult(requestCode, resultCode, data)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mHandler.removeCallbacksAndMessages(null)
     }
 
     open fun show(manager: FragmentManager?) {
@@ -247,16 +277,18 @@ abstract class BaseDialogFragment : DialogFragment() {
         }
     }
 
+    private val mKeyboardHandler = Handler(Looper.getMainLooper())
+
+    fun hideKeyboard(et: EditText?) {
+        KeyboardUtils.hideSoftInput(et)
+        mKeyboardHandler.postDelayed(Runnable {
+            KeyboardUtils.hideSoftInput(mActivity)
+        }, 300)
+    }
+
     //--------------------------------------------------------------------------------------------------------------
     fun <T : View> findViewById(resId: Int): T {
-        var view: T? = null
-        if (cacheView != null) {
-            view = cacheView!!.findViewById<T>(resId)
-        }
-        if (view == null) {
-            throw NullPointerException("no found view with ${resId.toString()} in " + this)
-        }
-        return view
+        return requireView().findViewById<T>(resId)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -267,4 +299,12 @@ abstract class BaseDialogFragment : DialogFragment() {
         }
     }
 
+    private var fragmentViewModelProvider: ViewModelProvider? = null
+
+    protected fun <T : ViewModel> getFragmentViewModel(clazz: Class<T>): T {
+        if (fragmentViewModelProvider == null) {
+            fragmentViewModelProvider = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())
+        }
+        return fragmentViewModelProvider!![clazz]
+    }
 }

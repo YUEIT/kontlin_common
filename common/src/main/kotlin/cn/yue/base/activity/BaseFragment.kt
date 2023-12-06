@@ -3,6 +3,7 @@ package cn.yue.base.activity
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,13 +15,15 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import cn.yue.base.R
 import cn.yue.base.activity.rx.ILifecycleProvider
 import cn.yue.base.activity.rx.RxLifecycleProvider
-import cn.yue.base.common.R
+import cn.yue.base.mvp.IWaitView
 import cn.yue.base.widget.TopBar
+import cn.yue.base.widget.dialog.WaitDialog
 
 
-abstract class BaseFragment : Fragment() {
+abstract class BaseFragment : Fragment(), IWaitView {
 
     private lateinit var lifecycleProvider: ILifecycleProvider<Lifecycle.Event>
     private var cacheView: View? = null
@@ -146,11 +149,11 @@ abstract class BaseFragment : Fragment() {
         mActivity.setFragmentResult(resultCode, data)
     }
 
-    open fun onNewIntent(bundle: Bundle) {
+    open fun onNewIntent(intent: Intent) {
         val fragments = childFragmentManager.fragments
         for (fragment in fragments) {
             if (fragment != null && fragment.isAdded && fragment is BaseFragment && fragment.isVisible) {
-                fragment.onNewIntent(bundle)
+                fragment.onNewIntent(intent)
             }
         }
     }
@@ -166,7 +169,7 @@ abstract class BaseFragment : Fragment() {
             }
         }
     }
-    
+
     fun registerResultLauncher(callback: ActivityResultCallback<ActivityResult>): WrapperResultLauncher {
         return WrapperResultLauncher(this,
             registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)
@@ -229,16 +232,16 @@ abstract class BaseFragment : Fragment() {
     fun replace(containViewId: Int, fragment: Fragment?) {
         if (null != fragment) {
             childFragmentManager.beginTransaction()
-                    .replace(containViewId, fragment)
-                    .commitAllowingStateLoss()
+                .replace(containViewId, fragment)
+                .commitAllowingStateLoss()
         }
     }
 
     fun replace(containViewId: Int, fragment: Fragment?, tag: String) {
         if (null != fragment) {
             childFragmentManager.beginTransaction()
-                    .replace(containViewId, fragment, tag)
-                    .commitAllowingStateLoss()
+                .replace(containViewId, fragment, tag)
+                .commitAllowingStateLoss()
         }
     }
 
@@ -291,20 +294,34 @@ abstract class BaseFragment : Fragment() {
 
     fun addFragment(containerId: Int, fragment: Fragment, tag: String) {
         childFragmentManager.beginTransaction()
-                .add(containerId, fragment, tag)
-                .commitAllowingStateLoss()
+            .add(containerId, fragment, tag)
+            .commitAllowingStateLoss()
     }
 
     fun hideFragment(fragment: Fragment) {
         childFragmentManager.beginTransaction()
-                .hide(fragment)
-                .commitAllowingStateLoss()
+            .hide(fragment)
+            .commitAllowingStateLoss()
     }
 
     fun showFragment(fragment: Fragment) {
         childFragmentManager.beginTransaction()
-                .show(fragment)
-                .commitAllowingStateLoss()
+            .show(fragment)
+            .commitAllowingStateLoss()
     }
 
+    private var waitDialog: WaitDialog? = null
+
+    override fun showWaitDialog(title: String?) {
+        if (waitDialog == null) {
+            waitDialog = WaitDialog(mActivity)
+        }
+        waitDialog?.show(title)
+    }
+
+    override fun dismissWaitDialog() {
+        if (waitDialog != null && waitDialog!!.isShowing()) {
+            waitDialog?.cancel()
+        }
+    }
 }
